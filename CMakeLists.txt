@@ -82,6 +82,7 @@ add_library(loguru-lib STATIC
 
 add_library(Base-Engine STATIC
     src/engine/foo.cpp
+    src/app/clihandler.hpp src/app/clihandler.cpp
 )
 
 add_library(Gen1-Engine SHARED
@@ -101,6 +102,7 @@ add_library(Gen2-Engine SHARED
 add_executable(StratStat
     src/app/main.cpp
     src/app/config.hpp
+    src/app/clihandler.cpp src/app/clihandler.hpp
 )
 
 target_link_libraries(StratStat PRIVATE

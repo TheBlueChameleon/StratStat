@@ -1,70 +1,26 @@
 #include <iostream>
 #include <dlfcn.h>
 
-#include <argparse/argparse.hpp>
 #include <lua.hpp>
 #include <jsonxx.h>
 
-#include "config.hpp"
-
-Config parseCliArgs(int argc, char* argv[])
-{
-    argparse::ArgumentParser stratStat("StratStat");
-
-    stratStat
-    .add_argument("engine")
-    .help("The file path of a BattleEngine library file (DLL/SO file)");
-
-    stratStat
-    .add_argument("userTeam")
-    .help("The file path of a user team definition file (JSON file)");
-
-    stratStat
-    .add_argument("userStrategy")
-    .help("The file path of a user strategy definition file (LUA file)");
-
-    stratStat
-    .add_argument("enemyTeam")
-    .help("The file path of a user team definition file (JSON file)");
-
-    stratStat
-    .add_argument("enemyStrategy")
-    .help("The file path of a user strategy definition file (LUA file)");
-
-    stratStat
-    .add_argument("--repetitions", "-r")
-    .help("The number of battles the engine attempts with the specified teams (default: 10)")
-    .default_value(10);
-
-    try
-    {
-        auto cfg = Config();
-        stratStat.parse_args(argc, argv);
-        return cfg;
-    }
-    catch (const std::exception& err)
-    {
-        std::cerr << err.what() << std::endl;
-        std::cerr << stratStat;
-        std::exit(-1);
-    }
-}
+#include "clihandler.hpp"
 
 void doLuaStuff()
 {
     lua_State* L = luaL_newstate();
     luaL_openlibs(L);
-    luaL_dofile(L, "../scripts/hello.lua");
+    luaL_dofile(L, "./strategies/hello.lua");
     lua_close(L);
 }
 
-int dyLibStuff()
+int dyLibStuff(const Config& cfg)
 {
     void* object{};
     char* error{};
     void* handler{};
     //* load shared library named "your-external-lib.so" file at runtime
-    handler = dlopen("./libStratStat-Engine.so", RTLD_LAZY);
+    handler = dlopen(cfg.engine.c_str(), RTLD_LAZY);
     if (!handler)
     {
         std::cerr << dlerror() << std::endl;
@@ -93,9 +49,9 @@ int dyLibStuff()
 
 int main(int argc, char* argv[])
 {
-    //doLuaStuff();
-    parseCliArgs(argc, argv);
-    dyLibStuff();
+    auto cfg = parseCliArgs(argc, argv);
+    doLuaStuff();
+    dyLibStuff(cfg);
 
     return 0;
 }

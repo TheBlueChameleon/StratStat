@@ -10,6 +10,8 @@ struct Config
     std::filesystem::path userStrat;
     std::filesystem::path enemyTeam;
     std::filesystem::path enemyStrat;
+
+    int repetitions;
 };
 
 #endif // CONFIG_HPP
