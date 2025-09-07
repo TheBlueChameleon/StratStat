@@ -106,7 +106,7 @@ target_link_libraries(Gen2-Engine PRIVATE
 
 add_executable(StratStat
     src/app/main.cpp
-    src/app/config.hpp
+    src/app/config.hpp src/app/config.cpp
     src/app/cliparser.hpp src/app/cliparser.cpp
 
 )

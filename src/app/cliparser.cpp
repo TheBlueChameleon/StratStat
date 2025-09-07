@@ -5,42 +5,37 @@
 using namespace std::string_literals;
 
 #include <jsonxx.h>
-
-#include "cliparser.hpp"
-
+#include <argparse/argparse.hpp>
 using ArgParser = argparse::ArgumentParser;
 
-constexpr auto APP_NAME = "StratStat";
+#include "cliparser.hpp"
+#include "config.hpp"
 
-constexpr auto CONFIG_FILE = "configFile";
-constexpr auto EXPLICIT = "explicit";
-
-constexpr auto CONFIG_FILE_NAME = "file";
-
-constexpr auto ENGINE = "engine";
-constexpr auto HUMAN_TEAM = "humanTeam";
-constexpr auto HUMAN_STRATEGY = "humanStrategy";
-constexpr auto ENEMY_TEAM = "enemyTeam";
-constexpr auto ENEMY_STRATEGY = "enemyStrategy";
-constexpr auto PKMN_DEFS = "pkmnDefs";
-constexpr auto MOVE_DEFS= "moveDefs";
-constexpr auto REPETITIONS = "repetitions";
-
-constexpr auto REPETITIONS_DEFAULT = 10;
-
-auto fileSlots =
+auto mandatoryPaths =
 {
-    Config::PathEntry(ENGINE, &Config::engine),
-    Config::PathEntry(HUMAN_TEAM, &Config::userTeam),
-    Config::PathEntry(HUMAN_STRATEGY, &Config::userStrat),
-    Config::PathEntry(ENEMY_TEAM, &Config::enemyTeam),
-    Config::PathEntry(ENEMY_STRATEGY, &Config::enemyStrat),
-    Config::PathEntry(PKMN_DEFS, &Config::pkmnDefs),
-    Config::PathEntry(MOVE_DEFS, &Config::moveDefs)
+    Config::PathEntry(ENGINE, &Config::setEngine),
+    Config::PathEntry(HUMAN_TEAM, &Config::setHumanTeam),
+    Config::PathEntry(HUMAN_STRATEGY, &Config::setUserStrat),
+    Config::PathEntry(ENEMY_TEAM, &Config::setEnemyTeam),
+    Config::PathEntry(ENEMY_STRATEGY, &Config::setEnemyStrat),
+    Config::PathEntry(PKMN_DEFS, &Config::setPkmnDefs),
+    Config::PathEntry(MOVE_DEFS, &Config::setMoveDefs)
+};
+
+auto optionalPaths =
+{
+    Config::OptPathEntry(LOGFILE, &Config::setLogFile),
+};
+
+auto intParams =
+{
+    Config::IntEntry(REPETITIONS, &Config::setRepetitions),
+    Config::IntEntry(MAX_TURNS, &Config::setMaxTurns),
+    Config::IntEntry(LOGLEVEL, &Config::setLogLevel),
 };
 
 CliParser::CliParser() :
-    parent(ArgParser(APP_NAME)),
+    parent(ArgParser(APP_NAME, APP_VERSION)),
     configFileParser(ArgParser(CONFIG_FILE)),
     explicitParametersParser(ArgParser(EXPLICIT))
 {
@@ -83,10 +78,26 @@ void CliParser::configureExplicitParametersParser()
     .help("The file path of a attack definition file (CSV file)");
 
     explicitParametersParser
+    .add_argument("--"s + LOGFILE)
+    .help("The file path write logs into.");
+
+    explicitParametersParser
+    .add_argument("--"s + LOGLEVEL)
+    .help("The minimum importance of messages to appear in a log. Must be between 0 and 6. (default: 4)")
+    .scan<'i', int>()
+    .default_value(REPETITIONS_DEFAULT);
+
+    explicitParametersParser
     .add_argument("--"s + REPETITIONS)
     .help("The number of battles the engine attempts with the specified teams (default: 10)")
     .scan<'i', int>()
     .default_value(REPETITIONS_DEFAULT);
+
+    explicitParametersParser
+    .add_argument("--"s + MAX_TURNS)
+    .help("The maximum number of turns a battle may last (default: 100)")
+    .scan<'i', int>()
+    .default_value(MAX_TURNS_DEFAULT);
 }
 
 void CliParser::configureConfigFileParser()
@@ -151,12 +162,26 @@ const Config CliParser::parseExplicit() const
 {
     auto cfg = Config();
 
-    for (const auto slot: fileSlots)
+    for (const auto cfgInfo: mandatoryPaths)
     {
-        validateAndTransferFile(slot, explicitParametersParser.get<std::string>(slot.entryName), cfg);
+        const auto setter = cfgInfo.setter;
+        const auto value = explicitParametersParser.get<std::string>(cfgInfo.attributeName);
+        (cfg.*setter)(value);
     }
 
-    validateAndTransferRepetitions(explicitParametersParser.get<int>(REPETITIONS), cfg);
+    for (const auto cfgInfo: optionalPaths)
+    {
+        const auto setter = cfgInfo.setter;
+        const auto value = explicitParametersParser.present<std::string>(cfgInfo.attributeName);
+        (cfg.*setter)(value);
+    }
+
+    for (const auto cfgInfo: intParams)
+    {
+        const auto setter = cfgInfo.setter;
+        const auto value = explicitParametersParser.get<int>(cfgInfo.attributeName);
+        (cfg.*setter)(value);
+    }
 
     return cfg;
 }
@@ -164,77 +189,64 @@ const Config CliParser::parseExplicit() const
 const Config CliParser::parseConfigFile() const
 {
     auto cfg = Config();
-    std::filesystem::path cfgFile = configFileParser.get<std::string>(CONFIG_FILE_NAME);
+    std::filesystem::path cfgFileName = configFileParser.get<std::string>(CONFIG_FILE_NAME);
 
-    if (!std::filesystem::exists(cfgFile))
+    if (!std::filesystem::exists(cfgFileName))
     {
-        std::cerr << "The config file " << cfgFile << " does not exist." << std::endl;
+        std::cerr << "The config file " << cfgFileName << " does not exist." << std::endl;
         std::exit(-1);
     }
 
-    auto file = std::ifstream(cfgFile);
+    auto cfgFile = std::ifstream(cfgFileName);
     jsonxx::Object json;
-    const bool success = json.parse(file);
+    const bool success = json.parse(cfgFile);
     if (!success)
     {
-        std::cerr << "The config file " << cfgFile << " is not a valid JSON file." << std::endl;
+        std::cerr << "The config file " << cfgFileName << " is not a valid JSON file." << std::endl;
         std::exit(-1);
     }
 
-
-    for (const auto& slot : fileSlots)
+    for (const auto& cfgInfo : mandatoryPaths)
     {
-        const std::string slotName = slot.entryName;
-        if (!json.has<std::string>(slotName))
+        const std::string attributeName = cfgInfo.attributeName;
+        const auto setter = cfgInfo.setter;
+
+        if (!json.has<std::string>(attributeName))
         {
-            std::cerr << "The required path '" << slotName << "' was not found in the cfgFile." << std::endl;
+            std::cerr << "The required path '" << attributeName << "' was not found in the cfgFile." << std::endl;
             std::exit(-1);
         }
         else
         {
-            validateAndTransferFile(slot, json.get<std::string>(slotName), cfg);
+            const auto value = json.get<std::string>(attributeName);
+            (cfg.*setter)(value);
         }
     }
 
-    if (json.has<jsonxx::Number>(REPETITIONS))
+    for (const auto& cfgInfo : optionalPaths)
     {
-        validateAndTransferRepetitions(json.get<jsonxx::Number>(REPETITIONS), cfg);
+        const std::string attributeName = cfgInfo.attributeName;
+        const auto setter = cfgInfo.setter;
+
+        if (json.has<jsonxx::String>(attributeName))
+        {
+            const auto value = json.get<std::string>(attributeName);
+            (cfg.*setter)(value);
+        }
     }
-    else
+
+    for (const auto& cfgInfo : intParams)
     {
-        cfg.repetitions = REPETITIONS_DEFAULT;
+        const std::string attributeName = cfgInfo.attributeName;
+        const auto setter = cfgInfo.setter;
+
+        if (json.has<jsonxx::Number>(attributeName))
+        {
+            const auto value = json.get<jsonxx::Number>(attributeName);
+            (cfg.*setter)(value);
+        }
     }
 
     return cfg;
 }
 
-void CliParser::validateAndTransferFile(Config::PathEntry entry, const std::string& path, Config& cfg) const
-{
-    const auto field = entry.entryName;
-    const auto offset = entry.offset;
-
-    if (std::filesystem::exists(path))
-    {
-        cfg.*offset = path;
-    }
-    else
-    {
-        std::cerr << "The required parameter '" << field << "' "
-                  "was specified to be '" << path << "', but no such file exists." << std::endl;
-        std::exit(-1);
-    }
-}
-
-void CliParser::validateAndTransferRepetitions(const int repetitions, Config& cfg) const
-{
-    if (repetitions > 0)
-    {
-        cfg.repetitions = repetitions;
-    }
-    else
-    {
-        std::cerr << "Invalid number of repetitions: " << repetitions << std::endl;
-        std::cerr << "Must be a positive number." << std::endl;
-        std::exit(-1);
-    }
-}

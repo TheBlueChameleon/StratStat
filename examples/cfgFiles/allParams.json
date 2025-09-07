@@ -5,5 +5,11 @@
     "enemyTeam": "examples/teams/enemy.json",
     "enemyStrategy": "strategies/random.lua",
     "pkmnDefs": "database/gen01pkmns.csv",
-    "moveDefs": "database/gen01moves.csv"
+    "moveDefs": "database/gen01moves.csv",
+
+    "logfile": "output.log",
+
+    "repetitions" : 10,
+    "maxTurns" : 100,
+    "loglevel" : 6,
 }

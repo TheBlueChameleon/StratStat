@@ -9,13 +9,24 @@
 
 #include "cliparser.hpp"
 
-static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
 
 void configureLogger(const Config& cfg)
 {
-    plog::init();
-    plog::init(plog::debug, "stratStat.log")
-    .addAppender(&consoleAppender);
+    static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
+
+    const auto severity = static_cast<plog::Severity>(cfg.getLogLevel());
+
+    if (cfg.getLogFile().has_value())
+    {
+        static plog::RollingFileAppender<plog::TxtFormatter> fileAppender(cfg.getLogFile().value().c_str());
+
+        plog::init(severity, &consoleAppender)
+        .addAppender(&fileAppender);
+    }
+    else
+    {
+        plog::init(severity, &consoleAppender);
+    }
 }
 
 void doLuaStuff()
@@ -32,7 +43,7 @@ int dyLibStuff(const Config& cfg)
     char* error{};
     void* handler{};
     //* load shared library named "your-external-lib.so" file at runtime
-    handler = dlopen(cfg.engine.c_str(), RTLD_LAZY);
+    handler = dlopen(cfg.getEngine().c_str(), RTLD_LAZY);
     if (!handler)
     {
         std::cerr << dlerror() << std::endl;
@@ -68,6 +79,13 @@ int main(const int argc, const char* argv[])
 
     // doLuaStuff();
     // dyLibStuff(cfg);
+
+    PLOG_VERBOSE << "verbose 6";
+    PLOG_DEBUG << "debug 5";
+    PLOG_INFO << "info 4";
+    PLOG_WARNING << "warning 3";
+    PLOG_ERROR << "error 2";
+    PLOG_FATAL << "fatal 1";
 
     return 0;
 }

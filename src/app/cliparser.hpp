@@ -22,9 +22,6 @@ class CliParser
 
         void handleErr(const std::exception& err) const;
 
-        void validateAndTransferRepetitions(const int repetitions, Config& cfg) const;
-        void validateAndTransferFile(Config::PathEntry entry, const std::string& path, Config& cfg) const;
-
     public:
         CliParser();
 
