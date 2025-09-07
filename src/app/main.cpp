@@ -2,12 +2,21 @@
 #include <dlfcn.h>
 
 #include <lua.hpp>
-#include <jsonxx.h>
-#include <loguru.hpp>
+
+#include <plog/Log.h>
+#include <plog/Initializers/RollingFileInitializer.h>
+#include <plog/Initializers/ConsoleInitializer.h>
 
 #include "cliparser.hpp"
 
-void configureLogger() {}
+static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
+
+void configureLogger(const Config& cfg)
+{
+    plog::init();
+    plog::init(plog::debug, "stratStat.log")
+    .addAppender(&consoleAppender);
+}
 
 void doLuaStuff()
 {
@@ -55,7 +64,7 @@ int main(const int argc, const char* argv[])
     auto parser = CliParser();
     auto cfg = parser.run(argc, argv);
 
-    configureLogger();
+    configureLogger(cfg);
 
     // doLuaStuff();
     // dyLibStuff(cfg);

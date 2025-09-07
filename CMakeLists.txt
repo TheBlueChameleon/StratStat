@@ -13,6 +13,7 @@ project(StratStat LANGUAGES
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 
 # ============================================================================ #
 # external dependencies
@@ -41,9 +42,10 @@ FetchContent_Declare(
     GIT_TAG "v0.1"
 )
 FetchContent_Declare(
-    loguru
-    GIT_REPOSITORY "https://github.com/emilk/loguru"
-    GIT_TAG "v2.1.0"
+    plog
+    GIT_REPOSITORY https://github.com/SergiusTheBest/plog
+    GIT_TAG        1.1.10
+    GIT_SHALLOW    true
 )
 # more `FetchContent_Declare`s (if any). They should all be declared
 # before any calls to FetchContent_Make_available (see docs for why).
@@ -52,7 +54,7 @@ FetchContent_MakeAvailable(argparse)
 FetchContent_MakeAvailable(lua)
 FetchContent_MakeAvailable(jsonxx)
 FetchContent_MakeAvailable(csv2)
-FetchContent_MakeAvailable(loguru)
+FetchContent_MakeAvailable(plog)
 # more `FetchContent_MakeAvailable`s (if any).
 
 # cmake_print_variables(argparse_SOURCE_DIR)
@@ -66,7 +68,8 @@ include_directories(
     "${argparse_SOURCE_DIR}/include"
     "${lua_SOURCE_DIR}/src"
     "${jsonxx_SOURCE_DIR}"
-    "${loguru_SOURCE_DIR}"
+    "${plog_SOURCE_DIR}"
+    "${plog_SOURCE_DIR}/include"
 )
 
 # ............................................................................ #
@@ -74,13 +77,6 @@ include_directories(
 
 add_library(jsonxx-lib STATIC
     ${jsonxx_SOURCE_DIR}/jsonxx.cc
-)
-
-# ............................................................................ #
-# loguru explicit
-
-add_library(loguru-lib STATIC
-    ${loguru_SOURCE_DIR}/loguru.cpp
 )
 
 # ............................................................................ #
@@ -120,7 +116,7 @@ target_link_libraries(StratStat PRIVATE
     argparse
     csv2
     jsonxx-lib
-    loguru-lib
+    plog
 )
 
 
