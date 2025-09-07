@@ -112,7 +112,7 @@ add_executable(StratStat
     src/app/main.cpp
     src/app/config.hpp
     src/app/cliparser.hpp src/app/cliparser.cpp
-    src/app/clihandler.cpp src/app/clihandler.hpp
+
 )
 
 target_link_libraries(StratStat PRIVATE
