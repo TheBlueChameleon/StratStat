@@ -3,8 +3,11 @@
 
 #include <lua.hpp>
 #include <jsonxx.h>
+#include <loguru.hpp>
 
-#include "clihandler.hpp"
+#include "cliparser.hpp"
+
+void configureLogger() {}
 
 void doLuaStuff()
 {
@@ -47,11 +50,15 @@ int dyLibStuff(const Config& cfg)
     return 0;
 }
 
-int main(int argc, char* argv[])
+int main(const int argc, const char* argv[])
 {
-    auto cfg = parseCliArgs(argc, argv);
-    doLuaStuff();
-    dyLibStuff(cfg);
+    auto parser = CliParser();
+    auto cfg = parser.run(argc, argv);
+
+    configureLogger();
+
+    // doLuaStuff();
+    // dyLibStuff(cfg);
 
     return 0;
 }

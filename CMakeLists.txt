@@ -36,6 +36,11 @@ FetchContent_Declare(
     GIT_TAG "v1.0.1"
 )
 FetchContent_Declare(
+    csv2
+    GIT_REPOSITORY "https://github.com/p-ranav/csv2"
+    GIT_TAG "v0.1"
+)
+FetchContent_Declare(
     loguru
     GIT_REPOSITORY "https://github.com/emilk/loguru"
     GIT_TAG "v2.1.0"
@@ -46,6 +51,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(argparse)
 FetchContent_MakeAvailable(lua)
 FetchContent_MakeAvailable(jsonxx)
+FetchContent_MakeAvailable(csv2)
 FetchContent_MakeAvailable(loguru)
 # more `FetchContent_MakeAvailable`s (if any).
 
@@ -82,7 +88,6 @@ add_library(loguru-lib STATIC
 
 add_library(Base-Engine STATIC
     src/engine/foo.cpp
-    src/app/clihandler.hpp src/app/clihandler.cpp
 )
 
 add_library(Gen1-Engine SHARED
@@ -96,18 +101,24 @@ add_library(Gen2-Engine SHARED
     src/engine/foo.cpp
 )
 
+target_link_libraries(Gen2-Engine PRIVATE
+    Base-Engine
+)
+
 # ............................................................................ #
 # main
 
 add_executable(StratStat
     src/app/main.cpp
     src/app/config.hpp
+    src/app/cliparser.hpp src/app/cliparser.cpp
     src/app/clihandler.cpp src/app/clihandler.hpp
 )
 
 target_link_libraries(StratStat PRIVATE
     lua::lua
     argparse
+    csv2
     jsonxx-lib
     loguru-lib
 )
