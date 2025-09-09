@@ -1,4 +1,4 @@
-ID,Name,Type1,Type2,HP,Attack,Defense,Special,Speed
+ID,Name,Type1,Type2,HP,ATK,DEF,SPC,SPD
 1,Bulbasaur,Grass,Poison,45,49,49,65,45
 2,Ivysaur,Grass,Poison,60,62,63,80,60
 3,Venusaur,Grass,Poison,80,82,83,100,80
