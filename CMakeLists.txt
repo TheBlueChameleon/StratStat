@@ -83,23 +83,24 @@ add_library(jsonxx-lib STATIC
 # engine
 
 add_library(Base-Engine STATIC
-    src/engine/interface.cpp src/engine/interface.hpp
+    src/engine/interface.hpp
+    src/engine/shared.cpp
 )
 
 add_library(Gen1-Engine SHARED
-    src/engine/interface.cpp src/engine/interface.hpp
+    src/engine/interface.hpp
     src/engine/gen1/gen1.cpp
     src/engine/gen1/engine.hpp src/engine/gen1/engine.cpp
 )
-target_link_libraries(Gen1-Engine PRIVATE
+target_link_libraries(Gen1-Engine PUBLIC
     Base-Engine
 )
 
 add_library(Gen2-Engine SHARED
-    src/engine/interface.cpp src/engine/interface.hpp
+    src/engine/interface.hpp
 )
 
-target_link_libraries(Gen2-Engine PRIVATE
+target_link_libraries(Gen2-Engine PUBLIC
     Base-Engine
 )
 
@@ -108,6 +109,7 @@ target_link_libraries(Gen2-Engine PRIVATE
 
 add_executable(StratStat
     src/app/main.cpp
+    src/app/plogcustomformatter.hpp src/app/plogcustomformatter.cpp
     src/app/config.hpp src/app/config.cpp
     src/app/cliparser.hpp src/app/cliparser.cpp
     src/engine/interface.hpp

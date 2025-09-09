@@ -6,6 +6,10 @@
 #include <plog/Log.h>
 #include <plog/Initializers/RollingFileInitializer.h>
 #include <plog/Initializers/ConsoleInitializer.h>
+#include <plog/Formatters/MessageOnlyFormatter.h>
+#include <plog/Formatters/TxtFormatter.h>
+
+#include "plogcustomformatter.hpp"
 
 #include "config.hpp"
 #include "cliparser.hpp"
@@ -13,7 +17,7 @@
 
 void configureLogger(const Config& cfg)
 {
-    static plog::ColorConsoleAppender<plog::TxtFormatter> consoleAppender;
+    static plog::ColorConsoleAppender<PlogCustomFormatter> consoleAppender;
 
     const auto severity = static_cast<plog::Severity>(cfg.getLogLevel());
 
