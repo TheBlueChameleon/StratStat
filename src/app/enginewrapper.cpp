@@ -21,24 +21,7 @@ void EngineWrapper::loadEninge(const std::filesystem::path& enginePath)
     PLOG_VERBOSE << "  ... SUCCESS!";
 }
 
-void EngineWrapper::testSignature()
-{
-    PLOG_VERBOSE << "TESTING FOR SIGNATURE ...";
-    const auto signaturePtr = findSymbol("getSignature");
-    _getSignature = reinterpret_cast<int(*)()>(signaturePtr);
-
-    if (!_getSignature)
-    {
-        PLOG_FATAL << "NO SIGNATURE DETECTED";
-        std::exit(-1);
-    }
-    else if (_getSignature() != EXPECTED_SIGNATURE)
-    {
-        PLOG_FATAL << "UNEXPECTED SIGNATURE";
-        std::exit(-1);
-    }
-    PLOG_VERBOSE << "  ... SUCCESS!";
-}
+#define FETCH(symbol) fetchCheckAndTransfer(&EngineWrapper::_##symbol, #symbol)
 
 template<typename T>
 void EngineWrapper::fetchCheckAndTransfer(T EngineWrapper::* offset, const char* const symbol)
@@ -53,23 +36,34 @@ void EngineWrapper::fetchCheckAndTransfer(T EngineWrapper::* offset, const char*
     }
     else
     {
-        PLOG_VERBOSE << "   ... EXTRACTED " << symbol;
+        PLOG_VERBOSE << "    ... EXTRACTED " << symbol;
     }
 
     this->*offset =target;
+}
+
+void EngineWrapper::testSignature()
+{
+    PLOG_VERBOSE << "TESTING FOR SIGNATURE ...";
+    FETCH(getSignature);
+
+    if (getSignature() != EXPECTED_SIGNATURE)
+    {
+        PLOG_FATAL << "UNEXPECTED SIGNATURE";
+        std::exit(-1);
+    }
+    PLOG_VERBOSE << "  ... SUCCESS!";
 }
 
 void EngineWrapper::extractFunctions()
 {
     PLOG_VERBOSE << "EXTRACTING FUNCTIONS ...";
 
-#define FETCH(symbol) fetchCheckAndTransfer(&EngineWrapper::_##symbol, #symbol)
     FETCH(getPkmnDefHeaders);
     FETCH(getMoveDefHeaders);
     FETCH(init);
     FETCH(shutdown);
     FETCH(isReady);
-#undef FETCH
 
     PLOG_VERBOSE << "  ... SUCCESS!";
 }
