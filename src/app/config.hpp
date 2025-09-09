@@ -20,9 +20,9 @@ constexpr auto ENEMY_STRATEGY = "enemyStrategy";
 constexpr auto PKMN_DEFS = "pkmnDefs";
 constexpr auto MOVE_DEFS= "moveDefs";
 constexpr auto REPETITIONS = "repetitions";
+constexpr auto MAX_TURNS = "maxTurns";
 constexpr auto LOGFILE = "logfile";
 constexpr auto LOGLEVEL = "loglevel";
-constexpr auto MAX_TURNS = "maxTurns";
 
 constexpr auto REPETITIONS_DEFAULT = 10;
 constexpr auto MAX_TURNS_DEFAULT = 100;

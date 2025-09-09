@@ -7,8 +7,9 @@
 #include <plog/Initializers/RollingFileInitializer.h>
 #include <plog/Initializers/ConsoleInitializer.h>
 
+#include "config.hpp"
 #include "cliparser.hpp"
-
+#include "enginewrapper.hpp"
 
 void configureLogger(const Config& cfg)
 {
@@ -29,6 +30,23 @@ void configureLogger(const Config& cfg)
     }
 }
 
+void logCfg(const Config& cfg)
+{
+    PLOG_VERBOSE << "### CONFIGURATION:";
+    PLOG_VERBOSE << ENGINE << "\t" << cfg.getEngine();
+    PLOG_VERBOSE << HUMAN_TEAM << "\t" << cfg.getHumanTeam();
+    PLOG_VERBOSE << HUMAN_STRATEGY << "\t" << cfg.getHumanStrat();
+    PLOG_VERBOSE << ENEMY_TEAM << "\t"  << cfg.getEnemyTeam();
+    PLOG_VERBOSE << ENEMY_STRATEGY << "\t" << cfg.getEnemyStrat();
+    PLOG_VERBOSE << PKMN_DEFS << "\t" << cfg.getPkmnDefs();
+    PLOG_VERBOSE << MOVE_DEFS << "\t" << cfg.getMoveDefs();
+    PLOG_VERBOSE << REPETITIONS << "\t" << cfg.getRepetitions();
+    PLOG_VERBOSE << MAX_TURNS << "\t" << cfg.getMaxTurns();
+    PLOG_VERBOSE << LOGFILE << "\t" << cfg.getLogFile().value_or("<not set>");
+    PLOG_VERBOSE << LOGLEVEL << "\t" << cfg.getLogLevel();
+    PLOG_VERBOSE << "### END OF CONFIGURATION:";
+}
+
 void doLuaStuff()
 {
     lua_State* L = luaL_newstate();
@@ -37,55 +55,17 @@ void doLuaStuff()
     lua_close(L);
 }
 
-int dyLibStuff(const Config& cfg)
-{
-    void* object{};
-    char* error{};
-    void* handler{};
-    //* load shared library named "your-external-lib.so" file at runtime
-    handler = dlopen(cfg.getEngine().c_str(), RTLD_LAZY);
-    if (!handler)
-    {
-        std::cerr << dlerror() << std::endl;
-        return -1;
-    }
-
-    dlerror(); // clear the error
-
-    //* locate the "symbol"/function inside the library
-    auto* func = (long*)dlsym(handler, "dummy");
-    if ((error = dlerror()) != nullptr && !func)
-    {
-        std::cerr << error << std::endl;
-        return -1;
-    }
-
-    //* cast the variable "object" into the appropriate function pointer type
-    auto funcFull = reinterpret_cast<int(*)()>(func);
-    std::cout << "LIB ANSWERS: " << funcFull() << std::endl;
-
-    //* close the shared library
-    dlclose(handler);
-
-    return 0;
-}
-
 int main(const int argc, const char* argv[])
 {
     auto parser = CliParser();
     auto cfg = parser.run(argc, argv);
 
     configureLogger(cfg);
+    logCfg(cfg);
+
+    auto ew = EngineWrapper(cfg.getEngine());
 
     // doLuaStuff();
-    // dyLibStuff(cfg);
-
-    PLOG_VERBOSE << "verbose 6";
-    PLOG_DEBUG << "debug 5";
-    PLOG_INFO << "info 4";
-    PLOG_WARNING << "warning 3";
-    PLOG_ERROR << "error 2";
-    PLOG_FATAL << "fatal 1";
 
     return 0;
 }
