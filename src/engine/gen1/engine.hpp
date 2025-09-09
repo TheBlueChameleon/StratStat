@@ -1,12 +1,18 @@
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
 
-extern "C" {
-    class Engine
-    {
-        public:
-            Engine();
-    };
-}
+class Engine
+{
+    private:
+        Engine();
+
+    public:
+        static Engine& getInstance();
+
+        Engine(Engine const&)           = delete;
+        void operator=(Engine const&)   = delete;
+
+
+};
 
 #endif // ENGINE_HPP
