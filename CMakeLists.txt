@@ -86,12 +86,24 @@ add_library(Base-Engine STATIC
     src/engine/interface.hpp
     src/engine/shared.cpp
 )
+if(WIN32)
+    target_compile_definitions(Base-Engine PRIVATE PLOG_IMPORT)
+    target_link_libraries(Base-Engine PRIVATE StratStat)
+else()
+    target_compile_definitions(Base-Engine PRIVATE PLOG_GLOBAL)
+endif()
 
 add_library(Gen1-Engine SHARED
     src/engine/interface.hpp
     src/engine/gen1/gen1.cpp
     src/engine/gen1/engine.hpp src/engine/gen1/engine.cpp
 )
+if(WIN32)
+    target_compile_definitions(Gen1-Engine PRIVATE PLOG_IMPORT)
+    target_link_libraries(Gen1-Engine PRIVATE StratStat)
+else()
+    target_compile_definitions(Gen1-Engine PRIVATE PLOG_GLOBAL)
+endif()
 target_link_libraries(Gen1-Engine PUBLIC
     Base-Engine
 )
@@ -99,7 +111,12 @@ target_link_libraries(Gen1-Engine PUBLIC
 add_library(Gen2-Engine SHARED
     src/engine/interface.hpp
 )
-
+if(WIN32)
+    target_compile_definitions(Gen2-Engine PRIVATE PLOG_IMPORT)
+    target_link_libraries(Gen2-Engine PRIVATE StratStat)
+else()
+    target_compile_definitions(Gen2-Engine PRIVATE PLOG_GLOBAL)
+endif()
 target_link_libraries(Gen2-Engine PUBLIC
     Base-Engine
 )
@@ -114,8 +131,14 @@ add_executable(StratStat
     src/app/cliparser.hpp src/app/cliparser.cpp
     src/engine/interface.hpp
     src/app/enginewrapper.hpp src/app/enginewrapper.cpp
-
 )
+
+if(WIN32)
+    target_compile_definitions(StratStat PRIVATE PLOG_EXPORT)
+    set_target_properties(StratStat PROPERTIES ENABLE_EXPORTS 1)
+else()
+    target_compile_definitions(StratStat PRIVATE PLOG_GLOBAL)
+endif()
 
 target_link_libraries(StratStat PRIVATE
     lua::lua

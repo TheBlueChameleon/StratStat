@@ -1,23 +1,35 @@
 #include <iostream>
-#include <dlfcn.h>
+
+#ifdef _WIN32
+    #include <windows.h>
+#else
+    #include <dlfcn.h>
+#endif
 
 #include <plog/Log.h>
 
 #include <engine/interface.hpp>
 #include "enginewrapper.hpp"
 
-// TODO win version of this
+// TODO test win version of this
 
 void EngineWrapper::loadEninge(const std::filesystem::path& enginePath)
 {
     PLOG_VERBOSE << "LOADING ENGINE FROM " << enginePath << "...";
+
+#ifdef _WIN32
+    handler = LoadLibrary(enginePath.c_str());
+#else
     handler = dlopen(enginePath.c_str(), RTLD_LAZY);
+#endif
+
     if (!handler)
     {
         PLOG_FATAL << "COULD NOT LOAD " << enginePath;
         PLOG_FATAL << dlerror();
         std::exit(-1);
     }
+
     PLOG_VERBOSE << "  ... SUCCESS!";
 }
 
@@ -79,20 +91,32 @@ EngineWrapper::~EngineWrapper()
 {
     if (handler)
     {
+#ifdef _WIN32
+        FreeLibrary(handler);
+#else
         dlclose(handler);
+#endif
     }
 }
 
 void* EngineWrapper::findSymbol(const char* const symbolName)
 {
+#ifdef _WIN32
+    auto* symbol = reinterpret_cast<void*>(GetProcAddress(hGetProcIDDLL, symbolName));
+    if (!symbol)
+    {
+        PLOG_ERROR << "COULD NOT FIND SYMBOL " << symbolName;
+    }
+#else
     char* error = nullptr;
     auto* symbol = dlsym(handler, symbolName);
-    if ((error = dlerror()) != nullptr && !symbol)
+    if ((error = dlerror()) != nullptr || !symbol)
     {
         PLOG_ERROR << "COULD NOT FIND SYMBOL " << symbolName;
         PLOG_ERROR << error;
         return nullptr;
     }
+#endif
     return symbol;
 }
 

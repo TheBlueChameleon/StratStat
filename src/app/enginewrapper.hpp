@@ -4,11 +4,18 @@
 #include <filesystem>
 #include <functional>
 
+#ifdef _WIN32
+    #include <windows.h>
+#endif
+
 class EngineWrapper
 {
     private:
+#ifdef _WIN32
+        HINSTANCE handler;
+#else
         void* handler = nullptr;
-
+#endif
         int(*_getSignature)();
 
         int(*_getPkmnDefHeaders)(std::vector<std::string>&);

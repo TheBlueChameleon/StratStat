@@ -46,7 +46,7 @@ void logCfg(const Config& cfg)
     PLOG_VERBOSE << MAX_TURNS << "\t" << cfg.getMaxTurns();
     PLOG_VERBOSE << LOGFILE << "\t" << cfg.getLogFile().value_or("<not set>");
     PLOG_VERBOSE << LOGLEVEL << "\t" << cfg.getLogLevel();
-    PLOG_VERBOSE << "### END OF CONFIGURATION:";
+    PLOG_VERBOSE << "### END OF CONFIGURATION";
 }
 
 void doLuaStuff()
