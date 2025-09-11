@@ -4,8 +4,8 @@
 #include <lua.hpp>
 
 #include <plog/Log.h>
-#include <plog/Initializers/RollingFileInitializer.h>
 #include <plog/Initializers/ConsoleInitializer.h>
+#include <plog/Initializers/RollingFileInitializer.h>
 
 #include "plogcustomformatter.hpp"
 
@@ -66,6 +66,9 @@ int main(const int argc, const char* argv[])
     logCfg(cfg);
 
     auto ew = EngineWrapper(cfg.getEngine());
+    std::vector<TextFileContentInfo> hdr;
+    ew.init(cfg.getPkmnDefs(), cfg.getMoveDefs());
+    PLOG_VERBOSE << "post";
 
     // doLuaStuff();
 

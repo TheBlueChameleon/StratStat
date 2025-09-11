@@ -125,12 +125,12 @@ int EngineWrapper::getSignature() const
     return _getSignature();
 }
 
-int EngineWrapper::getPkmnDefHeaders(std::vector<std::string>& buffer) const
+int EngineWrapper::getPkmnDefHeaders(std::vector<TextFileContentInfo>& buffer) const
 {
     return _getPkmnDefHeaders(buffer);
 }
 
-int EngineWrapper::getMoveDefHeaders(std::vector<std::string>& buffer) const
+int EngineWrapper::getMoveDefHeaders(std::vector<TextFileContentInfo>& buffer) const
 {
     return _getMoveDefHeaders(buffer);
 }

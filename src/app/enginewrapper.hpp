@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <functional>
 
+#include <engine/interface.hpp>
+
 #ifdef _WIN32
     #include <windows.h>
 #endif
@@ -18,14 +20,14 @@ class EngineWrapper
 #endif
         int(*_getSignature)();
 
-        int(*_getPkmnDefHeaders)(std::vector<std::string>&);
-        int(*_getMoveDefHeaders)(std::vector<std::string>&);
+        int(*_getPkmnDefHeaders)(std::vector<TextFileContentInfo>&);
+        int(*_getMoveDefHeaders)(std::vector<TextFileContentInfo>&);
 
         int(*_init)(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs);
         int(*_shutdown)();
         bool(*_isReady)();
 
-        void loadEninge(const std::filesystem::__cxx11::path& enginePath);
+        void loadEninge(const std::filesystem::path& enginePath);
         void testSignature();
         void extractFunctions();
 
@@ -39,8 +41,8 @@ class EngineWrapper
         void* findSymbol(const char* const symbolName);
 
         int getSignature() const;
-        int getPkmnDefHeaders(std::vector<std::string>& buffer) const;
-        int getMoveDefHeaders(std::vector<std::string>& buffer) const;
+        int getPkmnDefHeaders(std::vector<TextFileContentInfo>& buffer) const;
+        int getMoveDefHeaders(std::vector<TextFileContentInfo>& buffer) const;
         int init(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs) const;
         int shutdown() const;
         bool isReady() const;
