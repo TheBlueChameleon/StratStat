@@ -42,9 +42,9 @@ FetchContent_Declare(
     GIT_TAG "v0.1"
 )
 FetchContent_Declare(
-    plog
-    GIT_REPOSITORY https://github.com/SergiusTheBest/plog
-    GIT_TAG        1.1.10
+    spdlog
+    GIT_REPOSITORY https://github.com/gabime/spdlog
+    GIT_TAG        "v1.15.3"
     GIT_SHALLOW    true
 )
 # more `FetchContent_Declare`s (if any). They should all be declared
@@ -54,7 +54,7 @@ FetchContent_MakeAvailable(argparse)
 FetchContent_MakeAvailable(lua)
 FetchContent_MakeAvailable(jsonxx)
 FetchContent_MakeAvailable(csv2)
-FetchContent_MakeAvailable(plog)
+FetchContent_MakeAvailable(spdlog)
 # more `FetchContent_MakeAvailable`s (if any).
 
 # cmake_print_variables(argparse_SOURCE_DIR)
@@ -68,8 +68,8 @@ include_directories(
     "${argparse_SOURCE_DIR}/include"
     "${lua_SOURCE_DIR}/src"
     "${jsonxx_SOURCE_DIR}"
-    "${plog_SOURCE_DIR}"
-    "${plog_SOURCE_DIR}/include"
+    "${csv2_SOURCE_DIR}/include"
+    "${spdlog_SOURCE_DIR}/include"
 )
 
 # ............................................................................ #
@@ -80,12 +80,17 @@ add_library(jsonxx-lib STATIC
 )
 
 # ............................................................................ #
-# engine
+# engine shared routines
 
 add_library(Base-Engine STATIC
     src/engine/interface.hpp
     src/engine/shared.cpp
+    src/engine/pkmndatabase.hpp src/engine/pkmndatabase.cpp
+    src/engine/pkmndef.hpp src/engine/pkmndef.cpp
+    src/engine/movedatabase.hpp src/engine/movedatabase.cpp
+    src/engine/movedef.hpp src/engine/movedef.cpp
 )
+
 if(WIN32)
     target_compile_definitions(Base-Engine PRIVATE PLOG_IMPORT)
     target_link_libraries(Base-Engine PRIVATE StratStat)
@@ -93,30 +98,45 @@ else()
     target_compile_definitions(Base-Engine PRIVATE PLOG_GLOBAL)
 endif()
 
+target_link_libraries(Base-Engine PRIVATE
+    jsonxx-lib
+    csv2
+)
+
+# ............................................................................ #
+# gen1 engine
+
 add_library(Gen1-Engine SHARED
     src/engine/interface.hpp
     src/engine/gen1/gen1.cpp
     src/engine/gen1/engine.hpp src/engine/gen1/engine.cpp
 )
+
 if(WIN32)
     target_compile_definitions(Gen1-Engine PRIVATE PLOG_IMPORT)
     target_link_libraries(Gen1-Engine PRIVATE StratStat)
 else()
     target_compile_definitions(Gen1-Engine PRIVATE PLOG_GLOBAL)
 endif()
+
 target_link_libraries(Gen1-Engine PUBLIC
     Base-Engine
 )
 
+# ............................................................................ #
+# gen2 engine
+
 add_library(Gen2-Engine SHARED
     src/engine/interface.hpp
 )
+
 if(WIN32)
     target_compile_definitions(Gen2-Engine PRIVATE PLOG_IMPORT)
     target_link_libraries(Gen2-Engine PRIVATE StratStat)
 else()
     target_compile_definitions(Gen2-Engine PRIVATE PLOG_GLOBAL)
 endif()
+
 target_link_libraries(Gen2-Engine PUBLIC
     Base-Engine
 )
@@ -126,7 +146,7 @@ target_link_libraries(Gen2-Engine PUBLIC
 
 add_executable(StratStat
     src/app/main.cpp
-    src/app/plogcustomformatter.hpp src/app/plogcustomformatter.cpp
+
     src/app/config.hpp src/app/config.cpp
     src/app/cliparser.hpp src/app/cliparser.cpp
     src/engine/interface.hpp
@@ -145,7 +165,7 @@ target_link_libraries(StratStat PRIVATE
     argparse
     csv2
     jsonxx-lib
-    plog
+    spdlog
 )
 
 

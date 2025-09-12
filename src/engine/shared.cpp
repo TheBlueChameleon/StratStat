@@ -1,5 +1,3 @@
-#include <plog/Log.h>
-
 #include "interface.hpp"
 
 extern "C" {

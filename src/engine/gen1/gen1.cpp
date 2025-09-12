@@ -2,10 +2,6 @@
 
 #include <engine/interface.hpp>
 
-#include <plog/Log.h>
-#include <plog/Formatters/MessageOnlyFormatter.h>
-#include <plog/Initializers/ConsoleInitializer.h>
-
 extern "C" {
 
     int getSignature()
@@ -54,7 +50,6 @@ extern "C" {
         // static plog::ColorConsoleAppender<plog::MessageOnlyFormatter> consoleAppender;
         // plog::init(plog::verbose, &consoleAppender);
 
-        PLOG_VERBOSE << "INIT";
         std::cout << "(init cout)" << std::endl;
         return SUCCESS;
     }

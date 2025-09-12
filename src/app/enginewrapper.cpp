@@ -1,12 +1,12 @@
 #include <iostream>
 
+#include <spdlog/spdlog.h>
+
 #ifdef _WIN32
     #include <windows.h>
 #else
     #include <dlfcn.h>
 #endif
-
-#include <plog/Log.h>
 
 #include <engine/interface.hpp>
 #include "enginewrapper.hpp"
@@ -15,7 +15,7 @@
 
 void EngineWrapper::loadEninge(const std::filesystem::path& enginePath)
 {
-    PLOG_VERBOSE << "LOADING ENGINE FROM " << enginePath << "...";
+    spdlog::debug("LOADING ENGINE FROM {}", enginePath.c_str());
 
 #ifdef _WIN32
     handler = LoadLibrary(enginePath.c_str());
@@ -25,12 +25,12 @@ void EngineWrapper::loadEninge(const std::filesystem::path& enginePath)
 
     if (!handler)
     {
-        PLOG_FATAL << "COULD NOT LOAD " << enginePath;
-        PLOG_FATAL << dlerror();
+        spdlog::critical("COULD NOT LOAD {}", enginePath.c_str());
+        spdlog::critical(dlerror());
         std::exit(-1);
     }
 
-    PLOG_VERBOSE << "  ... SUCCESS!";
+    spdlog::debug("... SUCCESS!");
 }
 
 #define FETCH(symbol) fetchCheckAndTransfer(&EngineWrapper::_##symbol, #symbol)
@@ -43,12 +43,12 @@ void EngineWrapper::fetchCheckAndTransfer(T EngineWrapper::* offset, const char*
 
     if (target == nullptr)
     {
-        PLOG_FATAL << "COULD NOT EXTRACT FUNCTION " << symbol;
+        spdlog::critical("COULD NOT EXTRACT FUNCTION {}", symbol);
         std::exit(-1);
     }
     else
     {
-        PLOG_VERBOSE << "    ... EXTRACTED " << symbol;
+        spdlog::debug("  ... EXTRACTED {}", symbol);
     }
 
     this->*offset =target;
@@ -56,20 +56,20 @@ void EngineWrapper::fetchCheckAndTransfer(T EngineWrapper::* offset, const char*
 
 void EngineWrapper::testSignature()
 {
-    PLOG_VERBOSE << "TESTING FOR SIGNATURE ...";
+    spdlog::debug("TESTING FOR SIGNATURE ...");
     FETCH(getSignature);
 
     if (getSignature() != EXPECTED_SIGNATURE)
     {
-        PLOG_FATAL << "UNEXPECTED SIGNATURE";
+        spdlog::critical("UNEXPECTED SIGNATURE");
         std::exit(-1);
     }
-    PLOG_VERBOSE << "  ... SUCCESS!";
+    spdlog::debug("... SUCCESS!");
 }
 
 void EngineWrapper::extractFunctions()
 {
-    PLOG_VERBOSE << "EXTRACTING FUNCTIONS ...";
+    spdlog::debug("EXTRACTING FUNCTIONS ...");
 
     FETCH(getPkmnDefHeaders);
     FETCH(getMoveDefHeaders);
@@ -77,7 +77,7 @@ void EngineWrapper::extractFunctions()
     FETCH(shutdown);
     FETCH(isReady);
 
-    PLOG_VERBOSE << "  ... SUCCESS!";
+    spdlog::debug("... SUCCESS!");
 }
 
 EngineWrapper::EngineWrapper(const std::filesystem::path& enginePath)
@@ -105,15 +105,15 @@ void* EngineWrapper::findSymbol(const char* const symbolName)
     auto* symbol = reinterpret_cast<void*>(GetProcAddress(hGetProcIDDLL, symbolName));
     if (!symbol)
     {
-        PLOG_ERROR << "COULD NOT FIND SYMBOL " << symbolName;
+        // PLOG_ERROR << "COULD NOT FIND SYMBOL " << symbolName;
     }
 #else
     char* error = nullptr;
     auto* symbol = dlsym(handler, symbolName);
     if ((error = dlerror()) != nullptr || !symbol)
     {
-        PLOG_ERROR << "COULD NOT FIND SYMBOL " << symbolName;
-        PLOG_ERROR << error;
+        // PLOG_ERROR << "COULD NOT FIND SYMBOL " << symbolName;
+        // PLOG_ERROR << error;
         return nullptr;
     }
 #endif

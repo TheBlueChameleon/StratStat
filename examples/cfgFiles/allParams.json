@@ -11,5 +11,5 @@
 
     "repetitions" : 10,
     "maxTurns" : 100,
-    "loglevel" : 6,
+    "loglevel" : 0,
 }
