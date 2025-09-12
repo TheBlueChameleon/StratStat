@@ -1,3 +1,3 @@
 #include "basemovedef.hpp"
 
-BaseMoveDef::BaseMoveDef(const std::map<std::string, VariantContentType> &data) : VariantDef(data) {}
+BaseMoveDef::BaseMoveDef(const std::unordered_map<std::string, VariantContentType> &data) : VariantDef(data) {}

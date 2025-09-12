@@ -1,7 +1,7 @@
 #ifndef BASEPKMNDEF_H
 #define BASEPKMNDEF_H
 
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <variant>
 
@@ -11,7 +11,7 @@
 class BasePkmnDef : public VariantDef
 {
     public:
-        BasePkmnDef(const std::map<std::string, VariantContentType>& data);
+        BasePkmnDef(const std::unordered_map<std::string, VariantContentType>& data);
 };
 
 #endif // BASEPKMNDEF_H

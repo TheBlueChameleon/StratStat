@@ -54,12 +54,11 @@ std::vector<CsvMappingInfo> analyzeHeader(const DefaultCsvReader::Row& header, c
     return result;
 }
 
-std::map<std::string, VariantContentType> parseCsvRow(const DefaultCsvReader::Row& row, const std::vector<CsvMappingInfo>& columnData)
+std::unordered_map<std::string, VariantContentType> parseCsvRow(const DefaultCsvReader::Row& row, const std::vector<CsvMappingInfo>& columnData)
 {
-    std::map<std::string, VariantContentType> result;
+    std::unordered_map<std::string, VariantContentType> result;
 
     auto nextRelevant = columnData.begin();
-
     for (long i = -1; const auto& cell : row)
     {
         ++i;

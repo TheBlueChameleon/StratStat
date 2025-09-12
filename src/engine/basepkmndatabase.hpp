@@ -1,7 +1,7 @@
 #ifndef BASEPKMNDATABASE_H
 #define BASEPKMNDATABASE_H
 
-#include <map>
+#include <unordered_map>
 #include <string>
 
 #include "basepkmndef.hpp"
@@ -9,7 +9,7 @@
 class BasePkmnDatabase
 {
     private:
-        std::map<std::string, BasePkmnDef> db;
+        std::unordered_map<std::string, BasePkmnDef> db;
 
     public:
         BasePkmnDatabase();

@@ -33,7 +33,7 @@ void initPkmnDb(const std::filesystem::path& pkmnDefs);
 void initMoveDb(const std::filesystem::path& pkmnDefs);
 
 std::vector<CsvMappingInfo> analyzeHeader(const DefaultCsvReader::Row& header, const std::vector<VariantContentInfo>& headerRequirements, const std::string& filename);
-std::map<std::string, VariantContentType> parseCsvRow(const DefaultCsvReader::Row& row, const std::vector<CsvMappingInfo>& columnData);
+std::unordered_map<std::string, VariantContentType> parseCsvRow(const DefaultCsvReader::Row& row, const std::vector<CsvMappingInfo>& columnData);
 
 VariantContentType variantFromString(const std::string& input, const VariantContentID contentID);
 
