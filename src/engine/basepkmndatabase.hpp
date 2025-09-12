@@ -14,8 +14,9 @@ class BasePkmnDatabase
     public:
         BasePkmnDatabase();
 
-
         bool add(const BasePkmnDef& def);
+
+        int size() const;
 };
 
 #endif // BASEPKMNDATABASE_H

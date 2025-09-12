@@ -11,7 +11,7 @@
 class BasePkmnDef : public VariantDef
 {
     public:
-        BasePkmnDef(const std::unordered_map<std::string, VariantContentType>& data);
+        BasePkmnDef(const std::string& identifierKey, const std::unordered_map<std::string, VariantContentType>& data);
 };
 
 #endif // BASEPKMNDEF_H

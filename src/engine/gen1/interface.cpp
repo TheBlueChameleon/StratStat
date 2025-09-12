@@ -1,7 +1,10 @@
 #include <iostream>
+#include <string>
+using namespace std::string_literals;
 
 #include <engine/interface.hpp>
 
+#include "constants.hpp"
 #include "engine.hpp"
 
 extern "C" {
@@ -15,14 +18,14 @@ extern "C" {
     {
         buffer =
         {
-            VariantContentInfo("Name",  VariantContentID::Text),
-            VariantContentInfo("Type1", VariantContentID::Text),
-            VariantContentInfo("Type2", VariantContentID::Text),
-            VariantContentInfo("HP",    VariantContentID::Integer),
-            VariantContentInfo("ATK",   VariantContentID::Integer),
-            VariantContentInfo("DEF",   VariantContentID::Integer),
-            VariantContentInfo("SPC",   VariantContentID::Integer),
-            VariantContentInfo("SPD",   VariantContentID::Integer),
+            VariantContentInfo(PKMN_IDENTIFIER, VariantContentID::Text),
+            VariantContentInfo("Type1",         VariantContentID::Text),
+            VariantContentInfo("Type2",         VariantContentID::Text),
+            VariantContentInfo("HP",            VariantContentID::Integer),
+            VariantContentInfo("ATK",           VariantContentID::Integer),
+            VariantContentInfo("DEF",           VariantContentID::Integer),
+            VariantContentInfo("SPC",           VariantContentID::Integer),
+            VariantContentInfo("SPD",           VariantContentID::Integer),
         };
     }
 
@@ -30,15 +33,15 @@ extern "C" {
     {
         buffer =
         {
-            VariantContentInfo("identifier",       VariantContentID::Text),
-            VariantContentInfo("type_id",          VariantContentID::Text),
-            VariantContentInfo("power",            VariantContentID::Integer),
-            VariantContentInfo("pp",               VariantContentID::Integer),
-            VariantContentInfo("accuracy",         VariantContentID::Integer),
-            VariantContentInfo("priority",         VariantContentID::Integer),
-            VariantContentInfo("damage_class_id",  VariantContentID::Text),
-            VariantContentInfo("effect_id",        VariantContentID::Text),
-            VariantContentInfo("effect_chance",    VariantContentID::Integer),
+            VariantContentInfo(MOVE_IDENTIFIER,     VariantContentID::Text),
+            VariantContentInfo("type_id",           VariantContentID::Text),
+            VariantContentInfo("power",             VariantContentID::Integer),
+            VariantContentInfo("pp",                VariantContentID::Integer),
+            VariantContentInfo("accuracy",          VariantContentID::Integer),
+            VariantContentInfo("priority",          VariantContentID::Integer),
+            VariantContentInfo("damage_class_id",   VariantContentID::Text),
+            VariantContentInfo("effect_id",         VariantContentID::Text),
+            VariantContentInfo("effect_chance",     VariantContentID::Integer),
         };
     }
 
@@ -77,16 +80,53 @@ void initPkmnDb(const std::filesystem::path& pkmnDefs)
     for (const auto& row: csv)
     {
         const auto pkmnData = parseCsvRow(row, columnData);
+        if (pkmnData.size() == 0)
+        {
+            continue;
+        }
+        spdlog::trace(
+            "  PUT SPECIES '{}' IN DB",
+            std::get<static_cast<int>(VariantContentID::Text)>(pkmnData.at(PKMN_IDENTIFIER))
+        );
 
         engine.getPkmnDbMutable().add(pkmnData);
     }
 
+    spdlog::trace("  KNOWN SPECIES: {}", engine.getPkmnDb().size());
     spdlog::trace("... SUCCESS");
 }
 
-void initMoveDb(const std::filesystem::path& pkmnDefs)
+void initMoveDb(const std::filesystem::path& moveDefs)
 {
-    spdlog::trace("INITIALIZING MOVEDB");
+    spdlog::trace("INITIALIZING MOVEDB FROM {}", moveDefs.c_str());
+
+    auto& engine = Engine::getInstance();
+
+    auto headerRequirements = std::vector<VariantContentInfo>();
+    getMoveDefHeaders(headerRequirements);
+
+    auto csv = DefaultCsvReader();
+    csv.mmap(moveDefs.c_str());
+
+    const auto& header = csv.header();
+    const auto columnData = analyzeHeader(header, headerRequirements, moveDefs.c_str());
+
+    for (const auto& row: csv)
+    {
+        const auto moveData = parseCsvRow(row, columnData);
+        if (moveData.size() == 0)
+        {
+            continue;
+        }
+        spdlog::trace(
+            "  PUT MOVE '{}' IN DB",
+            std::get<static_cast<int>(VariantContentID::Text)>(moveData.at(MOVE_IDENTIFIER))
+        );
+
+        engine.getMoveDbMutable().add(moveData);
+    }
+
+    spdlog::trace("  KNOWN MOVES: {}", engine.getMoveDb().size());
     spdlog::trace("... SUCCESS");
 }
 

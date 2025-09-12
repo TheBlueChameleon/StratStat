@@ -1,11 +1,15 @@
+#include <iostream>
+
 #include "variantdef.hpp"
 
-VariantDef::VariantDef(const std::unordered_map<std::string, VariantContentType> &data)
-{
-
-}
+VariantDef::VariantDef(const std::string& identifierKey, const std::unordered_map<std::string, VariantContentType>& data) :
+    identifierKey(identifierKey),
+    data(data)
+{}
 
 const std::string& VariantDef::getIdentifier() const
 {
-    return identifier;
+    const VariantContentType& lookup = data.at(identifierKey);
+    const auto contentType = static_cast<int>(VariantContentID::Text);
+    return std::get<contentType>(lookup);
 }

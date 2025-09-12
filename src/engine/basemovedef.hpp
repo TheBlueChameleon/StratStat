@@ -6,7 +6,7 @@
 class BaseMoveDef : public VariantDef
 {
     public:
-        BaseMoveDef(const std::unordered_map<std::string, VariantContentType>& data);
+        BaseMoveDef(const std::string& identifierKey, const std::unordered_map<std::string, VariantContentType>& data);
 };
 
 #endif // BASEMOVEDEF_H

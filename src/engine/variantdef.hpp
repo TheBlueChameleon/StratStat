@@ -10,11 +10,11 @@
 class VariantDef
 {
     private:
-        std::string identifier;
+        const std::string identifierKey;
         std::unordered_map<std::string, VariantContentType> data;
 
     public:
-        VariantDef(const std::unordered_map<std::string, VariantContentType>& data);
+        VariantDef(const std::string& identifierKey, const std::unordered_map<std::string, VariantContentType>& data);
 
         const std::string& getIdentifier() const;
 };

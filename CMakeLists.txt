@@ -103,9 +103,11 @@ target_link_libraries(Base-Engine PRIVATE
 # gen1 engine
 
 add_library(Gen1-Engine SHARED
-    src/engine/interface.hpp
-    src/engine/gen1/interface.cpp
+    src/engine/interface.hpp src/engine/gen1/interface.cpp
+    src/engine/gen1/constants.hpp
     src/engine/gen1/engine.hpp src/engine/gen1/engine.cpp
+    src/engine/gen1/pkmndef.hpp src/engine/gen1/pkmndef.cpp
+    src/engine/gen1/movedef.hpp src/engine/gen1/movedef.cpp
     src/engine/gen1/pkmndatabase.hpp src/engine/gen1/pkmndatabase.cpp
     src/engine/gen1/movedatabase.hpp src/engine/gen1/movedatabase.cpp
 )
