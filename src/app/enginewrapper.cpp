@@ -130,22 +130,22 @@ int EngineWrapper::getSignature() const
     return _getSignature();
 }
 
-int EngineWrapper::getPkmnDefHeaders(std::vector<TextFileContentInfo>& buffer) const
+void EngineWrapper::getPkmnDefHeaders(std::vector<VariantContentInfo>& buffer) const
 {
     return _getPkmnDefHeaders(buffer);
 }
 
-int EngineWrapper::getMoveDefHeaders(std::vector<TextFileContentInfo>& buffer) const
+void EngineWrapper::getMoveDefHeaders(std::vector<VariantContentInfo>& buffer) const
 {
     return _getMoveDefHeaders(buffer);
 }
 
-int EngineWrapper::init(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs) const
+void EngineWrapper::init(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs) const
 {
     return _init(pkmnDefs, moveDefs);
 }
 
-int EngineWrapper::shutdown() const
+void EngineWrapper::shutdown() const
 {
     return _shutdown();
 }

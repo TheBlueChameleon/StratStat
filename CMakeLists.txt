@@ -83,12 +83,13 @@ add_library(jsonxx-lib STATIC
 # engine shared routines
 
 add_library(Base-Engine STATIC
-    src/engine/interface.hpp
-    src/engine/shared.cpp
-    src/engine/pkmndatabase.hpp src/engine/pkmndatabase.cpp
-    src/engine/pkmndef.hpp src/engine/pkmndef.cpp
-    src/engine/movedatabase.hpp src/engine/movedatabase.cpp
-    src/engine/movedef.hpp src/engine/movedef.cpp
+    src/engine/types.hpp
+    src/engine/interface.hpp src/engine/interface.cpp
+    src/engine/variantdef.hpp src/engine/variantdef.cpp
+    src/engine/basepkmndef.hpp src/engine/basepkmndef.cpp
+    src/engine/basemovedef.hpp src/engine/basemovedef.cpp
+    src/engine/basepkmndatabase.hpp src/engine/basepkmndatabase.cpp
+    src/engine/basemovedatabase.hpp src/engine/basemovedatabase.cpp
 )
 
 target_compile_options(Base-Engine PRIVATE -fPIC)
@@ -103,8 +104,10 @@ target_link_libraries(Base-Engine PRIVATE
 
 add_library(Gen1-Engine SHARED
     src/engine/interface.hpp
-    src/engine/gen1/gen1.cpp
+    src/engine/gen1/interface.cpp
     src/engine/gen1/engine.hpp src/engine/gen1/engine.cpp
+    src/engine/gen1/pkmndatabase.hpp src/engine/gen1/pkmndatabase.cpp
+    src/engine/gen1/movedatabase.hpp src/engine/gen1/movedatabase.cpp
 )
 
 target_link_libraries(Gen1-Engine PUBLIC

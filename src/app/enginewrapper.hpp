@@ -20,12 +20,12 @@ class EngineWrapper
 #endif
         int(*_getSignature)();
 
-        int(*_getPkmnDefHeaders)(std::vector<TextFileContentInfo>&);
-        int(*_getMoveDefHeaders)(std::vector<TextFileContentInfo>&);
+        void(*_getPkmnDefHeaders)(std::vector<VariantContentInfo>&);
+        void(*_getMoveDefHeaders)(std::vector<VariantContentInfo>&);
 
-        int(*_init)(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs);
+        void(*_init)(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs);
         void(*_connectLogger)(const std::shared_ptr<spdlog::logger>& logger);
-        int(*_shutdown)();
+        void(*_shutdown)();
         bool(*_isReady)();
 
         void loadEninge(const std::filesystem::path& enginePath);
@@ -41,12 +41,12 @@ class EngineWrapper
 
         void* findSymbol(const char* const symbolName);
 
-        int getSignature() const;
-        int getPkmnDefHeaders(std::vector<TextFileContentInfo>& buffer) const;
-        int getMoveDefHeaders(std::vector<TextFileContentInfo>& buffer) const;
-        int init(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs) const;
+        int  getSignature() const;
+        void getPkmnDefHeaders(std::vector<VariantContentInfo>& buffer) const;
+        void getMoveDefHeaders(std::vector<VariantContentInfo>& buffer) const;
+        void init(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs) const;
         void connectLogger(const std::shared_ptr<spdlog::logger>& logger) const;
-        int shutdown() const;
+        void shutdown() const;
         bool isReady() const;
 };
 
