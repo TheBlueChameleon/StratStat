@@ -15,7 +15,7 @@
 
 void EngineWrapper::loadEninge(const std::filesystem::path& enginePath)
 {
-    spdlog::debug("LOADING ENGINE FROM {}", enginePath.c_str());
+    spdlog::trace("LOADING ENGINE FROM {}", enginePath.c_str());
 
 #ifdef _WIN32
     handler = LoadLibrary(enginePath.c_str());
@@ -30,7 +30,7 @@ void EngineWrapper::loadEninge(const std::filesystem::path& enginePath)
         std::exit(-1);
     }
 
-    spdlog::debug("... SUCCESS!");
+    spdlog::trace("... SUCCESS!");
 }
 
 #define FETCH(symbol) fetchCheckAndTransfer(&EngineWrapper::_##symbol, #symbol)
@@ -48,7 +48,7 @@ void EngineWrapper::fetchCheckAndTransfer(T EngineWrapper::* offset, const char*
     }
     else
     {
-        spdlog::debug("  ... EXTRACTED {}", symbol);
+        spdlog::trace("  ... EXTRACTED {}", symbol);
     }
 
     this->*offset =target;
@@ -56,7 +56,7 @@ void EngineWrapper::fetchCheckAndTransfer(T EngineWrapper::* offset, const char*
 
 void EngineWrapper::testSignature()
 {
-    spdlog::debug("TESTING FOR SIGNATURE ...");
+    spdlog::trace("TESTING FOR SIGNATURE ...");
     FETCH(getSignature);
 
     if (getSignature() != EXPECTED_SIGNATURE)
@@ -64,27 +64,32 @@ void EngineWrapper::testSignature()
         spdlog::critical("UNEXPECTED SIGNATURE");
         std::exit(-1);
     }
-    spdlog::debug("... SUCCESS!");
+    spdlog::trace("... SUCCESS!");
 }
 
 void EngineWrapper::extractFunctions()
 {
-    spdlog::debug("EXTRACTING FUNCTIONS ...");
+    spdlog::trace("EXTRACTING FUNCTIONS ...");
 
     FETCH(getPkmnDefHeaders);
     FETCH(getMoveDefHeaders);
     FETCH(init);
+    FETCH(connectLogger);
     FETCH(shutdown);
     FETCH(isReady);
 
-    spdlog::debug("... SUCCESS!");
+    spdlog::trace("... SUCCESS!");
 }
 
 EngineWrapper::EngineWrapper(const std::filesystem::path& enginePath)
 {
+    spdlog::debug("BOOTING ENGINE WRAPPER");
+
     loadEninge(enginePath);
     testSignature();
     extractFunctions();
+
+    spdlog::debug("... DONE");
 }
 
 EngineWrapper::~EngineWrapper()
@@ -105,15 +110,15 @@ void* EngineWrapper::findSymbol(const char* const symbolName)
     auto* symbol = reinterpret_cast<void*>(GetProcAddress(hGetProcIDDLL, symbolName));
     if (!symbol)
     {
-        // PLOG_ERROR << "COULD NOT FIND SYMBOL " << symbolName;
+        spdlog::critical("COULD NOT FIND SYMBOL {}", symbolName);
     }
 #else
     char* error = nullptr;
     auto* symbol = dlsym(handler, symbolName);
     if ((error = dlerror()) != nullptr || !symbol)
     {
-        // PLOG_ERROR << "COULD NOT FIND SYMBOL " << symbolName;
-        // PLOG_ERROR << error;
+        spdlog::critical("COULD NOT FIND SYMBOL {}", symbolName);
+        spdlog::critical(error);
         return nullptr;
     }
 #endif
@@ -148,4 +153,9 @@ int EngineWrapper::shutdown() const
 bool EngineWrapper::isReady() const
 {
     return _isReady();
+}
+
+void EngineWrapper::connectLogger(const std::shared_ptr<spdlog::logger>& logger) const
+{
+    return _connectLogger(logger);
 }

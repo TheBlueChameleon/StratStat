@@ -47,10 +47,8 @@ extern "C" {
 
     int init(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs)
     {
-        // static plog::ColorConsoleAppender<plog::MessageOnlyFormatter> consoleAppender;
-        // plog::init(plog::verbose, &consoleAppender);
 
-        std::cout << "(init cout)" << std::endl;
+
         return SUCCESS;
     }
 
@@ -63,4 +61,10 @@ extern "C" {
     {
         return SUCCESS;
     }
+}
+
+// this ensures "unused" functions from the static lib are still linked into the dyLib.
+void dummyCalls()
+{
+    connectLogger(nullptr);
 }

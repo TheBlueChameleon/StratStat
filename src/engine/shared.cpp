@@ -1,6 +1,10 @@
 #include "interface.hpp"
 
 extern "C" {
+void connectLogger(const std::shared_ptr<spdlog::logger> &logger)
+    {
+        spdlog::set_default_logger(logger);
+    }
 }
 
 const DefaultCsvReader getDefaultCsvReader()

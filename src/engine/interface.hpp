@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 
+#include <spdlog/spdlog.h>
 #include <csv2/reader.hpp>
 
 #include "pkmndatabase.hpp"
@@ -24,6 +25,7 @@ extern "C" {
     int getPkmnDefHeaders(std::vector<TextFileContentInfo>& buffer);
     int getMoveDefHeaders(std::vector<TextFileContentInfo>& buffer);
 
+    void connectLogger(const std::shared_ptr<spdlog::logger>& logger);
     int init(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs);
     bool isReady();
     int shutdown();

@@ -24,6 +24,7 @@ class EngineWrapper
         int(*_getMoveDefHeaders)(std::vector<TextFileContentInfo>&);
 
         int(*_init)(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs);
+        void(*_connectLogger)(const std::shared_ptr<spdlog::logger>& logger);
         int(*_shutdown)();
         bool(*_isReady)();
 
@@ -44,9 +45,9 @@ class EngineWrapper
         int getPkmnDefHeaders(std::vector<TextFileContentInfo>& buffer) const;
         int getMoveDefHeaders(std::vector<TextFileContentInfo>& buffer) const;
         int init(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs) const;
+        void connectLogger(const std::shared_ptr<spdlog::logger>& logger) const;
         int shutdown() const;
         bool isReady() const;
-
 };
 
 #endif // ENGINEWRAPPER_HPP
