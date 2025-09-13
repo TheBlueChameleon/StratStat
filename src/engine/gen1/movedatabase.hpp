@@ -11,6 +11,7 @@ class MoveDatabase : public BaseMoveDatabase
         MoveDatabase();
 
         bool add(const MoveDef& def);
+        const MoveDef& get(const std::string& identifier) const;
 };
 
 #endif // MOVEDATABASE_H

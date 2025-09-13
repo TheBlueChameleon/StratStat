@@ -15,6 +15,7 @@ class BaseMoveDatabase
         BaseMoveDatabase();
 
         bool add(const BaseMoveDef& def);
+        const BaseMoveDef& get(const std::string& identifier) const;
 
         int size() const;
 };
