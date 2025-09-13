@@ -8,6 +8,11 @@ bool BasePkmnDatabase::add(const BasePkmnDef& def)
     return insertion;
 }
 
+const BasePkmnDef& BasePkmnDatabase::get(const std::string& identifier) const
+{
+    return db.at(identifier);
+}
+
 int BasePkmnDatabase::size() const
 {
     return db.size();

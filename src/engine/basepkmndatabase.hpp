@@ -15,6 +15,7 @@ class BasePkmnDatabase
         BasePkmnDatabase();
 
         bool add(const BasePkmnDef& def);
+        const BasePkmnDef& get(const std::string& identifier) const;
 
         int size() const;
 };

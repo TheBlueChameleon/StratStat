@@ -10,6 +10,7 @@ class PkmnDatabase : public BasePkmnDatabase
         PkmnDatabase();
 
         bool add(const PkmnDef& def);
+        const PkmnDef& get(const std::string& identifier) const;
 };
 
 #endif // PKMNDATABASE_HPP

@@ -13,3 +13,8 @@ const std::string& VariantDef::getIdentifier() const
     const auto contentType = static_cast<int>(VariantContentID::Text);
     return std::get<contentType>(lookup);
 }
+
+const VariantContentType& VariantDef::get(std::string key) const
+{
+    return data.at(key);
+}

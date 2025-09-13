@@ -19,13 +19,13 @@ extern "C" {
         buffer =
         {
             VariantContentInfo(PKMN_IDENTIFIER, VariantContentID::Text),
-            VariantContentInfo("Type1",         VariantContentID::Text),
-            VariantContentInfo("Type2",         VariantContentID::Text),
-            VariantContentInfo("HP",            VariantContentID::Integer),
-            VariantContentInfo("ATK",           VariantContentID::Integer),
-            VariantContentInfo("DEF",           VariantContentID::Integer),
-            VariantContentInfo("SPC",           VariantContentID::Integer),
-            VariantContentInfo("SPD",           VariantContentID::Integer),
+            VariantContentInfo(PKMN_TYPE1,      VariantContentID::Text),
+            VariantContentInfo(PKMN_TYPE2,      VariantContentID::Text),
+            VariantContentInfo(PKMN_HP,         VariantContentID::Integer),
+            VariantContentInfo(PKMN_ATK,        VariantContentID::Integer),
+            VariantContentInfo(PKMN_DEF,        VariantContentID::Integer),
+            VariantContentInfo(PKMN_SPC,        VariantContentID::Integer),
+            VariantContentInfo(PKMN_SPD,        VariantContentID::Integer),
         };
     }
 

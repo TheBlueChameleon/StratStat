@@ -17,6 +17,7 @@ class VariantDef
         VariantDef(const std::string& identifierKey, const std::unordered_map<std::string, VariantContentType>& data);
 
         const std::string& getIdentifier() const;
+        const VariantContentType& get(std::string key) const;
 };
 
 #endif // VARIANTDEF_HPP
