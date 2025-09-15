@@ -79,6 +79,20 @@ add_library(jsonxx-lib STATIC
     ${jsonxx_SOURCE_DIR}/jsonxx.cc
 )
 
+target_compile_options(jsonxx-lib PRIVATE -fPIC)
+
+# ............................................................................ #
+
+add_library(jsonxx-schema-lib STATIC
+    src/json-schema/constants.hpp
+    src/json-schema/node.hpp src/json-schema/node.cpp
+    src/json-schema/jsonvalidation.hpp src/json-schema/jsonvalidation.cpp
+    src/json-schema/jsonvalidationtionresult.hpp src/json-schema/jsonvalidationtionresult.cpp
+    
+)
+
+target_compile_options(jsonxx-schema-lib PRIVATE -fPIC)
+
 # ............................................................................ #
 # engine shared routines
 
@@ -138,6 +152,8 @@ add_executable(StratStat
     src/app/logging.hpp src/app/logging.cpp
     src/engine/interface.hpp
     src/app/enginewrapper.hpp src/app/enginewrapper.cpp
+
+    src/app/tests.hpp src/app/tests.cpp
 )
 
 target_link_libraries(StratStat PRIVATE
@@ -145,6 +161,7 @@ target_link_libraries(StratStat PRIVATE
     argparse
     csv2
     jsonxx-lib
+    jsonxx-schema-lib
     spdlog
 )
 

@@ -1,0 +1,24 @@
+{
+    "":,
+    "null":,
+    "string": "string",
+    "number": 2.71,
+    "bool": true,
+    "list": [1, 2, 3, "error"],
+    "nested": [
+        ["true", "yes", "on"],
+        ["false", "no", "off", 0]
+    ],
+    "object" : {
+        "inner": true
+    },
+    "mutexGroups" : {
+        "A":,
+        "B":,
+        "AB":,
+        "0":
+    },
+    "unexpected":,
+    "wrongType": false,
+    "anyType": true
+}

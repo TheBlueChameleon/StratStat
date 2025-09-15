@@ -7,6 +7,8 @@ using namespace std::string_literals;
 #include "constants.hpp"
 #include "engine.hpp"
 
+static bool readyFlag = false;
+
 extern "C" {
 
     int getSignature()
@@ -26,6 +28,7 @@ extern "C" {
             VariantContentInfo(PKMN_DEF,        VariantContentID::Integer),
             VariantContentInfo(PKMN_SPC,        VariantContentID::Integer),
             VariantContentInfo(PKMN_SPD,        VariantContentID::Integer),
+            VariantContentInfo(PKMN_EXPGROUP,   VariantContentID::Text),
         };
     }
 
@@ -45,21 +48,29 @@ extern "C" {
         };
     }
 
+    void getTeamDefStructure()
+    {
+
+    }
+
     void init(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs)
     {
         spdlog::debug("INITIALIZING ENGINE");
-
         initPkmnDb(pkmnDefs);
         initMoveDb(moveDefs);
+        readyFlag = true;
         spdlog::debug("... DONE");
     }
 
     bool isReady()
     {
-        return false;
+        return readyFlag;
     }
 
-    void shutdown() {}
+    void shutdown()
+    {
+        readyFlag = false;
+    }
 }
 
 void initPkmnDb(const std::filesystem::path& pkmnDefs)

@@ -1,7 +1,9 @@
+#include <iostream>
 #include <fstream>
 #include <exception>
 #include <sstream>
 #include <string>
+#include <vector>
 using namespace std::string_literals;
 
 #include <jsonxx.h>
@@ -10,6 +12,8 @@ using ArgParser = argparse::ArgumentParser;
 
 #include "cliparser.hpp"
 #include "config.hpp"
+
+#include "../json-schema/jsonvalidation.hpp"
 
 auto mandatoryPaths =
 {
@@ -206,21 +210,14 @@ const Config CliParser::parseConfigFile() const
         std::exit(-1);
     }
 
+    validateConfigFile(json, cfgFileName);
+
     for (const auto& cfgInfo : mandatoryPaths)
     {
         const std::string attributeName = cfgInfo.attributeName;
         const auto setter = cfgInfo.setter;
-
-        if (!json.has<std::string>(attributeName))
-        {
-            std::cerr << "The required path '" << attributeName << "' was not found in the cfgFile." << std::endl;
-            std::exit(-1);
-        }
-        else
-        {
-            const auto value = json.get<std::string>(attributeName);
-            (cfg.*setter)(value);
-        }
+        const auto value = json.get<std::string>(attributeName);
+        (cfg.*setter)(value);
     }
 
     for (const auto& cfgInfo : optionalPaths)
@@ -250,3 +247,41 @@ const Config CliParser::parseConfigFile() const
     return cfg;
 }
 
+void CliParser::validateConfigFile(const jsonxx::Object& json, const std::filesystem::path& cfgFileName) const
+{
+    std::unordered_set<JsonValidation::Node> specs;
+
+    specs.emplace("enemyStrategy", JsonValidation::String, true);
+    specs.emplace("enemyTeam", JsonValidation::String, true);
+    specs.emplace("engine", JsonValidation::String, true);
+    specs.emplace("humanStrategy", JsonValidation::String, true);
+    specs.emplace("humanTeam", JsonValidation::String, true);
+    specs.emplace("logfile", JsonValidation::String, false);
+    specs.emplace("loglevel", JsonValidation::Number, false);
+    specs.emplace("maxTurns", JsonValidation::Number, false);
+    specs.emplace("moveDefs", JsonValidation::String, true);
+    specs.emplace("pkmnDefs", JsonValidation::String, true);
+    specs.emplace("repetitions", JsonValidation::Number, false);
+
+    const auto result = JsonValidation::validate(json, specs);
+
+    if (result.hasMessages())
+    {
+        std::cerr << "Validation result of " << cfgFileName.c_str() << ":" << std::endl;
+    }
+
+    for (const auto& msg: result.getValidationWarnings())
+    {
+        std::cerr << "WARNING: " << msg << std::endl;
+    }
+
+    if (!result.isValid())
+    {
+        for (const auto& msg: result.getValidationErrors())
+        {
+            std::cerr << "ERROR: " << msg << std::endl;
+        }
+        std::exit(0);
+    }
+    std::exit(0);
+}

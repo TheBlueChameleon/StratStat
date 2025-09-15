@@ -4,6 +4,7 @@
 #include <filesystem>
 
 #include <argparse/argparse.hpp>
+#include <jsonxx.h>
 
 #include "config.hpp"
 
@@ -19,6 +20,7 @@ class CliParser
 
         const Config parseExplicit() const;
         const Config parseConfigFile() const;
+        void validateConfigFile(const jsonxx::Object& json, const std::filesystem::path& cfgFileName) const;
 
         void handleErr(const std::exception& err) const;
 

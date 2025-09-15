@@ -1,0 +1,5 @@
+{
+    "engine": "build-Desktop-Debug/libGen1-Engine.so",  // regular entry
+    "EnemyStrategy" : "strategies/random.lua"           // unknown key (capitalization of initial character)
+    // missing keys
+}

@@ -1,0 +1,14 @@
+{
+    "Trainer": {
+        "BadgeBrock": false
+    },
+    "Pokemon": [
+        {
+            "name": "charmander",
+            "lvl": 5,
+            "move1": {
+                "identifier": "pound"
+            }
+        }
+    ],
+}

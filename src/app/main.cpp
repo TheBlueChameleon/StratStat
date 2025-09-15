@@ -9,6 +9,8 @@ using namespace std::string_literals;
 #include "logging.hpp"
 #include "enginewrapper.hpp"
 
+#include "tests.hpp"
+
 void doLuaStuff()
 {
     lua_State* L = luaL_newstate();
@@ -19,6 +21,9 @@ void doLuaStuff()
 
 int main(const int argc, const char* argv[])
 {
+    testJsonValidation();
+    std::exit(0);
+
     auto parser = CliParser();
     auto cfg = parser.run(argc, argv);
 
