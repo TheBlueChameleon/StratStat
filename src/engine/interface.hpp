@@ -10,6 +10,7 @@
 #include <spdlog/spdlog.h>
 
 #include <jsonxx.h>
+#include <json-schema/jsonvalidation.hpp>
 
 #include "types.hpp"
 #include "basepkmndatabase.hpp"

@@ -6,6 +6,7 @@ using namespace std::string_literals;
 
 #include "constants.hpp"
 #include "engine.hpp"
+#include <engine/types.hpp>
 
 static bool readyFlag = false;
 
@@ -48,10 +49,7 @@ extern "C" {
         };
     }
 
-    void getTeamDefStructure()
-    {
-
-    }
+    void getTeamDefStructure() {}
 
     void init(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs)
     {
@@ -87,6 +85,7 @@ void initPkmnDb(const std::filesystem::path& pkmnDefs)
 
     const auto& header = csv.header();
     const auto columnData = analyzeHeader(header, headerRequirements, pkmnDefs.c_str());
+    const auto expectedColumnCount = columnData.size();
 
     for (const auto& row: csv)
     {
@@ -95,12 +94,24 @@ void initPkmnDb(const std::filesystem::path& pkmnDefs)
         {
             continue;
         }
-        spdlog::trace(
-            "  PUT SPECIES '{}' IN DB",
-            std::get<static_cast<int>(VariantContentID::Text)>(pkmnData.at(PKMN_IDENTIFIER))
-        );
+        else if (pkmnData.size() < expectedColumnCount)
+        {
+            spdlog::error(
+                "  MALFORMED PKMN DEFINITION FOR '{}' (IGNORED)",
+                std::get<static_cast<int>(VariantContentID::Text)>(pkmnData.at(PKMN_IDENTIFIER)),
+                pkmnData.size(),
+                expectedColumnCount
+            );
+        }
+        else
+        {
+            spdlog::trace(
+                "  PUT SPECIES '{}' IN DB",
+                std::get<static_cast<int>(VariantContentID::Text)>(pkmnData.at(PKMN_IDENTIFIER))
+            );
 
-        engine.getPkmnDbMutable().add(pkmnData);
+            engine.getPkmnDbMutable().add(pkmnData);
+        }
     }
 
     spdlog::trace("  KNOWN SPECIES: {}", engine.getPkmnDb().size());
