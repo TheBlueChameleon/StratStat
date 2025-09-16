@@ -1,5 +1,5 @@
-#ifndef CONSTANTS_HPP
-#define CONSTANTS_HPP
+#ifndef JSON_SCHEMA_CONSTANTS_HPP
+#define JSON_SCHEMA_CONSTANTS_HPP
 
 #include <jsonxx.h>
 
@@ -16,4 +16,4 @@ namespace JsonValidation
     constexpr JsonValueType NoValidation = JsonValueType::INVALID_;
 }
 
-#endif // CONSTANTS_HPP
+#endif // JSON_SCHEMA_CONSTANTS_HPP

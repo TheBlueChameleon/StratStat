@@ -1,5 +1,5 @@
-#ifndef CONSTANTS_HPP
-#define CONSTANTS_HPP
+#ifndef GEN1_CONSTANTS_HPP
+#define GEN1_CONSTANTS_HPP
 
 constexpr auto JSON_MANDATORY = "MANDATORY";
 constexpr auto JSON_TYPE = "TYPE";
@@ -22,4 +22,4 @@ constexpr auto PKMN_EXPGROUP = "EXPGROUP";
 
 constexpr auto MOVE_IDENTIFIER = "identifier";
 
-#endif // CONSTANTS_HPP
+#endif // GEN1_CONSTANTS_HPP
