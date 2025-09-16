@@ -18,6 +18,7 @@ const std::string& PkmnDef::getName() const
            );
 }
 
+
 const std::string& PkmnDef::getType1() const
 {
     return std::get<static_cast<int>(VariantContentID::Text)>(

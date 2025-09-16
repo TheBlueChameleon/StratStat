@@ -283,5 +283,4 @@ void CliParser::validateConfigFile(const jsonxx::Object& json, const std::filesy
         }
         std::exit(0);
     }
-    std::exit(0);
 }
