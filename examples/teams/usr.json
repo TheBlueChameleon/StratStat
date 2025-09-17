@@ -1,8 +1,8 @@
 {
-    "Trainer": {
-        "BadgeBrock": false
+    "trainer": {
+        "badges": ["Brock", "Misty", "Surge", "Erika", "Sabrina", "Koga", "Blaine", "Giovanni"]
     },
-    "Pokemon": [
+    "pokemon": [
         {
             "name": "charmander",
             "lvl": 5,

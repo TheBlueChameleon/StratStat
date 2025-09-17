@@ -99,11 +99,10 @@ target_compile_options(jsonxx-schema-lib PRIVATE -fPIC)
 add_library(Base-Engine STATIC
     src/engine/types.hpp
     src/engine/interface.hpp src/engine/interface.cpp
-    src/engine/variantdef.hpp src/engine/variantdef.cpp
-    src/engine/basepkmndef.hpp src/engine/basepkmndef.cpp
-    src/engine/basemovedef.hpp src/engine/basemovedef.cpp
-    src/engine/basepkmndatabase.hpp src/engine/basepkmndatabase.cpp
-    src/engine/basemovedatabase.hpp src/engine/basemovedatabase.cpp
+    src/engine/shared.hpp src/engine/shared.cpp
+    src/engine/engine.hpp src/engine/engine.cpp
+    src/engine/commonvaluecollection.hpp src/engine/commonvaluecollection.cpp
+    src/engine/commondatabase.hpp src/engine/commondatabase.cpp
 )
 
 target_compile_options(Base-Engine PRIVATE -fPIC)
@@ -119,11 +118,10 @@ target_link_libraries(Base-Engine PRIVATE
 add_library(Gen1-Engine SHARED
     src/engine/interface.hpp src/engine/gen1/interface.cpp
     src/engine/gen1/constants.hpp
-    src/engine/gen1/engine.hpp src/engine/gen1/engine.cpp
-    src/engine/gen1/pkmndef.hpp src/engine/gen1/pkmndef.cpp
-    src/engine/gen1/movedef.hpp src/engine/gen1/movedef.cpp
-    src/engine/gen1/pkmndatabase.hpp src/engine/gen1/pkmndatabase.cpp
-    src/engine/gen1/movedatabase.hpp src/engine/gen1/movedatabase.cpp
+    # src/engine/gen1/pkmndef.hpp src/engine/gen1/pkmndef.cpp
+    # src/engine/gen1/movedef.hpp src/engine/gen1/movedef.cpp
+    # src/engine/gen1/pkmndatabase.hpp src/engine/gen1/pkmndatabase.cpp
+    # src/engine/gen1/movedatabase.hpp src/engine/gen1/movedatabase.cpp
 )
 
 target_link_libraries(Gen1-Engine PUBLIC
@@ -133,13 +131,13 @@ target_link_libraries(Gen1-Engine PUBLIC
 # ............................................................................ #
 # gen2 engine
 
-add_library(Gen2-Engine SHARED
-    src/engine/interface.hpp
-)
+# add_library(Gen2-Engine SHARED
+#     src/engine/interface.hpp
+# )
 
-target_link_libraries(Gen2-Engine PUBLIC
-    Base-Engine
-)
+# target_link_libraries(Gen2-Engine PUBLIC
+#     Base-Engine
+# )
 
 # ............................................................................ #
 # main

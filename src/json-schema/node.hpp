@@ -23,6 +23,8 @@ namespace std
 
 namespace JsonValidation
 {
+    using MutexGroup = std::unordered_set<std::string>;
+
     class Node
     {
         private:
@@ -38,7 +40,7 @@ namespace JsonValidation
                 const std::string& name,
                 const JsonValueType type = Object,
                 const bool mandatory = true,
-                const std::unordered_set<std::string>& mutuallyExclusiveGroups = {}
+                const MutexGroup& mutuallyExclusiveGroups = {}
             );
 
             std::string getName() const;

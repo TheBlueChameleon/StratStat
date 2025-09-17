@@ -5,17 +5,11 @@ using namespace std::string_literals;
 #include <engine/interface.hpp>
 
 #include "constants.hpp"
-#include "engine.hpp"
 #include <engine/types.hpp>
 
 static bool readyFlag = false;
 
 extern "C" {
-
-    int getSignature()
-    {
-        return EXPECTED_SIGNATURE;
-    }
 
     void getPkmnDefHeaders(std::vector<VariantContentInfo>& buffer)
     {
@@ -49,15 +43,31 @@ extern "C" {
         };
     }
 
-    void getTeamDefStructure() {}
-
-    void init(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs)
+    void getTeamDefStructure(std::unordered_set<JsonValidation::Node>& specs)
     {
-        spdlog::debug("INITIALIZING ENGINE");
-        initPkmnDb(pkmnDefs);
-        initMoveDb(moveDefs);
-        readyFlag = true;
-        spdlog::debug("... DONE");
+        using namespace JsonValidation;
+
+        const auto mutexBadges = MutexGroup({"badges"});
+        const auto mutexBoosts = MutexGroup({"boosts"});
+
+        auto trainerBadges = Node("badges", Array, false, mutexBadges);
+        trainerBadges.addChild(Node("", String, false));
+
+        auto trainer = Node("trainer", Object);
+        trainer.addChild(trainerBadges);
+        trainer.addChild(Node("boostAtk", Bool, false, mutexBoosts));
+        trainer.addChild(Node("boostDef", Bool, false, mutexBoosts));
+        trainer.addChild(Node("boostSpd", Bool, false, mutexBoosts));
+        trainer.addChild(Node("boostSpc", Bool, false, mutexBoosts));
+
+
+        auto pokemonDef = Node("", Object, false);
+        auto pokemon = Node("pokemon", Array);
+
+        pokemon.addChild(pokemonDef);
+
+        specs.insert(trainer);
+        specs.insert(pokemon);
     }
 
     bool isReady()
@@ -71,90 +81,9 @@ extern "C" {
     }
 }
 
-void initPkmnDb(const std::filesystem::path& pkmnDefs)
-{
-    spdlog::trace("INITIALIZING PKMNDB");
-
-    auto& engine = Engine::getInstance();
-
-    auto headerRequirements = std::vector<VariantContentInfo>();
-    getPkmnDefHeaders(headerRequirements);
-
-    auto csv = DefaultCsvReader();
-    csv.mmap(pkmnDefs.c_str());
-
-    const auto& header = csv.header();
-    const auto columnData = analyzeHeader(header, headerRequirements, pkmnDefs.c_str());
-    const auto expectedColumnCount = columnData.size();
-
-    for (const auto& row: csv)
-    {
-        const auto pkmnData = parseCsvRow(row, columnData);
-        if (pkmnData.size() == 0)
-        {
-            continue;
-        }
-        else if (pkmnData.size() < expectedColumnCount)
-        {
-            spdlog::error(
-                "  MALFORMED PKMN DEFINITION FOR '{}' (IGNORED)",
-                std::get<static_cast<int>(VariantContentID::Text)>(pkmnData.at(PKMN_IDENTIFIER)),
-                pkmnData.size(),
-                expectedColumnCount
-            );
-        }
-        else
-        {
-            spdlog::trace(
-                "  PUT SPECIES '{}' IN DB",
-                std::get<static_cast<int>(VariantContentID::Text)>(pkmnData.at(PKMN_IDENTIFIER))
-            );
-
-            engine.getPkmnDbMutable().add(pkmnData);
-        }
-    }
-
-    spdlog::trace("  KNOWN SPECIES: {}", engine.getPkmnDb().size());
-    spdlog::trace("... SUCCESS");
-}
-
-void initMoveDb(const std::filesystem::path& moveDefs)
-{
-    spdlog::trace("INITIALIZING MOVEDB FROM {}", moveDefs.c_str());
-
-    auto& engine = Engine::getInstance();
-
-    auto headerRequirements = std::vector<VariantContentInfo>();
-    getMoveDefHeaders(headerRequirements);
-
-    auto csv = DefaultCsvReader();
-    csv.mmap(moveDefs.c_str());
-
-    const auto& header = csv.header();
-    const auto columnData = analyzeHeader(header, headerRequirements, moveDefs.c_str());
-
-    for (const auto& row: csv)
-    {
-        const auto moveData = parseCsvRow(row, columnData);
-        if (moveData.size() == 0)
-        {
-            continue;
-        }
-        spdlog::trace(
-            "  PUT MOVE '{}' IN DB",
-            std::get<static_cast<int>(VariantContentID::Text)>(moveData.at(MOVE_IDENTIFIER))
-        );
-
-        engine.getMoveDbMutable().add(moveData);
-    }
-
-    spdlog::trace("  KNOWN MOVES: {}", engine.getMoveDb().size());
-    spdlog::trace("... SUCCESS");
-}
-
-
 // this ensures "unused" functions from the static lib are still linked into the dyLib.
 void dummyCalls()
 {
+    getSignature();
     connectLogger(nullptr);
 }

@@ -1,5 +1,5 @@
-#ifndef VARIANTDEF_HPP
-#define VARIANTDEF_HPP
+#ifndef COMMONVALUECOLLECTION_H
+#define COMMONVALUECOLLECTION_H
 
 #include <string>
 #include <unordered_map>
@@ -7,17 +7,17 @@
 
 #include "types.hpp"
 
-class VariantDef
+class CommonValueCollection
 {
     private:
         const std::string identifierKey;
         std::unordered_map<std::string, VariantContentType> data;
 
     public:
-        VariantDef(const std::string& identifierKey, const std::unordered_map<std::string, VariantContentType>& data);
+        CommonValueCollection(const std::string& identifierKey, const std::unordered_map<std::string, VariantContentType>& data);
 
         const std::string& getIdentifier() const;
         const VariantContentType& get(std::string key) const;
 };
 
-#endif // VARIANTDEF_HPP
+#endif // COMMONVALUECOLLECTION_H
