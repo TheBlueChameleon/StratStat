@@ -4,17 +4,21 @@
 #include <string>
 #include <unordered_map>
 #include <variant>
+#include <vector>
 
 #include "sharedtypes.hpp"
+
+using CommonValueMap = std::unordered_map<std::string, VariantContentType>;
+using CommonValueMapVector = std::vector<CommonValueMap>;
 
 class CommonValueCollection
 {
     private:
         const std::string identifierKey;
-        std::unordered_map<std::string, VariantContentType> data;
+        CommonValueMap data;
 
     public:
-        CommonValueCollection(const std::string& identifierKey, const std::unordered_map<std::string, VariantContentType>& data);
+        CommonValueCollection(const std::string& identifierKey, const CommonValueMap& data);
 
         const std::string& getIdentifier() const;
         const VariantContentType& get(std::string key) const;

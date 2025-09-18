@@ -12,8 +12,11 @@ class Engine
         CommonDatabase pkmnDb;
         CommonDatabase moveDb;
 
-        std::unordered_map<std::string, VariantContentType> player1;
-        std::unordered_map<std::string, VariantContentType> player2;
+        CommonValueMap player1;
+        CommonValueMap player2;
+
+        CommonValueMapVector team1;
+        CommonValueMapVector team2;
 
         Engine();
 
@@ -28,6 +31,18 @@ class Engine
 
         CommonDatabase& getPkmnDbMutable();
         CommonDatabase& getMoveDbMutable();
+
+        const CommonValueMap& getPlayer1() const;
+        const CommonValueMap& getPlayer2() const;
+
+        CommonValueMap& getPlayer1Mutable();
+        CommonValueMap& getPlayer2Mutable();
+
+        const CommonValueMapVector& getTeam1() const;
+        const CommonValueMapVector& getTeam2() const;
+
+        CommonValueMapVector& getTeam1Mutable();
+        CommonValueMapVector& getTeam2Mutable();
 };
 
 Engine& getEngineInstance();

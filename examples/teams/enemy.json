@@ -1,0 +1,17 @@
+{
+    "computer": {
+        "statMoveDebuf" : false,
+        "usesPP"        : false
+    },
+    "pokemon": [
+        {
+            "species": "charmander",
+            "level": 5,
+
+            "move1": "pound",
+            "move1pp": 10,
+
+            "move2": "growl"
+        }
+    ],
+}

@@ -1,7 +1,7 @@
+#include <fstream>
+#include <list>
 #include <string>
 using namespace std::string_literals;
-
-#include <list>
 
 #include <spdlog/spdlog.h>
 
@@ -167,4 +167,56 @@ VariantContentType variantFromString(const std::string& input, const VariantCont
             return input;
     }
     throw std::runtime_error("Unknown contentID: "s + std::to_string(static_cast<int>(contentID)));
+}
+
+void loadTeam1(const std::filesystem::path& teamDef)
+{
+    spdlog::trace("  READING TEAM 1 FROM {}", teamDef.c_str());
+    auto& engine = Engine::getInstance();
+    loadTeam(teamDef, engine.getPlayer1Mutable(), engine.getTeam1Mutable());
+    spdlog::trace("  ... OK");
+}
+
+void loadTeam2(const std::filesystem::path& teamDef)
+{
+    spdlog::trace("  READING TEAM 2 FROM {}", teamDef.c_str());
+    auto& engine = Engine::getInstance();
+    loadTeam(teamDef, engine.getPlayer2Mutable(), engine.getTeam2Mutable());
+    spdlog::trace("  ... OK");
+}
+
+void loadTeam(const std::filesystem::path& fileName, CommonValueMap& playerDef, CommonValueMapVector& teamDef)
+{
+    auto file = std::ifstream(fileName);
+    jsonxx::Object json;
+    const bool success = json.parse(file);
+    if (!success)
+    {
+        spdlog::critical("The team definition file '{}' is not a valid JSON file.", fileName.c_str());
+        std::exit(-1);
+    }
+
+    std::unordered_set<JsonValidation::Node> specs;
+    getTeamDefStructure(specs);
+
+    const auto validationResult = JsonValidation::validate(json, specs);
+
+    if (validationResult.hasMessages())
+    {
+        spdlog::warn("In team definition file '{}':", fileName.c_str());
+        for (const auto& warning: validationResult.getValidationWarnings())
+        {
+            spdlog::warn(warning);
+        }
+    }
+
+    if (!validationResult.isValid())
+    {
+        spdlog::critical("In team definition file '{}':", fileName.c_str());
+        for (const auto& error: validationResult.getValidationErrors())
+        {
+            spdlog::critical(error);
+        }
+        std::exit(-1);
+    }
 }

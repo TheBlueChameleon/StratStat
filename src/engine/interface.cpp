@@ -28,7 +28,8 @@ extern "C" {
     void loadTeams(const std::filesystem::path& player1TeamDef, const std::filesystem::path& player2TeamDef)
     {
         spdlog::debug("INITIALIZING TEAMS");
-
+        loadTeam1(player1TeamDef);
+        loadTeam2(player2TeamDef);
         spdlog::debug("... DONE");
     }
 

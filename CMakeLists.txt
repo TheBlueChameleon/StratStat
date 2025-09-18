@@ -122,6 +122,7 @@ add_library(Gen1-Engine SHARED
 
 target_link_libraries(Gen1-Engine PUBLIC
     Base-Engine
+    jsonxx-schema-lib
 )
 
 # ............................................................................ #

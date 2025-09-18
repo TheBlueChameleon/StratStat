@@ -2,7 +2,7 @@
 
 #include "commonvaluecollection.hpp"
 
-CommonValueCollection::CommonValueCollection(const std::string& identifierKey, const std::unordered_map<std::string, VariantContentType>& data) :
+CommonValueCollection::CommonValueCollection(const std::string& identifierKey, const CommonValueMap &data) :
     identifierKey(identifierKey),
     data(data)
 {}

@@ -22,6 +22,10 @@ void initDb(
     CommonDatabase& db
 );
 
+void loadTeam1(const std::filesystem::path& teamDef);
+void loadTeam2(const std::filesystem::path& teamDef);
+void loadTeam(const std::filesystem::path& defFile, CommonValueMap& playerDef, CommonValueMapVector& teamDef);
+
 std::vector<CsvMappingInfo> analyzeHeader(const DefaultCsvReader::Row& header, const std::vector<VariantContentInfo>& headerRequirements, const std::string& filename);
 std::unordered_map<std::string, VariantContentType> parseCsvRow(const DefaultCsvReader::Row& row, const std::vector<CsvMappingInfo>& columnData);
 

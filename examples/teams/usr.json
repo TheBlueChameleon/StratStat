@@ -1,14 +1,13 @@
 {
-    "trainer": {
+    "human": {
         "badges": ["Brock", "Misty", "Surge", "Erika", "Sabrina", "Koga", "Blaine", "Giovanni"]
     },
     "pokemon": [
         {
-            "name": "charmander",
-            "lvl": 5,
-            "move1": {
-                "identifier": "pound"
-            }
+            "species": "charmander",
+            "level": 5,
+            "move1": "pound",
+            "move1pp": 10
         }
     ],
 }

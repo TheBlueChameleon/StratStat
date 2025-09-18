@@ -57,22 +57,62 @@ extern "C" {
         player.addChild(Node("boostDef", Bool, false, mutexBoosts));
         player.addChild(Node("boostSpd", Bool, false, mutexBoosts));
         player.addChild(Node("boostSpc", Bool, false, mutexBoosts));
+
+        player.addChild(Node("statMoveDebuf", Bool, false));
+        player.addChild(Node("usesPP", Bool, false));
+    }
+
+    void addPokemonStructureElements(JsonValidation::Node& pokemon)
+    {
+        using namespace JsonValidation;
+
+        auto pokemonDef = Node("", Object, false);
+
+        pokemonDef.addChild(Node("species", String));
+        pokemonDef.addChild(Node("level", Number));
+
+        pokemonDef.addChild(Node("DV_ATK", Number, false));
+        pokemonDef.addChild(Node("DV_DEF", Number, false));
+        pokemonDef.addChild(Node("DV_SPC", Number, false));
+        pokemonDef.addChild(Node("DV_SPD", Number, false));
+
+        pokemonDef.addChild(Node("StatExperience_HP",  Number, false));
+        pokemonDef.addChild(Node("StatExperience_ATK", Number, false));
+        pokemonDef.addChild(Node("StatExperience_DEF", Number, false));
+        pokemonDef.addChild(Node("StatExperience_SPC", Number, false));
+        pokemonDef.addChild(Node("StatExperience_SPD", Number, false));
+
+        pokemonDef.addChild(Node("move1", String));
+        pokemonDef.addChild(Node("move2", String, false));
+        pokemonDef.addChild(Node("move3", String, false));
+        pokemonDef.addChild(Node("move4", String, false));
+
+        pokemonDef.addChild(Node("move1PP", Number, false));
+        pokemonDef.addChild(Node("move2PP", Number, false));
+        pokemonDef.addChild(Node("move3PP", Number, false));
+        pokemonDef.addChild(Node("move4PP", Number, false));
+
+        pokemonDef.addChild(Node("move1MaxPP", Number, false));
+        pokemonDef.addChild(Node("move2MaxPP", Number, false));
+        pokemonDef.addChild(Node("move3MaxPP", Number, false));
+        pokemonDef.addChild(Node("move4MaxPP", Number, false));
+
+        pokemon.addChild(pokemonDef);
     }
 
     void getTeamDefStructure(std::unordered_set<JsonValidation::Node>& specs)
     {
         using namespace JsonValidation;
 
-        auto trainer = Node("trainer", Object);
-        auto computer = Node("computer", Object);
+        const auto mutexPlayerType = MutexGroup({"playerType"});
+
+        auto trainer = Node("human", Object, true, mutexPlayerType);
+        auto computer = Node("computer", Object, true, mutexPlayerType);
         addPlayerStructureElements(trainer);
         addPlayerStructureElements(computer);
 
-
-        auto pokemonDef = Node("", Object, false);
         auto pokemon = Node("pokemon", Array);
-
-        pokemon.addChild(pokemonDef);
+        addPokemonStructureElements(pokemon);
 
         specs.insert(trainer);
         specs.insert(pokemon);
