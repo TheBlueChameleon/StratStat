@@ -24,4 +24,16 @@ extern "C" {
         initMoveDb(moveDefs);
         spdlog::debug("... DONE");
     }
+
+    void loadTeams(const std::filesystem::path& player1TeamDef, const std::filesystem::path& player2TeamDef)
+    {
+        spdlog::debug("INITIALIZING TEAMS");
+
+        spdlog::debug("... DONE");
+    }
+
+    bool isReady()
+    {
+        return readyFlag;
+    }
 }

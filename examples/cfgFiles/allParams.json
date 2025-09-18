@@ -1,11 +1,11 @@
 {
-    "engine": "build-Desktop-Debug/libGen1-Engine.so",
-    "humanTeam" : "examples/teams/usr.json",
-    "humanStrategy": "strategies/random.lua",
-    "enemyTeam": "examples/teams/enemy.json",
-    "enemyStrategy": "strategies/random.lua",
-    "pkmnDefs": "database/gen01pkmns.csv",
-    "moveDefs": "database/gen01moves.csv",
+    "engine"            : "build-Desktop-Debug/libGen1-Engine.so",
+    "player1Team"       : "examples/teams/usr.json",
+    "player1Strategy"   : "strategies/random.lua",
+    "player2Team"       : "examples/teams/enemy.json",
+    "player2Strategy"   : "strategies/random.lua",
+    "pkmnDefs"          : "database/gen01pkmns.csv",
+    "moveDefs"          : "database/gen01moves.csv",
 
     "logfile": "output.log",
 

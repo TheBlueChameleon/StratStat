@@ -9,10 +9,18 @@
 #include <csv2/reader.hpp>
 #include <jsonxx.h>
 
-#include "types.hpp"
+#include "commondatabase.hpp"
+#include "sharedtypes.hpp"
+
+extern bool readyFlag;
 
 void initPkmnDb(const std::filesystem::path& pkmnDefs);
 void initMoveDb(const std::filesystem::path& pkmnDefs);
+void initDb(
+    const std::filesystem::path& filename,
+    const std::vector<VariantContentInfo>& headerRequirements,
+    CommonDatabase& db
+);
 
 std::vector<CsvMappingInfo> analyzeHeader(const DefaultCsvReader::Row& header, const std::vector<VariantContentInfo>& headerRequirements, const std::string& filename);
 std::unordered_map<std::string, VariantContentType> parseCsvRow(const DefaultCsvReader::Row& row, const std::vector<CsvMappingInfo>& columnData);

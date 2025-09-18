@@ -13,12 +13,12 @@ constexpr auto EXPLICIT = "explicit";
 constexpr auto CONFIG_FILE_NAME = "file";
 
 constexpr auto ENGINE = "engine";
-constexpr auto HUMAN_TEAM = "humanTeam";
-constexpr auto HUMAN_STRATEGY = "humanStrategy";
-constexpr auto ENEMY_TEAM = "enemyTeam";
-constexpr auto ENEMY_STRATEGY = "enemyStrategy";
+constexpr auto PLAYER1_TEAM = "player1Team";
+constexpr auto PLAYER1_STRATEGY = "player1Strategy";
+constexpr auto PLAYER2_TEAM = "player2Team";
+constexpr auto PLAYER2_STRATEGY = "player2Strategy";
 constexpr auto PKMN_DEFS = "pkmnDefs";
-constexpr auto MOVE_DEFS= "moveDefs";
+constexpr auto MOVE_DEFS = "moveDefs";
 constexpr auto REPETITIONS = "repetitions";
 constexpr auto MAX_TURNS = "maxTurns";
 constexpr auto LOGFILE = "logfile";
@@ -51,10 +51,10 @@ class Config
 
     private:
         std::filesystem::path engine;
-        std::filesystem::path humanTeam;
-        std::filesystem::path humanStrat;
-        std::filesystem::path enemyTeam;
-        std::filesystem::path enemyStrat;
+        std::filesystem::path Player1Team;
+        std::filesystem::path Player1Strat;
+        std::filesystem::path Player2Team;
+        std::filesystem::path Player2Strat;
         std::filesystem::path pkmnDefs;
         std::filesystem::path moveDefs;
 
@@ -73,16 +73,16 @@ class Config
         void setEngine(const std::filesystem::path& newEngine);
 
         std::filesystem::path getHumanTeam() const;
-        void setHumanTeam(const std::filesystem::path& newHumanTeam);
+        void setPlayer1Team(const std::filesystem::path& newHumanTeam);
 
         std::filesystem::path getHumanStrat() const;
-        void setUserStrat(const std::filesystem::path& newHumanStrat);
+        void setPlayer1Strat(const std::filesystem::path& newHumanStrat);
 
         std::filesystem::path getEnemyTeam() const;
-        void setEnemyTeam(const std::filesystem::path& newEnemyTeam);
+        void setPlayer2Team(const std::filesystem::path& newEnemyTeam);
 
         std::filesystem::path getEnemyStrat() const;
-        void setEnemyStrat(const std::filesystem::path& newEnemyStrat);
+        void setPlayer2Strat(const std::filesystem::path& newEnemyStrat);
 
         std::filesystem::path getPkmnDefs() const;
         void setPkmnDefs(const std::filesystem::path& newPkmnDefs);

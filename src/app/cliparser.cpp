@@ -18,10 +18,10 @@ using ArgParser = argparse::ArgumentParser;
 auto mandatoryPaths =
 {
     Config::PathEntry(ENGINE, &Config::setEngine),
-    Config::PathEntry(HUMAN_TEAM, &Config::setHumanTeam),
-    Config::PathEntry(HUMAN_STRATEGY, &Config::setUserStrat),
-    Config::PathEntry(ENEMY_TEAM, &Config::setEnemyTeam),
-    Config::PathEntry(ENEMY_STRATEGY, &Config::setEnemyStrat),
+    Config::PathEntry(PLAYER1_TEAM, &Config::setPlayer1Team),
+    Config::PathEntry(PLAYER1_STRATEGY, &Config::setPlayer1Strat),
+    Config::PathEntry(PLAYER2_TEAM, &Config::setPlayer2Team),
+    Config::PathEntry(PLAYER2_STRATEGY, &Config::setPlayer2Strat),
     Config::PathEntry(PKMN_DEFS, &Config::setPkmnDefs),
     Config::PathEntry(MOVE_DEFS, &Config::setMoveDefs)
 };
@@ -58,19 +58,19 @@ void CliParser::configureExplicitParametersParser()
     .help("The file path of a BattleEngine library file (DLL/SO file)");
 
     explicitParametersParser
-    .add_argument(HUMAN_TEAM)
+    .add_argument(PLAYER1_TEAM)
     .help("The file path of a user team definition file (JSON file)");
 
     explicitParametersParser
-    .add_argument(HUMAN_STRATEGY)
+    .add_argument(PLAYER1_STRATEGY)
     .help("The file path of a user strategy definition file (LUA file)");
 
     explicitParametersParser
-    .add_argument(ENEMY_TEAM)
+    .add_argument(PLAYER2_TEAM)
     .help("The file path of a user team definition file (JSON file)");
 
     explicitParametersParser
-    .add_argument(ENEMY_STRATEGY)
+    .add_argument(PLAYER2_STRATEGY)
     .help("The file path of a user strategy definition file (LUA file)");
 
     explicitParametersParser
@@ -251,17 +251,17 @@ void CliParser::validateConfigFile(const jsonxx::Object& json, const std::filesy
 {
     std::unordered_set<JsonValidation::Node> specs;
 
-    specs.emplace("enemyStrategy", JsonValidation::String, true);
-    specs.emplace("enemyTeam", JsonValidation::String, true);
-    specs.emplace("engine", JsonValidation::String, true);
-    specs.emplace("humanStrategy", JsonValidation::String, true);
-    specs.emplace("humanTeam", JsonValidation::String, true);
-    specs.emplace("logfile", JsonValidation::String, false);
-    specs.emplace("loglevel", JsonValidation::Number, false);
-    specs.emplace("maxTurns", JsonValidation::Number, false);
-    specs.emplace("moveDefs", JsonValidation::String, true);
-    specs.emplace("pkmnDefs", JsonValidation::String, true);
-    specs.emplace("repetitions", JsonValidation::Number, false);
+    specs.emplace(ENGINE, JsonValidation::String, true);
+    specs.emplace(PLAYER1_TEAM, JsonValidation::String, true);
+    specs.emplace(PLAYER1_STRATEGY, JsonValidation::String, true);
+    specs.emplace(PLAYER2_TEAM, JsonValidation::String, true);
+    specs.emplace(PLAYER2_STRATEGY, JsonValidation::String, true);
+    specs.emplace(PKMN_DEFS, JsonValidation::String, true);
+    specs.emplace(MOVE_DEFS, JsonValidation::String, true);
+    specs.emplace(REPETITIONS, JsonValidation::Number, false);
+    specs.emplace(MAX_TURNS, JsonValidation::Number, false);
+    specs.emplace(LOGFILE, JsonValidation::String, false);
+    specs.emplace(LOGLEVEL, JsonValidation::Number, false);
 
     const auto result = JsonValidation::validate(json, specs);
 

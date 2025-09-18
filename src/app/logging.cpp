@@ -14,7 +14,7 @@ void configureLogger(const Config& cfg)
     auto defLogger = std::make_shared<spdlog::logger>(DEFALUT_LOGGER_NAME);
     spdlog::set_default_logger(defLogger);
 
-    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    auto console_sink = std::make_shared<spdlog::sinks::stderr_color_sink_mt>();
     console_sink->set_level(logLevel);
     console_sink->set_pattern(pattern);
 

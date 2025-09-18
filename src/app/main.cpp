@@ -34,7 +34,7 @@ int main(const int argc, const char* argv[])
 
     ew.connectLogger(spdlog::get(DEFALUT_LOGGER_NAME));
     ew.init(cfg.getPkmnDefs(), cfg.getMoveDefs());
-
+    ew.loadTeams(cfg.getHumanTeam(), cfg.getEnemyTeam());
     // doLuaStuff();
 
     return 0;

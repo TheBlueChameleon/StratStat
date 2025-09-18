@@ -1,6 +1,9 @@
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
 
+#include <unordered_map>
+#include <string>
+
 #include "commondatabase.hpp"
 
 class Engine
@@ -8,6 +11,9 @@ class Engine
     private:
         CommonDatabase pkmnDb;
         CommonDatabase moveDb;
+
+        std::unordered_map<std::string, VariantContentType> player1;
+        std::unordered_map<std::string, VariantContentType> player2;
 
         Engine();
 

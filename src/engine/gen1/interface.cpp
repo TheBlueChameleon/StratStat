@@ -4,10 +4,9 @@ using namespace std::string_literals;
 
 #include <engine/interface.hpp>
 
+#include "../shared.hpp"
+#include "../sharedtypes.hpp"
 #include "constants.hpp"
-#include <engine/types.hpp>
-
-static bool readyFlag = false;
 
 extern "C" {
 
@@ -43,7 +42,7 @@ extern "C" {
         };
     }
 
-    void getTeamDefStructure(std::unordered_set<JsonValidation::Node>& specs)
+    void addPlayerStructureElements(JsonValidation::Node& player)
     {
         using namespace JsonValidation;
 
@@ -53,12 +52,21 @@ extern "C" {
         auto trainerBadges = Node("badges", Array, false, mutexBadges);
         trainerBadges.addChild(Node("", String, false));
 
+        player.addChild(trainerBadges);
+        player.addChild(Node("boostAtk", Bool, false, mutexBoosts));
+        player.addChild(Node("boostDef", Bool, false, mutexBoosts));
+        player.addChild(Node("boostSpd", Bool, false, mutexBoosts));
+        player.addChild(Node("boostSpc", Bool, false, mutexBoosts));
+    }
+
+    void getTeamDefStructure(std::unordered_set<JsonValidation::Node>& specs)
+    {
+        using namespace JsonValidation;
+
         auto trainer = Node("trainer", Object);
-        trainer.addChild(trainerBadges);
-        trainer.addChild(Node("boostAtk", Bool, false, mutexBoosts));
-        trainer.addChild(Node("boostDef", Bool, false, mutexBoosts));
-        trainer.addChild(Node("boostSpd", Bool, false, mutexBoosts));
-        trainer.addChild(Node("boostSpc", Bool, false, mutexBoosts));
+        auto computer = Node("computer", Object);
+        addPlayerStructureElements(trainer);
+        addPlayerStructureElements(computer);
 
 
         auto pokemonDef = Node("", Object, false);
@@ -68,11 +76,6 @@ extern "C" {
 
         specs.insert(trainer);
         specs.insert(pokemon);
-    }
-
-    bool isReady()
-    {
-        return readyFlag;
     }
 
     void shutdown()
@@ -85,5 +88,6 @@ extern "C" {
 void dummyCalls()
 {
     getSignature();
+    isReady();
     connectLogger(nullptr);
 }

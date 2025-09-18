@@ -97,7 +97,7 @@ target_compile_options(jsonxx-schema-lib PRIVATE -fPIC)
 # engine shared routines
 
 add_library(Base-Engine STATIC
-    src/engine/types.hpp
+    src/engine/sharedtypes.hpp
     src/engine/interface.hpp src/engine/interface.cpp
     src/engine/shared.hpp src/engine/shared.cpp
     src/engine/engine.hpp src/engine/engine.cpp
@@ -116,12 +116,8 @@ target_link_libraries(Base-Engine PRIVATE
 # gen1 engine
 
 add_library(Gen1-Engine SHARED
-    src/engine/interface.hpp src/engine/gen1/interface.cpp
     src/engine/gen1/constants.hpp
-    # src/engine/gen1/pkmndef.hpp src/engine/gen1/pkmndef.cpp
-    # src/engine/gen1/movedef.hpp src/engine/gen1/movedef.cpp
-    # src/engine/gen1/pkmndatabase.hpp src/engine/gen1/pkmndatabase.cpp
-    # src/engine/gen1/movedatabase.hpp src/engine/gen1/movedatabase.cpp
+    src/engine/interface.hpp src/engine/gen1/interface.cpp
 )
 
 target_link_libraries(Gen1-Engine PUBLIC

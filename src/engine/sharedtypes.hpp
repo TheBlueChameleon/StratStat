@@ -1,8 +1,9 @@
-#ifndef TYPES_HPP
-#define TYPES_HPP
+#ifndef SHAREDTYPES_H
+#define SHAREDTYPES_H
 
 #include <string>
 #include <utility>
+#include <unordered_map>
 #include <variant>
 
 #include <csv2/reader.hpp>
@@ -30,4 +31,4 @@ struct CsvMappingInfo
 };
 
 
-#endif // TYPES_HPP
+#endif // SHAREDTYPES_H

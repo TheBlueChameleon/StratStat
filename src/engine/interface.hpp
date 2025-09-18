@@ -10,7 +10,7 @@
 
 #include <json-schema/jsonvalidation.hpp>
 
-#include "types.hpp"
+#include "sharedtypes.hpp"
 
 
 constexpr auto SUCCESS = 0;
@@ -26,6 +26,7 @@ extern "C" {
 
     void connectLogger(const std::shared_ptr<spdlog::logger>& logger);
     void init(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs);
+    void loadTeams(const std::filesystem::path& player1TeamDef, const std::filesystem::path& player2TeamDef);
     bool isReady();
     void shutdown();
 }

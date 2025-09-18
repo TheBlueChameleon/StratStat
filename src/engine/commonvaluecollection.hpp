@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <variant>
 
-#include "types.hpp"
+#include "sharedtypes.hpp"
 
 class CommonValueCollection
 {

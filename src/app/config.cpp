@@ -27,46 +27,46 @@ void Config::setEngine(const std::filesystem::path& newEngine)
 
 std::filesystem::path Config::getHumanTeam() const
 {
-    return humanTeam;
+    return Player1Team;
 }
 
-void Config::setHumanTeam(const std::filesystem::path& newHumanTeam)
+void Config::setPlayer1Team(const std::filesystem::path& newHumanTeam)
 {
-    assertPathExists(HUMAN_TEAM, newHumanTeam);
-    humanTeam = newHumanTeam;
+    assertPathExists(PLAYER1_TEAM, newHumanTeam);
+    Player1Team = newHumanTeam;
 }
 
 std::filesystem::path Config::getHumanStrat() const
 {
-    return humanStrat;
+    return Player1Strat;
 }
 
-void Config::setUserStrat(const std::filesystem::path& newHumanStrat)
+void Config::setPlayer1Strat(const std::filesystem::path& newHumanStrat)
 {
-    assertPathExists(HUMAN_STRATEGY, newHumanStrat);
-    humanStrat = newHumanStrat;
+    assertPathExists(PLAYER1_STRATEGY, newHumanStrat);
+    Player1Strat = newHumanStrat;
 }
 
 std::filesystem::path Config::getEnemyTeam() const
 {
-    return enemyTeam;
+    return Player2Team;
 }
 
-void Config::setEnemyTeam(const std::filesystem::path& newEnemyTeam)
+void Config::setPlayer2Team(const std::filesystem::path& newEnemyTeam)
 {
-    assertPathExists(ENEMY_TEAM, newEnemyTeam);
-    enemyTeam = newEnemyTeam;
+    assertPathExists(PLAYER2_TEAM, newEnemyTeam);
+    Player2Team = newEnemyTeam;
 }
 
 std::filesystem::path Config::getEnemyStrat() const
 {
-    return enemyStrat;
+    return Player2Strat;
 }
 
-void Config::setEnemyStrat(const std::filesystem::path& newEnemyStrat)
+void Config::setPlayer2Strat(const std::filesystem::path& newEnemyStrat)
 {
-    assertPathExists(ENEMY_STRATEGY, newEnemyStrat);
-    enemyStrat = newEnemyStrat;
+    assertPathExists(PLAYER2_STRATEGY, newEnemyStrat);
+    Player2Strat = newEnemyStrat;
 }
 
 std::filesystem::path Config::getPkmnDefs() const

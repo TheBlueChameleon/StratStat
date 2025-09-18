@@ -24,6 +24,7 @@ class EngineWrapper
         void(*_getMoveDefHeaders)(std::vector<VariantContentInfo>&);
 
         void(*_init)(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs);
+        void(*_loadTeams)(const std::filesystem::path& player1TeamDef, const std::filesystem::path& player2TeamDef);
         void(*_connectLogger)(const std::shared_ptr<spdlog::logger>& logger);
         void(*_shutdown)();
         bool(*_isReady)();
@@ -45,6 +46,7 @@ class EngineWrapper
         void getPkmnDefHeaders(std::vector<VariantContentInfo>& buffer) const;
         void getMoveDefHeaders(std::vector<VariantContentInfo>& buffer) const;
         void init(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs) const;
+        void loadTeams(const std::filesystem::path& player1TeamDef, const std::filesystem::path& player2TeamDef) const;
         void connectLogger(const std::shared_ptr<spdlog::logger>& logger) const;
         void shutdown() const;
         bool isReady() const;

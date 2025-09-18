@@ -74,6 +74,7 @@ void EngineWrapper::extractFunctions()
     FETCH(getPkmnDefHeaders);
     FETCH(getMoveDefHeaders);
     FETCH(init);
+    FETCH(loadTeams);
     FETCH(connectLogger);
     FETCH(shutdown);
     FETCH(isReady);
@@ -143,6 +144,11 @@ void EngineWrapper::getMoveDefHeaders(std::vector<VariantContentInfo>& buffer) c
 void EngineWrapper::init(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs) const
 {
     return _init(pkmnDefs, moveDefs);
+}
+
+void EngineWrapper::loadTeams(const std::filesystem::path& player1TeamDef, const std::filesystem::path& player2TeamDef) const
+{
+    return _loadTeams(player1TeamDef, player2TeamDef);
 }
 
 void EngineWrapper::shutdown() const

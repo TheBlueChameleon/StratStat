@@ -1,59 +1,32 @@
 #include <string>
 using namespace std::string_literals;
 
+#include <list>
+
 #include <spdlog/spdlog.h>
 
 #include "engine.hpp"
 #include "interface.hpp"
 #include "shared.hpp"
 
+bool readyFlag = false;
+
+DefaultCsvReader getCsvData(const std::filesystem::path& csvFileName)
+{
+    auto csv = DefaultCsvReader();
+    csv.mmap(csvFileName.c_str());
+    return csv;
+}
+
 void initPkmnDb(const std::filesystem::path& pkmnDefs)
 {
     spdlog::trace("INITIALIZING PKMNDB");
 
-    auto& engine = Engine::getInstance();
-
     auto headerRequirements = std::vector<VariantContentInfo>();
     getPkmnDefHeaders(headerRequirements);
-    const auto& pkmnIdentifierKey = headerRequirements.front().identifier;
+    initDb(pkmnDefs, headerRequirements, Engine::getInstance().getPkmnDbMutable());
 
-    auto csv = DefaultCsvReader();
-    csv.mmap(pkmnDefs.c_str());
-
-    const auto& header = csv.header();
-    const auto columnData = analyzeHeader(header, headerRequirements, pkmnDefs.c_str());
-    const auto expectedColumnCount = columnData.size();
-
-    for (const auto& row: csv)
-    {
-        const auto pkmnData = parseCsvRow(row, columnData);
-        if (pkmnData.size() == 0)
-        {
-            continue;
-        }
-        else if (pkmnData.size() < expectedColumnCount)
-        {
-            spdlog::error(
-                "  MALFORMED PKMN DEFINITION FOR '{}' (IGNORED)",
-                std::get<static_cast<int>(VariantContentID::Text)>(pkmnData.at(pkmnIdentifierKey)),
-                pkmnData.size(),
-                expectedColumnCount
-            );
-        }
-        else
-        {
-            spdlog::trace(
-                "  PUT SPECIES '{}' IN DB",
-                std::get<static_cast<int>(VariantContentID::Text)>(pkmnData.at(pkmnIdentifierKey))
-            );
-
-            engine.getPkmnDbMutable().add(CommonValueCollection(pkmnIdentifierKey, pkmnData));
-
-            //engine.getPkmnDbMutable().add(BasePkmnDef(pkmnIdentifierKey, pkmnData));
-        }
-    }
-
-    spdlog::trace("  KNOWN SPECIES: {}", engine.getPkmnDb().size());
+    spdlog::trace("  KNOWN SPECIES: {}", Engine::getInstance().getPkmnDb().size());
     spdlog::trace("... SUCCESS");
 }
 
@@ -61,43 +34,65 @@ void initMoveDb(const std::filesystem::path& moveDefs)
 {
     spdlog::trace("INITIALIZING MOVEDB FROM {}", moveDefs.c_str());
 
-    auto& engine = Engine::getInstance();
-
     auto headerRequirements = std::vector<VariantContentInfo>();
     getMoveDefHeaders(headerRequirements);
-    const auto& moveIdentifierKey = headerRequirements.front().identifier;
+    initDb(moveDefs, headerRequirements, Engine::getInstance().getMoveDbMutable());
 
-    auto csv = DefaultCsvReader();
-    csv.mmap(moveDefs.c_str());
-
-    const auto& header = csv.header();
-    const auto columnData = analyzeHeader(header, headerRequirements, moveDefs.c_str());
-
-    for (const auto& row: csv)
-    {
-        const auto moveData = parseCsvRow(row, columnData);
-        if (moveData.size() == 0)
-        {
-            continue;
-        }
-        spdlog::trace(
-            "  PUT MOVE '{}' IN DB",
-            std::get<static_cast<int>(VariantContentID::Text)>(moveData.at(moveIdentifierKey))
-        );
-
-        engine.getMoveDbMutable().add(CommonValueCollection(moveIdentifierKey, moveData));
-    }
-
-    spdlog::trace("  KNOWN MOVES: {}", engine.getMoveDb().size());
+    spdlog::trace("  KNOWN MOVES: {}", Engine::getInstance().getMoveDb().size());
     spdlog::trace("... SUCCESS");
 }
 
-std::vector<CsvMappingInfo> analyzeHeader(const DefaultCsvReader::Row& header, const std::vector<VariantContentInfo>& headerRequirements, const std::string& filename)
+void initDb(
+    const std::filesystem::path& filename,
+    const std::vector<VariantContentInfo>& headerRequirements,
+    CommonDatabase& db
+)
+{
+    auto csv = getCsvData(filename);
+
+    const auto& identifierKey = headerRequirements.front().identifier;
+    const auto& header = csv.header();
+    const auto columnData = analyzeHeader(header, headerRequirements, filename);
+    const auto expectedColumnCount = columnData.size();
+
+    for (const auto& row: csv)
+    {
+        const auto dbEntry = parseCsvRow(row, columnData);
+        if (dbEntry.size() == 0)
+        {
+            continue;
+        }
+        else if (dbEntry.size() < expectedColumnCount)
+        {
+            spdlog::error(
+                "  MALFORMED DEFINITION FOR '{}' (IGNORED)",
+                std::get<static_cast<int>(VariantContentID::Text)>(dbEntry.at(identifierKey)),
+                dbEntry.size(),
+                expectedColumnCount
+            );
+        }
+        else
+        {
+            spdlog::trace(
+                "  PUT SPECIES '{}' IN DB",
+                std::get<static_cast<int>(VariantContentID::Text)>(dbEntry.at(identifierKey))
+            );
+
+            db.add(CommonValueCollection(identifierKey, dbEntry));
+        }
+    }
+}
+
+
+std::vector<CsvMappingInfo> analyzeHeader(
+    const DefaultCsvReader::Row& header,
+    const std::vector<VariantContentInfo>& headerRequirements,
+    const std::string& filename
+)
 {
     std::vector<CsvMappingInfo> result;
 
-    std::vector<std::string> presentHeaders;
-
+    std::list<std::string> presentHeaders;
     for (const auto& cell : header)
     {
         std::string cellContent;
@@ -115,7 +110,7 @@ std::vector<CsvMappingInfo> analyzeHeader(const DefaultCsvReader::Row& header, c
         const auto it = std::ranges::find(presentHeaders, requiredColumn);
         if (it == notAvailable)
         {
-            spdlog::critical("REQUIRED COLUMN '{}' IN {} NOT FOUND", requiredColumn, filename);
+            spdlog::critical("IN FILE {}: REQUIRED COLUMN '{}' NOT FOUND", filename, requiredColumn);
             std::exit(-1);
         }
         else
