@@ -249,7 +249,7 @@ const Config CliParser::parseConfigFile() const
 
 void CliParser::validateConfigFile(const jsonxx::Object& json, const std::filesystem::path& cfgFileName) const
 {
-    std::unordered_set<JsonValidation::Node> specs;
+    std::unordered_set<JsonValidation::Specification> specs;
 
     specs.emplace(ENGINE, JsonValidation::String, true);
     specs.emplace(PLAYER1_TEAM, JsonValidation::String, true);

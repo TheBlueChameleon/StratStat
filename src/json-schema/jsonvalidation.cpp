@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <forward_list>
 #include <list>
 #include <ranges>
 #include <sstream>
@@ -10,7 +9,12 @@ using namespace std::string_literals;
 
 using namespace JsonValidation;
 
-std::string makeKeySequenceRepr(const std::list<std::string>& keySequence)
+using KV_Map = std::map<std::string, jsonxx::Value*>;
+using KeySequence = std::list<std::string>;
+using ProcessedKeys = std::list<std::string>;
+using ValidationMessageList = std::vector<std::string>;
+
+std::string makeKeySequenceRepr(const KeySequence& keySequence)
 {
     if (keySequence.empty())
     {
@@ -27,15 +31,15 @@ std::string makeKeySequenceRepr(const std::list<std::string>& keySequence)
     return buffer.str();
 }
 
-std::string makeKeyListRepr(const std::forward_list<std::string>& processed)
+std::string makeListRepr(auto& items)
 {
     std::stringstream buffer;
 
-    auto it = processed.cbegin();
+    auto it = items.begin();
     buffer << "{'" << *it << "'";
 
     ++it;
-    for (; it != processed.cend(); it = ++it)
+    for (; it != items.end(); it = ++it)
     {
         buffer << ", '" << *it << "'";
     }
@@ -44,18 +48,19 @@ std::string makeKeyListRepr(const std::forward_list<std::string>& processed)
     return buffer.str();
 }
 
+// TODO: list only the forbidden keys given the current token set
 std::string makeMutexErrorMsg(
     const std::string& name,
-    const std::list<std::string>& keySequence,
-    const std::forward_list<std::string>& processed
+    const KeySequence& keySequence,
+    const ProcessedKeys& processed
 )
 {
     return "in "s + makeKeySequenceRepr(keySequence) + ": "
            "key '" + name + "' may not be used with one or several of the keys " +
-           makeKeyListRepr(processed);
+           makeListRepr(processed);
 }
 
-std::string makeTypeName(JsonValidation::JsonValueType typeID)
+std::string makeTypeName(JsonValueType typeID)
 {
     switch (typeID)
     {
@@ -79,33 +84,71 @@ std::string makeTypeName(JsonValidation::JsonValueType typeID)
     }
 }
 
-void validateMandatoryNodes(
-    const std::map<std::string, jsonxx::Value*>& kv_map,
-    const std::unordered_set<Node>& node,
-    const std::list<std::string>& keySequence,
-    std::vector<std::string>& errors
+void validateMandatorySpecs(
+    const KV_Map& kv_map,
+    const SpecificationSet& specs,
+    const MutexGroup& currentMutexTokenSet,
+    const KeySequence& keySequence,
+    ValidationMessageList& errors
 )
 {
-    auto isMandatory = [](const JsonValidation::Node& node)
+    auto isMandatory = [](const JsonValidation::Specification& node)
     {
         return node.isMandatory();
     };
-
-    auto mandatorySpecs = node | std::views::filter(isMandatory);
-
-    for (const auto& ms : mandatorySpecs)
+    auto hasNoMutexToken = [](const JsonValidation::Specification& node)
     {
-        const auto& key = ms.getName();
+        return node.getMutuallyExclusiveGroups().empty();
+    };
+    auto isPresent = [&kv_map](const JsonValidation::Specification& node)
+    {
+        return kv_map.contains(node.getName());
+    };
+    auto checkAndAddError = [&errors, &kv_map, &keySequence](const JsonValidation::Specification& node)
+    {
+        const auto& key = node.getName();
         if (!kv_map.contains(key))
         {
             errors.emplace_back("in "s + makeKeySequenceRepr(keySequence) + ": missing mandatory key '" + key + "'");
         }
+    };
+
+    auto alwaysMandatorySpecs = specs
+                                | std::views::filter(isMandatory)
+                                | std::views::filter(hasNoMutexToken);
+    std::ranges::for_each(alwaysMandatorySpecs, checkAndAddError);
+
+    for (const auto& token : currentMutexTokenSet)
+    {
+        auto hasThisMutexToken = [&token](const Specification& node)
+        {
+            return node.getMutuallyExclusiveGroups().contains(token);
+        };
+
+        auto mandatorySpecsWithToken = specs
+                                       | std::views::filter(isMandatory)
+                                       | std::views::filter(hasThisMutexToken);
+
+        if (mandatorySpecsWithToken.empty())
+        {
+            // std::ranges::none_of on empty range gives UB
+            continue;
+        }
+
+        if (std::ranges::none_of(mandatorySpecsWithToken, isPresent))
+        {
+            auto mandatoryKeyNames = mandatorySpecsWithToken | std::views::transform([](const auto& spec)
+            {
+                return spec.getName();
+            });
+            errors.emplace_back("in "s + makeKeySequenceRepr(keySequence) + ": missing one of the mandatory keys " + makeListRepr(mandatoryKeyNames));
+        }
     }
 }
 
-std::unordered_set<std::string> makeSetIntersection(
-    const std::unordered_set<std::string>& left,
-    const std::unordered_set<std::string>& right
+MutexGroup makeSetIntersection(
+    const MutexGroup& left,
+    const MutexGroup& right
 )
 {
     // std::set_intersection requires SORTED inputs...
@@ -123,63 +166,45 @@ std::unordered_set<std::string> makeSetIntersection(
 }
 
 void validateMutuallyExclusiveGrups(
-    const JsonValidation::Node& node,
-    std::unordered_set<std::string>& allowedMutexTokens,
+    const Specification& spec,
+    MutexGroup& allowedMutexTokens,
     const std::list<std::string>& keySequence,
-    const std::forward_list<std::string>& processed,
-    std::vector<std::string>& errors
+    const ProcessedKeys& processed,
+    ValidationMessageList& errors
 )
 {
-    const auto& spec = node.getMutuallyExclusiveGroups();
-    if (spec.empty())
+    const auto& mutexGroup = spec.getMutuallyExclusiveGroups();
+    if (mutexGroup.empty())
     {
         // current item does not belong to any mutually exclusive group -- pass
         return;
     }
 
-    if (allowedMutexTokens.empty())
+    // current node can belong to several mutex groups: is any of them the current group?
+    MutexGroup intersection = makeSetIntersection(mutexGroup, allowedMutexTokens);
+    if (intersection.empty())
     {
-        // no mutex group was identified -- make this the current group
-        allowedMutexTokens = spec;
-        return;
-    }
-
-    if (spec.size() == 1)
-    {
-        const auto& group = *spec.begin();
-        if (allowedMutexTokens.contains(group))
-        {
-            // only one spec allowed from now on
-            allowedMutexTokens = spec;
-        }
-        else
-        {
-            errors.push_back(makeMutexErrorMsg(node.getName(), keySequence, processed));
-        }
+        // conflict detected
+        // auto hasConflict = [](const auto&)
+        // {
+        //     return;
+        // };
+        // ProcessedKeys conflicting = processed | std::views::filter();
+        errors.push_back(makeMutexErrorMsg(spec.getName(), keySequence, processed));
     }
     else
     {
-        // current node can belong to several mutex groups: is any of them the current group?
-        std::unordered_set<std::string> intersection = makeSetIntersection(spec, allowedMutexTokens);
-        if (intersection.empty())
-        {
-            // conflict detected
-            errors.push_back(makeMutexErrorMsg(node.getName(), keySequence, processed));
-        }
-        else
-        {
-            // narrow down set of allowed groups
-            allowedMutexTokens = intersection;
-        }
+        // narrow down set of allowed groups
+        allowedMutexTokens = intersection;
     }
 }
 
 bool validateType(
     const std::string& key,
     const jsonxx::Value* value,
-    const JsonValidation::JsonValueType expected,
-    const std::list<std::string>& keySequence,
-    std::vector<std::string>& errors
+    const JsonValueType expected,
+    const KeySequence& keySequence,
+    ValidationMessageList& errors
 )
 {
     if (expected == JsonValidation::NoValidation)
@@ -203,18 +228,18 @@ bool validateType(
 void validateRecursively(
     const std::string& key,
     const jsonxx::Value* value,
-    const std::unordered_set<Node>& childSpecs,
-    std::list<std::string>& keySequence,
-    std::vector<std::string>& errors,
-    std::vector<std::string>& warnings
+    const SpecificationSet& childSpecs,
+    KeySequence& keySequence,
+    ValidationMessageList& errors,
+    ValidationMessageList& warnings
 );
 
 void validateArray(
     const jsonxx::Array& json,
-    const Node& spec,
-    std::list<std::string>& keySequence,
-    std::vector<std::string>& errors,
-    std::vector<std::string>& warnings
+    const Specification& spec,
+    KeySequence& keySequence,
+    ValidationMessageList& errors,
+    ValidationMessageList& warnings
 )
 {
     const auto expectedType = spec.getType();
@@ -247,25 +272,40 @@ void validateArray(
     }
 }
 
-void validateInternal(
+MutexGroup collectMutexTokenSet(const SpecificationSet& specs)
+{
+    MutexGroup result;
+
+    for (const auto& spec: specs)
+    {
+        const auto& tokens = spec.getMutuallyExclusiveGroups();
+        for (const auto& token : tokens)
+        {
+            result.insert(token);
+        }
+    }
+
+    return result;
+}
+
+void validateObject(
     const jsonxx::Object& json,
-    const std::unordered_set<Node>& specs,
-    std::list<std::string>& keySequence,
-    std::vector<std::string>& errors,
-    std::vector<std::string>& warnings
+    const SpecificationSet& specs,
+    KeySequence& keySequence,
+    ValidationMessageList& errors,
+    ValidationMessageList& warnings
 )
 {
-    const auto& kv_map = json.kv_map();
-    validateMandatoryNodes(kv_map, specs, keySequence, errors);
-
-    std::forward_list<std::string> processed;
-    std::unordered_set<std::string> currentMutexTokenSet;
+    ProcessedKeys processed;
+    MutexGroup currentMutexTokenSet = collectMutexTokenSet(specs);
+    const KV_Map& kv_map = json.kv_map();
+    const auto notAvailable = specs.end();
     for (const auto& [key, value] : kv_map)
     {
-        if (specs.contains(key))
+        const auto it = specs.find(key);
+        if (it != notAvailable)
         {
-            const auto it = specs.find(key);
-            processed.push_front(key);
+            processed.push_back(key);
             validateMutuallyExclusiveGrups(*it, currentMutexTokenSet, keySequence, processed, errors);
 
             const auto expectedType = it->getType();
@@ -289,22 +329,24 @@ void validateInternal(
             );
         }
     }
+
+    validateMandatorySpecs(kv_map, specs, currentMutexTokenSet, keySequence, errors);
 }
 
 void validateRecursively(
     const std::string& key,
     const jsonxx::Value* value,
-    const std::unordered_set<Node>& childSpecs,
-    std::list<std::string>& keySequence,
-    std::vector<std::string>& errors,
-    std::vector<std::string>& warnings
+    const SpecificationSet& childSpecs,
+    KeySequence& keySequence,
+    ValidationMessageList& errors,
+    ValidationMessageList& warnings
 )
 {
     keySequence.push_back(key);
     const auto expectedType = value->type_;
     if (expectedType == JsonValidation::Object)
     {
-        validateInternal(
+        validateObject(
             value->get<jsonxx::Object>(),
             childSpecs,
             keySequence,
@@ -327,13 +369,13 @@ void validateRecursively(
 
 namespace JsonValidation
 {
-    JsonValidationResult validate(const jsonxx::Object& json, const std::unordered_set<Node>& specs)
+    JsonValidationResult validate(const jsonxx::Object& json, const SpecificationSet& specs)
     {
-        std::list<std::string> keySequence;
-        std::vector<std::string> errors;
-        std::vector<std::string> warnings;
+        KeySequence keySequence;
+        ValidationMessageList errors;
+        ValidationMessageList warnings;
 
-        validateInternal(json, specs, keySequence, errors, warnings);
+        validateObject(json, specs, keySequence, errors, warnings);
 
         return JsonValidationResult(errors, warnings);
     }

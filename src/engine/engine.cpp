@@ -3,9 +3,7 @@
 #include "engine.hpp"
 
 Engine::Engine()
-{
-    std::cout << "CTOR ENGINE: " << this << std::endl;
-}
+{}
 
 Engine& Engine::getInstance()
 {

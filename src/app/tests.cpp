@@ -21,12 +21,12 @@ void testJsonValidation()
         std::exit(-1);
     }
 
-    std::unordered_set<Node> specs;
-    std::unordered_set<std::string> grpA = {"A"};
-    std::unordered_set<std::string> grpB = {"B"};
-    std::unordered_set<std::string> grpAB = {"A", "B"};
+    SpecificationSet specs;
+    MutexGroup grpA = {"A"};
+    MutexGroup grpB = {"B"};
+    MutexGroup grpAB = {"A", "B"};
 
-#define CAPTUREAS(symbol, emplacement) auto& symbol = const_cast<JsonValidation::Node&>(*emplacement.first)
+#define CAPTUREAS(symbol, emplacement) auto& symbol = const_cast<JsonValidation::Specification&>(*emplacement.first)
 
     specs.emplace("", Null, false);
     specs.emplace("null", Null);
@@ -40,16 +40,16 @@ void testJsonValidation()
     specs.emplace("wrongType", Null);
     specs.emplace("anyType", NoValidation);
 
-    object.addChild(Node("inner", Bool));
+    object.addChild(Specification("inner", Bool));
 
-    mutex.addChild(Node("A", Null, true, grpA));
-    mutex.addChild(Node("B", Null, true, grpB));
-    mutex.addChild(Node("AB", Null, true, grpAB));
+    mutex.addChild(Specification("A", Null, true, grpA));
+    mutex.addChild(Specification("B", Null, true, grpB));
+    mutex.addChild(Specification("AB", Null, true, grpAB));
 
-    list.addChild(Node("", Number));
+    list.addChild(Specification("", Number));
 
-    auto stringList = Node("", Array);
-    stringList.addChild(Node("", String));
+    auto stringList = Specification("", Array);
+    stringList.addChild(Specification("", String));
     nested.addChild(stringList);
 #undef CAPTURE_AS
 

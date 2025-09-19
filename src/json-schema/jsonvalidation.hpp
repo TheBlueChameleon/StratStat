@@ -4,11 +4,11 @@
 #include <jsonxx.h>
 
 #include "jsonvalidationtionresult.hpp"
-#include "node.hpp"
+#include "specification.hpp"
 
 namespace JsonValidation
 {
-    JsonValidationResult validate(const jsonxx::Object& json, const std::unordered_set<Node>& specs);
+    JsonValidationResult validate(const jsonxx::Object& json, const SpecificationSet& specs);
 }
 
 #endif // JSONVALIDATION_H

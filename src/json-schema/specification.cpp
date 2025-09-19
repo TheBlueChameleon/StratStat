@@ -1,8 +1,8 @@
-#include "node.hpp"
+#include "specification.hpp"
 
 namespace std
 {
-    size_t std::hash<JsonValidation::Node>::operator()(const JsonValidation::Node& node) const
+    size_t std::hash<JsonValidation::Specification>::operator()(const JsonValidation::Specification& node) const
     {
         {
             return hash<std::string>()(node.getName());
@@ -12,7 +12,7 @@ namespace std
 
 namespace JsonValidation
 {
-    Node::Node(
+    Specification::Specification(
         const std::string& name,
         const JsonValueType type,
         const bool mandatory,
@@ -24,53 +24,53 @@ namespace JsonValidation
         mutuallyExclusiveGroups(mutuallyExclusiveGroups)
     {}
 
-    std::string Node::getName() const
+    std::string Specification::getName() const
     {
         return name;
     }
 
-    void Node::setName(const std::string& newName)
+    void Specification::setName(const std::string& newName)
     {
         name = newName;
     }
 
-    bool Node::isMandatory() const
+    bool Specification::isMandatory() const
     {
         return mandatory;
     }
 
-    void Node::setMandatory(bool newMandatory)
+    void Specification::setMandatory(bool newMandatory)
     {
         mandatory = newMandatory;
     }
 
-    JsonValueType Node::getType() const
+    JsonValueType Specification::getType() const
     {
         return type;
     }
 
-    void Node::setType(const JsonValueType& newType)
+    void Specification::setType(const JsonValueType& newType)
     {
         children.clear();
         type = newType;
     }
 
-    const std::unordered_set<std::string>& Node::getMutuallyExclusiveGroups() const
+    const MutexGroup &Specification::getMutuallyExclusiveGroups() const
     {
         return mutuallyExclusiveGroups;
     }
 
-    void Node::addMutuallyExclusiveGroup(const std::string& groupName)
+    void Specification::addMutuallyExclusiveGroup(const std::string& groupName)
     {
         mutuallyExclusiveGroups.insert(groupName);
     }
 
-    void Node::resetMutuallyExclusiveGruops()
+    void Specification::resetMutuallyExclusiveGruops()
     {
         mutuallyExclusiveGroups.clear();
     }
 
-    void Node::addChild(const Node& child)
+    void Specification::addChild(const Specification& child)
     {
         switch (type)
         {
@@ -96,12 +96,12 @@ namespace JsonValidation
         }
     }
 
-    const std::unordered_set<Node>& Node::getChildren() const
+    const SpecificationSet &Specification::getChildren() const
     {
         return children;
     }
 
-    bool Node::operator==(const Node& other) const
+    bool Specification::operator==(const Specification& other) const
     {
         return this->name == other.name;
     }

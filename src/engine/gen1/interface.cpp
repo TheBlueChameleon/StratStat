@@ -42,79 +42,80 @@ extern "C" {
         };
     }
 
-    void addPlayerStructureElements(JsonValidation::Node& player)
+    void addPlayerStructureElements(JsonValidation::Specification& player)
     {
         using namespace JsonValidation;
 
         const auto mutexBadges = MutexGroup({"badges"});
         const auto mutexBoosts = MutexGroup({"boosts"});
 
-        auto trainerBadges = Node("badges", Array, false, mutexBadges);
-        trainerBadges.addChild(Node("", String, false));
+        auto trainerBadges = Specification("badges", Array, false, mutexBadges);
+        trainerBadges.addChild(Specification("", String, false));
 
         player.addChild(trainerBadges);
-        player.addChild(Node("boostAtk", Bool, false, mutexBoosts));
-        player.addChild(Node("boostDef", Bool, false, mutexBoosts));
-        player.addChild(Node("boostSpd", Bool, false, mutexBoosts));
-        player.addChild(Node("boostSpc", Bool, false, mutexBoosts));
+        player.addChild(Specification("boostAtk", Bool, false, mutexBoosts));
+        player.addChild(Specification("boostDef", Bool, false, mutexBoosts));
+        player.addChild(Specification("boostSpd", Bool, false, mutexBoosts));
+        player.addChild(Specification("boostSpc", Bool, false, mutexBoosts));
 
-        player.addChild(Node("statMoveDebuf", Bool, false));
-        player.addChild(Node("usesPP", Bool, false));
+        player.addChild(Specification("statMoveDebuf", Bool, false));
+        player.addChild(Specification("usesPP", Bool, false));
     }
 
-    void addPokemonStructureElements(JsonValidation::Node& pokemon)
+    void addPokemonStructureElements(JsonValidation::Specification& pokemon)
     {
         using namespace JsonValidation;
 
-        auto pokemonDef = Node("", Object, false);
+        auto pokemonDef = Specification("", Object, false);
 
-        pokemonDef.addChild(Node("species", String));
-        pokemonDef.addChild(Node("level", Number));
+        pokemonDef.addChild(Specification("species", String));
+        pokemonDef.addChild(Specification("level", Number));
 
-        pokemonDef.addChild(Node("DV_ATK", Number, false));
-        pokemonDef.addChild(Node("DV_DEF", Number, false));
-        pokemonDef.addChild(Node("DV_SPC", Number, false));
-        pokemonDef.addChild(Node("DV_SPD", Number, false));
+        pokemonDef.addChild(Specification("DV_ATK", Number, false));
+        pokemonDef.addChild(Specification("DV_DEF", Number, false));
+        pokemonDef.addChild(Specification("DV_SPC", Number, false));
+        pokemonDef.addChild(Specification("DV_SPD", Number, false));
 
-        pokemonDef.addChild(Node("StatExperience_HP",  Number, false));
-        pokemonDef.addChild(Node("StatExperience_ATK", Number, false));
-        pokemonDef.addChild(Node("StatExperience_DEF", Number, false));
-        pokemonDef.addChild(Node("StatExperience_SPC", Number, false));
-        pokemonDef.addChild(Node("StatExperience_SPD", Number, false));
+        pokemonDef.addChild(Specification("StatExperience_HP",  Number, false));
+        pokemonDef.addChild(Specification("StatExperience_ATK", Number, false));
+        pokemonDef.addChild(Specification("StatExperience_DEF", Number, false));
+        pokemonDef.addChild(Specification("StatExperience_SPC", Number, false));
+        pokemonDef.addChild(Specification("StatExperience_SPD", Number, false));
 
-        pokemonDef.addChild(Node("move1", String));
-        pokemonDef.addChild(Node("move2", String, false));
-        pokemonDef.addChild(Node("move3", String, false));
-        pokemonDef.addChild(Node("move4", String, false));
+        pokemonDef.addChild(Specification("move1", String));
+        pokemonDef.addChild(Specification("move2", String, false));
+        pokemonDef.addChild(Specification("move3", String, false));
+        pokemonDef.addChild(Specification("move4", String, false));
 
-        pokemonDef.addChild(Node("move1PP", Number, false));
-        pokemonDef.addChild(Node("move2PP", Number, false));
-        pokemonDef.addChild(Node("move3PP", Number, false));
-        pokemonDef.addChild(Node("move4PP", Number, false));
+        pokemonDef.addChild(Specification("move1PP", Number, false));
+        pokemonDef.addChild(Specification("move2PP", Number, false));
+        pokemonDef.addChild(Specification("move3PP", Number, false));
+        pokemonDef.addChild(Specification("move4PP", Number, false));
 
-        pokemonDef.addChild(Node("move1MaxPP", Number, false));
-        pokemonDef.addChild(Node("move2MaxPP", Number, false));
-        pokemonDef.addChild(Node("move3MaxPP", Number, false));
-        pokemonDef.addChild(Node("move4MaxPP", Number, false));
+        pokemonDef.addChild(Specification("move1MaxPP", Number, false));
+        pokemonDef.addChild(Specification("move2MaxPP", Number, false));
+        pokemonDef.addChild(Specification("move3MaxPP", Number, false));
+        pokemonDef.addChild(Specification("move4MaxPP", Number, false));
 
         pokemon.addChild(pokemonDef);
     }
 
-    void getTeamDefStructure(std::unordered_set<JsonValidation::Node>& specs)
+    void getTeamDefStructure(std::unordered_set<JsonValidation::Specification>& specs)
     {
         using namespace JsonValidation;
 
         const auto mutexPlayerType = MutexGroup({"playerType"});
 
-        auto trainer = Node("human", Object, true, mutexPlayerType);
-        auto computer = Node("computer", Object, true, mutexPlayerType);
-        addPlayerStructureElements(trainer);
+        auto human = Specification("human", Object, true, mutexPlayerType);
+        auto computer = Specification("computer", Object, true, mutexPlayerType);
+        addPlayerStructureElements(human);
         addPlayerStructureElements(computer);
 
-        auto pokemon = Node("pokemon", Array);
+        auto pokemon = Specification("pokemon", Array);
         addPokemonStructureElements(pokemon);
 
-        specs.insert(trainer);
+        specs.insert(human);
+        specs.insert(computer);
         specs.insert(pokemon);
     }
 

@@ -196,7 +196,7 @@ void loadTeam(const std::filesystem::path& fileName, CommonValueMap& playerDef, 
         std::exit(-1);
     }
 
-    std::unordered_set<JsonValidation::Node> specs;
+    std::unordered_set<JsonValidation::Specification> specs;
     getTeamDefStructure(specs);
 
     const auto validationResult = JsonValidation::validate(json, specs);

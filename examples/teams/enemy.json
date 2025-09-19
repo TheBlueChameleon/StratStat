@@ -1,5 +1,5 @@
 {
-    "computer": {
+    "Computer": {
         "statMoveDebuf" : false,
         "usesPP"        : false
     },
@@ -9,7 +9,7 @@
             "level": 5,
 
             "move1": "pound",
-            "move1pp": 10,
+            "move1PP": 10,
 
             "move2": "growl"
         }

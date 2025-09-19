@@ -85,7 +85,7 @@ target_compile_options(jsonxx-lib PRIVATE -fPIC)
 
 add_library(jsonxx-schema-lib STATIC
     src/json-schema/constants.hpp
-    src/json-schema/node.hpp src/json-schema/node.cpp
+    src/json-schema/specification.hpp src/json-schema/specification.cpp
     src/json-schema/jsonvalidation.hpp src/json-schema/jsonvalidation.cpp
     src/json-schema/jsonvalidationtionresult.hpp src/json-schema/jsonvalidationtionresult.cpp
     

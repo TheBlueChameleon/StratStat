@@ -1,5 +1,5 @@
-#ifndef NODE_HPP
-#define NODE_HPP
+#ifndef SPECIFICATION_H
+#define SPECIFICATION_H
 
 #include <string>
 #include <unordered_set>
@@ -10,33 +10,33 @@
 
 namespace JsonValidation
 {
-    class Node;
+    class Specification;
+    using SpecificationSet = std::unordered_set<Specification>;
+    using MutexGroup = std::unordered_set<std::string>;
 }
 
 namespace std
 {
-    template <> struct hash<JsonValidation::Node>
+    template <> struct hash<JsonValidation::Specification>
     {
-        size_t operator()(const JsonValidation::Node& node) const;
+        size_t operator()(const JsonValidation::Specification& specification) const;
     };
 }
 
 namespace JsonValidation
 {
-    using MutexGroup = std::unordered_set<std::string>;
-
-    class Node
+    class Specification
     {
         private:
             std::string name;
             bool mandatory;
             JsonValueType type;
 
-            std::unordered_set<Node> children;
-            std::unordered_set<std::string> mutuallyExclusiveGroups;
+            SpecificationSet children;
+            MutexGroup mutuallyExclusiveGroups;
 
         public:
-            Node(
+            Specification(
                 const std::string& name,
                 const JsonValueType type = Object,
                 const bool mandatory = true,
@@ -52,15 +52,15 @@ namespace JsonValidation
             JsonValueType getType() const;
             void setType(const JsonValueType& newType);
 
-            const std::unordered_set<std::string>& getMutuallyExclusiveGroups() const;
+            const MutexGroup& getMutuallyExclusiveGroups() const;
             void addMutuallyExclusiveGroup(const std::string& groupName);
             void resetMutuallyExclusiveGruops();
 
-            void addChild(const Node& child);
-            const std::unordered_set<Node>& getChildren() const;
+            void addChild(const Specification& child);
+            const SpecificationSet& getChildren() const;
 
-            bool operator==(const Node& other) const;
+            bool operator==(const Specification& other) const;
     };
 }
 
-#endif // NODE_HPP
+#endif // SPECIFICATION_H

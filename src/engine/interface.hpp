@@ -22,7 +22,7 @@ extern "C" {
     // oldStyle: pass mutable ref to avoid incomplete type error of std::vector<T> in extern C
     void getPkmnDefHeaders(std::vector<VariantContentInfo>& buffer);
     void getMoveDefHeaders(std::vector<VariantContentInfo>& buffer);
-    void getTeamDefStructure(std::unordered_set<JsonValidation::Node>& specs);
+    void getTeamDefStructure(std::unordered_set<JsonValidation::Specification>& specs);
 
     void connectLogger(const std::shared_ptr<spdlog::logger>& logger);
     void init(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs);
