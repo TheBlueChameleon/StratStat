@@ -1,14 +1,5 @@
 #include "specification.hpp"
-
-namespace std
-{
-    size_t std::hash<JsonValidation::Specification>::operator()(const JsonValidation::Specification& node) const
-    {
-        {
-            return hash<std::string>()(node.getName());
-        }
-    }
-}
+#include "jsonsetoperations.hpp"
 
 namespace JsonValidation
 {
@@ -16,13 +7,17 @@ namespace JsonValidation
         const std::string& name,
         const JsonValueType type,
         const bool mandatory,
+        const AllowedValues& allowedValues,
         const std::unordered_set<std::string>& mutuallyExclusiveGroups
     ):
         name(name),
         type(type),
         mandatory(mandatory),
-        mutuallyExclusiveGroups(mutuallyExclusiveGroups)
-    {}
+        mutuallyExclusiveGroups(mutuallyExclusiveGroups),
+        allowedValues(allowedValues)
+    {
+        AllowedValues x = {};
+    }
 
     std::string Specification::getName() const
     {
@@ -55,9 +50,29 @@ namespace JsonValidation
         type = newType;
     }
 
-    const MutexGroup &Specification::getMutuallyExclusiveGroups() const
+    const AllowedValues& Specification::getAllowedValues() const
+    {
+        return allowedValues;
+    }
+
+    void Specification::setAllowedValues(const AllowedValues& newAllowedValues)
+    {
+        for (const auto& valueSpec: newAllowedValues)
+        {
+            valueSpec.type_;
+        }
+
+        allowedValues = newAllowedValues;
+    }
+
+    const MutexGroup& Specification::getMutuallyExclusiveGroups() const
     {
         return mutuallyExclusiveGroups;
+    }
+
+    void Specification::setMutuallyExclusiveGroups(const MutexGroup& newMutuallyExclusiveGroups)
+    {
+        mutuallyExclusiveGroups = newMutuallyExclusiveGroups;
     }
 
     void Specification::addMutuallyExclusiveGroup(const std::string& groupName)
@@ -74,11 +89,11 @@ namespace JsonValidation
     {
         switch (type)
         {
-            case JsonValueType::OBJECT_:
+            case TID_Object:
                 children.insert(child);
                 break;
 
-            case JsonValueType::ARRAY_:
+            case TID_Array:
                 if (children.size() > 0)
                 {
                     throw std::runtime_error("An ARRAY can have only one child type");
@@ -86,17 +101,17 @@ namespace JsonValidation
                 children.insert(child);
                 break;
 
-            case JsonValueType::NUMBER_:
-            case JsonValueType::STRING_:
-            case JsonValueType::BOOL_:
-            case JsonValueType::NULL_:
-            case JsonValueType::INVALID_:
+            case TID_Number:
+            case TID_String:
+            case TID_Boolean:
+            case TID_Null:
+            case TID_NoValidation:
             default:
                 throw std::runtime_error("Only OBJECT and ARRAY can have children");
         }
     }
 
-    const SpecificationSet &Specification::getChildren() const
+    const SpecificationSet& Specification::getChildren() const
     {
         return children;
     }

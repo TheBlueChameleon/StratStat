@@ -7,20 +7,14 @@
 #include <jsonxx.h>
 
 #include "constants.hpp"
+#include "jsonsetoperations.hpp"
 
 namespace JsonValidation
 {
     class Specification;
     using SpecificationSet = std::unordered_set<Specification>;
     using MutexGroup = std::unordered_set<std::string>;
-}
-
-namespace std
-{
-    template <> struct hash<JsonValidation::Specification>
-    {
-        size_t operator()(const JsonValidation::Specification& specification) const;
-    };
+    using AllowedValues = std::unordered_set<jsonxx::Value>;
 }
 
 namespace JsonValidation
@@ -31,6 +25,7 @@ namespace JsonValidation
             std::string name;
             bool mandatory;
             JsonValueType type;
+            AllowedValues allowedValues;
 
             SpecificationSet children;
             MutexGroup mutuallyExclusiveGroups;
@@ -38,8 +33,9 @@ namespace JsonValidation
         public:
             Specification(
                 const std::string& name,
-                const JsonValueType type = Object,
+                const JsonValueType typeID = TID_Object,
                 const bool mandatory = true,
+                const AllowedValues& allowedValues = {},
                 const MutexGroup& mutuallyExclusiveGroups = {}
             );
 
@@ -52,7 +48,11 @@ namespace JsonValidation
             JsonValueType getType() const;
             void setType(const JsonValueType& newType);
 
+            const AllowedValues& getAllowedValues() const;
+            void setAllowedValues(const AllowedValues& newAllowedValues);
+
             const MutexGroup& getMutuallyExclusiveGroups() const;
+            void setMutuallyExclusiveGroups(const MutexGroup& newMutuallyExclusiveGroups);
             void addMutuallyExclusiveGroup(const std::string& groupName);
             void resetMutuallyExclusiveGruops();
 

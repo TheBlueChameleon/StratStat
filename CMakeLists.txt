@@ -88,6 +88,7 @@ add_library(jsonxx-schema-lib STATIC
     src/json-schema/specification.hpp src/json-schema/specification.cpp
     src/json-schema/jsonvalidation.hpp src/json-schema/jsonvalidation.cpp
     src/json-schema/jsonvalidationtionresult.hpp src/json-schema/jsonvalidationtionresult.cpp
+    src/json-schema/jsonsetoperations.hpp src/json-schema/jsonsetoperations.cpp
     
 )
 

@@ -46,56 +46,59 @@ extern "C" {
     {
         using namespace JsonValidation;
 
+        const auto badgeNames = AllowedValues({"Brock", "Misty", "Surge", "Erika", "Sabrina", "Koga", "Blaine", "Giovanni"});
+        const auto allAllowed = AllowedValues();
+
         const auto mutexBadges = MutexGroup({"badges"});
         const auto mutexBoosts = MutexGroup({"boosts"});
 
-        auto trainerBadges = Specification("badges", Array, false, mutexBadges);
-        trainerBadges.addChild(Specification("", String, false));
+        auto trainerBadges = Specification("badges", TID_Array, false, allAllowed, mutexBadges);
+        trainerBadges.addChild(Specification("", TID_String, false, badgeNames));
 
         player.addChild(trainerBadges);
-        player.addChild(Specification("boostAtk", Bool, false, mutexBoosts));
-        player.addChild(Specification("boostDef", Bool, false, mutexBoosts));
-        player.addChild(Specification("boostSpd", Bool, false, mutexBoosts));
-        player.addChild(Specification("boostSpc", Bool, false, mutexBoosts));
+        player.addChild(Specification("boostAtk", TID_Boolean, false, allAllowed, mutexBoosts));
+        player.addChild(Specification("boostDef", TID_Boolean, false, allAllowed, mutexBoosts));
+        player.addChild(Specification("boostSpd", TID_Boolean, false, allAllowed, mutexBoosts));
+        player.addChild(Specification("boostSpc", TID_Boolean, false, allAllowed, mutexBoosts));
 
-        player.addChild(Specification("statMoveDebuf", Bool, false));
-        player.addChild(Specification("usesPP", Bool, false));
+        player.addChild(Specification("statMoveDebuf", TID_Boolean, false));
+        player.addChild(Specification("usesPP", TID_Boolean, false));
     }
 
     void addPokemonStructureElements(JsonValidation::Specification& pokemon)
     {
         using namespace JsonValidation;
 
-        auto pokemonDef = Specification("", Object, false);
+        auto pokemonDef = Specification("", TID_Object, false);
 
-        pokemonDef.addChild(Specification("species", String));
-        pokemonDef.addChild(Specification("level", Number));
+        pokemonDef.addChild(Specification("species", TID_String));
+        pokemonDef.addChild(Specification("level", TID_Number));
 
-        pokemonDef.addChild(Specification("DV_ATK", Number, false));
-        pokemonDef.addChild(Specification("DV_DEF", Number, false));
-        pokemonDef.addChild(Specification("DV_SPC", Number, false));
-        pokemonDef.addChild(Specification("DV_SPD", Number, false));
+        pokemonDef.addChild(Specification("DV_ATK", TID_Number, false));
+        pokemonDef.addChild(Specification("DV_DEF", TID_Number, false));
+        pokemonDef.addChild(Specification("DV_SPC", TID_Number, false));
+        pokemonDef.addChild(Specification("DV_SPD", TID_Number, false));
 
-        pokemonDef.addChild(Specification("StatExperience_HP",  Number, false));
-        pokemonDef.addChild(Specification("StatExperience_ATK", Number, false));
-        pokemonDef.addChild(Specification("StatExperience_DEF", Number, false));
-        pokemonDef.addChild(Specification("StatExperience_SPC", Number, false));
-        pokemonDef.addChild(Specification("StatExperience_SPD", Number, false));
+        pokemonDef.addChild(Specification("StatExperience_HP",  TID_Number, false));
+        pokemonDef.addChild(Specification("StatExperience_ATK", TID_Number, false));
+        pokemonDef.addChild(Specification("StatExperience_DEF", TID_Number, false));
+        pokemonDef.addChild(Specification("StatExperience_SPC", TID_Number, false));
+        pokemonDef.addChild(Specification("StatExperience_SPD", TID_Number, false));
 
-        pokemonDef.addChild(Specification("move1", String));
-        pokemonDef.addChild(Specification("move2", String, false));
-        pokemonDef.addChild(Specification("move3", String, false));
-        pokemonDef.addChild(Specification("move4", String, false));
+        pokemonDef.addChild(Specification("move1", TID_String));
+        pokemonDef.addChild(Specification("move2", TID_String, false));
+        pokemonDef.addChild(Specification("move3", TID_String, false));
+        pokemonDef.addChild(Specification("move4", TID_String, false));
 
-        pokemonDef.addChild(Specification("move1PP", Number, false));
-        pokemonDef.addChild(Specification("move2PP", Number, false));
-        pokemonDef.addChild(Specification("move3PP", Number, false));
-        pokemonDef.addChild(Specification("move4PP", Number, false));
+        pokemonDef.addChild(Specification("move1PP", TID_Number, false));
+        pokemonDef.addChild(Specification("move2PP", TID_Number, false));
+        pokemonDef.addChild(Specification("move3PP", TID_Number, false));
+        pokemonDef.addChild(Specification("move4PP", TID_Number, false));
 
-        pokemonDef.addChild(Specification("move1MaxPP", Number, false));
-        pokemonDef.addChild(Specification("move2MaxPP", Number, false));
-        pokemonDef.addChild(Specification("move3MaxPP", Number, false));
-        pokemonDef.addChild(Specification("move4MaxPP", Number, false));
+        pokemonDef.addChild(Specification("move1MaxPP", TID_Number, false));
+        pokemonDef.addChild(Specification("move2MaxPP", TID_Number, false));
+        pokemonDef.addChild(Specification("move3MaxPP", TID_Number, false));
+        pokemonDef.addChild(Specification("move4MaxPP", TID_Number, false));
 
         pokemon.addChild(pokemonDef);
     }
@@ -107,12 +110,14 @@ extern "C" {
         const auto mutexHuman = MutexGroup({"playerHumam"});
         const auto mutexCompu = MutexGroup({"playerComputer"});
 
-        auto human = Specification("human", Object, true, mutexHuman);
-        auto compu = Specification("computer", Object, true, mutexCompu);
+        const auto allAllowed = AllowedValues();
+
+        auto human = Specification("human", TID_Object, true, allAllowed, mutexHuman);
+        auto compu = Specification("computer", TID_Object, true, allAllowed, mutexCompu);
         addPlayerStructureElements(human);
         addPlayerStructureElements(compu);
 
-        auto pokemon = Specification("pokemon", Array);
+        auto pokemon = Specification("pokemon", TID_Array);
         addPokemonStructureElements(pokemon);
 
         specs.insert(human);

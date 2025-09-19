@@ -26,30 +26,32 @@ void testJsonValidation()
     MutexGroup grpB = {"B"};
     MutexGroup grpAB = {"A", "B"};
 
+    AllowedValues allAllowed;
+
 #define CAPTUREAS(symbol, emplacement) auto& symbol = const_cast<JsonValidation::Specification&>(*emplacement.first)
 
-    specs.emplace("", Null, false);
-    specs.emplace("null", Null);
-    specs.emplace("string", String);
-    specs.emplace("number", Number);
-    specs.emplace("bool", Bool);
-    CAPTUREAS(list, specs.emplace("list", Array));
-    CAPTUREAS(nested, specs.emplace("nested", Array));
-    CAPTUREAS(object, specs.emplace("object", Object));
-    CAPTUREAS(mutex, specs.emplace("mutexGroups", Object));
-    specs.emplace("wrongType", Null);
-    specs.emplace("anyType", NoValidation);
+    specs.emplace("", TID_Null, false);
+    specs.emplace("null", TID_Null);
+    specs.emplace("string", TID_String);
+    specs.emplace("number", TID_Number);
+    specs.emplace("bool", TID_Boolean);
+    CAPTUREAS(list, specs.emplace("list", TID_Array));
+    CAPTUREAS(nested, specs.emplace("nested", TID_Array));
+    CAPTUREAS(object, specs.emplace("object", TID_Object));
+    CAPTUREAS(mutex, specs.emplace("mutexGroups", TID_Object));
+    specs.emplace("wrongType", TID_Null);
+    specs.emplace("anyType", TID_NoValidation);
 
-    object.addChild(Specification("inner", Bool));
+    object.addChild(Specification("inner", TID_Boolean));
 
-    mutex.addChild(Specification("A", Null, true, grpA));
-    mutex.addChild(Specification("B", Null, true, grpB));
-    mutex.addChild(Specification("AB", Null, true, grpAB));
+    mutex.addChild(Specification("A", TID_Null, true, allAllowed, grpA));
+    mutex.addChild(Specification("B", TID_Null, true, allAllowed, grpB));
+    mutex.addChild(Specification("AB", TID_Null, true, allAllowed, grpAB));
 
-    list.addChild(Specification("", Number));
+    list.addChild(Specification("", TID_Number));
 
-    auto stringList = Specification("", Array);
-    stringList.addChild(Specification("", String));
+    auto stringList = Specification("", TID_Array);
+    stringList.addChild(Specification("", TID_String));
     nested.addChild(stringList);
 #undef CAPTURE_AS
 

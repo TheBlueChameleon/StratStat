@@ -251,17 +251,17 @@ void CliParser::validateConfigFile(const jsonxx::Object& json, const std::filesy
 {
     std::unordered_set<JsonValidation::Specification> specs;
 
-    specs.emplace(ENGINE, JsonValidation::String, true);
-    specs.emplace(PLAYER1_TEAM, JsonValidation::String, true);
-    specs.emplace(PLAYER1_STRATEGY, JsonValidation::String, true);
-    specs.emplace(PLAYER2_TEAM, JsonValidation::String, true);
-    specs.emplace(PLAYER2_STRATEGY, JsonValidation::String, true);
-    specs.emplace(PKMN_DEFS, JsonValidation::String, true);
-    specs.emplace(MOVE_DEFS, JsonValidation::String, true);
-    specs.emplace(REPETITIONS, JsonValidation::Number, false);
-    specs.emplace(MAX_TURNS, JsonValidation::Number, false);
-    specs.emplace(LOGFILE, JsonValidation::String, false);
-    specs.emplace(LOGLEVEL, JsonValidation::Number, false);
+    specs.emplace(ENGINE, JsonValidation::TID_String, true);
+    specs.emplace(PLAYER1_TEAM, JsonValidation::TID_String, true);
+    specs.emplace(PLAYER1_STRATEGY, JsonValidation::TID_String, true);
+    specs.emplace(PLAYER2_TEAM, JsonValidation::TID_String, true);
+    specs.emplace(PLAYER2_STRATEGY, JsonValidation::TID_String, true);
+    specs.emplace(PKMN_DEFS, JsonValidation::TID_String, true);
+    specs.emplace(MOVE_DEFS, JsonValidation::TID_String, true);
+    specs.emplace(REPETITIONS, JsonValidation::TID_Number, false);
+    specs.emplace(MAX_TURNS, JsonValidation::TID_Number, false);
+    specs.emplace(LOGFILE, JsonValidation::TID_String, false);
+    specs.emplace(LOGLEVEL, JsonValidation::TID_Number, false);
 
     const auto result = JsonValidation::validate(json, specs);
 
