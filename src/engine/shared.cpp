@@ -6,6 +6,7 @@ using namespace std::string_literals;
 #include <spdlog/spdlog.h>
 
 #include "engine.hpp"
+#include "innerinterface.hpp"
 #include "interface.hpp"
 #include "shared.hpp"
 
@@ -25,6 +26,7 @@ void initPkmnDb(const std::filesystem::path& pkmnDefs)
     auto headerRequirements = std::vector<VariantContentInfo>();
     getPkmnDefHeaders(headerRequirements);
     initDb(pkmnDefs, headerRequirements, Engine::getInstance().getPkmnDbMutable());
+    validatePkmnDb();
 
     spdlog::trace("  KNOWN SPECIES: {}", Engine::getInstance().getPkmnDb().size());
     spdlog::trace("... SUCCESS");
@@ -37,6 +39,7 @@ void initMoveDb(const std::filesystem::path& moveDefs)
     auto headerRequirements = std::vector<VariantContentInfo>();
     getMoveDefHeaders(headerRequirements);
     initDb(moveDefs, headerRequirements, Engine::getInstance().getMoveDbMutable());
+    validateMoveDb();
 
     spdlog::trace("  KNOWN MOVES: {}", Engine::getInstance().getMoveDb().size());
     spdlog::trace("... SUCCESS");
@@ -74,7 +77,7 @@ void initDb(
         else
         {
             spdlog::trace(
-                "  PUT SPECIES '{}' IN DB",
+                "  PUT '{}' IN DB",
                 std::get<static_cast<int>(VariantContentID::Text)>(dbEntry.at(identifierKey))
             );
 
@@ -155,6 +158,7 @@ std::unordered_map<std::string, VariantContentType> parseCsvRow(const DefaultCsv
     return result;
 }
 
+// TODO error resistance
 VariantContentType variantFromString(const std::string& input, const VariantContentID contentID)
 {
     switch (contentID)
@@ -196,7 +200,7 @@ void loadTeam(const std::filesystem::path& fileName, CommonValueMap& playerDef, 
         std::exit(-1);
     }
 
-    std::unordered_set<JsonValidation::Specification> specs;
+    JsonValidation::SpecificationSet specs;
     getTeamDefStructure(specs);
 
     const auto validationResult = JsonValidation::validate(json, specs);
@@ -219,4 +223,6 @@ void loadTeam(const std::filesystem::path& fileName, CommonValueMap& playerDef, 
         }
         std::exit(-1);
     }
+
+    validateTeamDef(json);
 }

@@ -15,6 +15,55 @@ using ProcessedKeys = std::list<std::string>;
 using ProcessedSpecs = std::list<Specification>;
 using ValidationMessageList = std::vector<std::string>;
 
+void validateRecursively(
+    const std::string& key,
+    const jsonxx::Value* value,
+    const SpecificationSet& childSpecs,
+    KeySequence& keySequence,
+    ValidationMessageList& errors,
+    ValidationMessageList& warnings
+);
+
+MutexGroup collectMutexTokenSet(const SpecificationSet& specs)
+{
+    MutexGroup result;
+
+    for (const auto& spec: specs)
+    {
+        const auto& tokens = spec.getMutuallyExclusiveGroups();
+        for (const auto& token : tokens)
+        {
+            result.insert(token);
+        }
+    }
+
+    return result;
+}
+
+std::string makeTypeName(JsonValueType typeID)
+{
+    switch (typeID)
+    {
+        case Object:
+            return "Object";
+        case Array:
+            return "Array";
+        case Number:
+            return "Number";
+        case String:
+            return "String";
+        case Bool:
+            return "Boolean";
+        case Null:
+            return "Null";
+        case NoValidation:
+            return "(No Validation)";
+
+        default:
+            throw std::runtime_error("Unknown Type ID");
+    }
+}
+
 std::string makeKeySequenceRepr(const KeySequence& keySequence)
 {
     if (keySequence.empty())
@@ -49,39 +98,23 @@ std::string makeListRepr(auto& items)
     return buffer.str();
 }
 
-std::string makeMutexErrorMsg(
-    const std::string& name,
-    const KeySequence& keySequence,
-    const ProcessedKeys& processed
+MutexGroup makeSetIntersection(
+    const MutexGroup& left,
+    const MutexGroup& right
 )
 {
-    return "in "s + makeKeySequenceRepr(keySequence) + ": "
-           "key '" + name + "' may not be used with one or several of the keys " +
-           makeListRepr(processed);
-}
+    // std::set_intersection requires SORTED inputs...
+    MutexGroup intersection;
 
-std::string makeTypeName(JsonValueType typeID)
-{
-    switch (typeID)
+    for (const auto& l : left)
     {
-        case Object:
-            return "Object";
-        case Array:
-            return "Array";
-        case Number:
-            return "Number";
-        case String:
-            return "String";
-        case Bool:
-            return "Boolean";
-        case Null:
-            return "Null";
-        case NoValidation:
-            return "(No Validation)";
-
-        default:
-            throw std::runtime_error("Unknown Type ID");
+        if (right.contains(l))
+        {
+            intersection.insert(l);
+        }
     }
+
+    return intersection;
 }
 
 void validateMandatorySpecs(
@@ -146,25 +179,6 @@ void validateMandatorySpecs(
     }
 }
 
-MutexGroup makeSetIntersection(
-    const MutexGroup& left,
-    const MutexGroup& right
-)
-{
-    // std::set_intersection requires SORTED inputs...
-    MutexGroup intersection;
-
-    for (const auto& l : left)
-    {
-        if (right.contains(l))
-        {
-            intersection.insert(l);
-        }
-    }
-
-    return intersection;
-}
-
 void validateMutuallyExclusiveGrups(
     const Specification& spec,
     MutexGroup& allowedMutexTokens,
@@ -197,7 +211,10 @@ void validateMutuallyExclusiveGrups(
         {
             conflictingKeys.push_back(cSpec.getName());
         }
-        errors.push_back(makeMutexErrorMsg(spec.getName(), keySequence, conflictingKeys));
+        errors.push_back("in "s + makeKeySequenceRepr(keySequence) + ": "
+                         "key '" + spec.getName() + "' may not be used with the key(s): " +
+                         makeListRepr(conflictingKeys)
+                        );
     }
     else
     {
@@ -231,15 +248,6 @@ bool validateType(
     }
     return true;
 }
-
-void validateRecursively(
-    const std::string& key,
-    const jsonxx::Value* value,
-    const SpecificationSet& childSpecs,
-    KeySequence& keySequence,
-    ValidationMessageList& errors,
-    ValidationMessageList& warnings
-);
 
 void validateArray(
     const jsonxx::Array& json,
@@ -279,22 +287,6 @@ void validateArray(
     }
 }
 
-MutexGroup collectMutexTokenSet(const SpecificationSet& specs)
-{
-    MutexGroup result;
-
-    for (const auto& spec: specs)
-    {
-        const auto& tokens = spec.getMutuallyExclusiveGroups();
-        for (const auto& token : tokens)
-        {
-            result.insert(token);
-        }
-    }
-
-    return result;
-}
-
 void validateObject(
     const jsonxx::Object& json,
     const SpecificationSet& specs,
@@ -303,7 +295,6 @@ void validateObject(
     ValidationMessageList& warnings
 )
 {
-    ProcessedKeys processed;
     ProcessedSpecs processedSpecs;
     MutexGroup currentMutexTokenSet = collectMutexTokenSet(specs);
     const KV_Map& kv_map = json.kv_map();
@@ -313,7 +304,6 @@ void validateObject(
         const auto it = specs.find(key);
         if (it != notAvailable)
         {
-            processed.push_back(key);
             processedSpecs.push_back(*it);
             validateMutuallyExclusiveGrups(*it, currentMutexTokenSet, keySequence, processedSpecs, errors);
 

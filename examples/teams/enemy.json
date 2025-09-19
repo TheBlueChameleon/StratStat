@@ -1,5 +1,5 @@
 {
-    "Computer": {
+    "computer": {
         "statMoveDebuf" : false,
         "usesPP"        : false
     },

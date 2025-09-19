@@ -104,18 +104,19 @@ extern "C" {
     {
         using namespace JsonValidation;
 
-        const auto mutexPlayerType = MutexGroup({"playerType"});
+        const auto mutexHuman = MutexGroup({"playerHumam"});
+        const auto mutexCompu = MutexGroup({"playerComputer"});
 
-        auto human = Specification("human", Object, true, mutexPlayerType);
-        auto computer = Specification("computer", Object, true, mutexPlayerType);
+        auto human = Specification("human", Object, true, mutexHuman);
+        auto compu = Specification("computer", Object, true, mutexCompu);
         addPlayerStructureElements(human);
-        addPlayerStructureElements(computer);
+        addPlayerStructureElements(compu);
 
         auto pokemon = Specification("pokemon", Array);
         addPokemonStructureElements(pokemon);
 
         specs.insert(human);
-        specs.insert(computer);
+        specs.insert(compu);
         specs.insert(pokemon);
     }
 
