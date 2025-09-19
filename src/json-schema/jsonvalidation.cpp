@@ -12,6 +12,7 @@ using namespace JsonValidation;
 using KV_Map = std::map<std::string, jsonxx::Value*>;
 using KeySequence = std::list<std::string>;
 using ProcessedKeys = std::list<std::string>;
+using ProcessedSpecs = std::list<Specification>;
 using ValidationMessageList = std::vector<std::string>;
 
 std::string makeKeySequenceRepr(const KeySequence& keySequence)
@@ -48,7 +49,6 @@ std::string makeListRepr(auto& items)
     return buffer.str();
 }
 
-// TODO: list only the forbidden keys given the current token set
 std::string makeMutexErrorMsg(
     const std::string& name,
     const KeySequence& keySequence,
@@ -152,7 +152,7 @@ MutexGroup makeSetIntersection(
 )
 {
     // std::set_intersection requires SORTED inputs...
-    std::unordered_set<std::string> intersection;
+    MutexGroup intersection;
 
     for (const auto& l : left)
     {
@@ -168,8 +168,8 @@ MutexGroup makeSetIntersection(
 void validateMutuallyExclusiveGrups(
     const Specification& spec,
     MutexGroup& allowedMutexTokens,
-    const std::list<std::string>& keySequence,
-    const ProcessedKeys& processed,
+    const KeySequence& keySequence,
+    const ProcessedSpecs& processed,
     ValidationMessageList& errors
 )
 {
@@ -181,16 +181,23 @@ void validateMutuallyExclusiveGrups(
     }
 
     // current node can belong to several mutex groups: is any of them the current group?
-    MutexGroup intersection = makeSetIntersection(mutexGroup, allowedMutexTokens);
+    const MutexGroup intersection = makeSetIntersection(mutexGroup, allowedMutexTokens);
     if (intersection.empty())
     {
         // conflict detected
-        // auto hasConflict = [](const auto&)
-        // {
-        //     return;
-        // };
-        // ProcessedKeys conflicting = processed | std::views::filter();
-        errors.push_back(makeMutexErrorMsg(spec.getName(), keySequence, processed));
+        const auto hasConflictWithThisSpec = [&spec](const auto& processedSpec)
+        {
+            const auto& specMutexGroup = processedSpec.getMutuallyExclusiveGroups();
+            MutexGroup intersection = makeSetIntersection(specMutexGroup, spec.getMutuallyExclusiveGroups());
+            return intersection.empty();
+        };
+        auto conflictingSpecs = processed | std::views::filter(hasConflictWithThisSpec);
+        ProcessedKeys conflictingKeys;
+        for (const auto& cSpec: conflictingSpecs)
+        {
+            conflictingKeys.push_back(cSpec.getName());
+        }
+        errors.push_back(makeMutexErrorMsg(spec.getName(), keySequence, conflictingKeys));
     }
     else
     {
@@ -297,6 +304,7 @@ void validateObject(
 )
 {
     ProcessedKeys processed;
+    ProcessedSpecs processedSpecs;
     MutexGroup currentMutexTokenSet = collectMutexTokenSet(specs);
     const KV_Map& kv_map = json.kv_map();
     const auto notAvailable = specs.end();
@@ -306,7 +314,8 @@ void validateObject(
         if (it != notAvailable)
         {
             processed.push_back(key);
-            validateMutuallyExclusiveGrups(*it, currentMutexTokenSet, keySequence, processed, errors);
+            processedSpecs.push_back(*it);
+            validateMutuallyExclusiveGrups(*it, currentMutexTokenSet, keySequence, processedSpecs, errors);
 
             const auto expectedType = it->getType();
             const auto typeMatch = validateType(key, value, expectedType, keySequence, errors);

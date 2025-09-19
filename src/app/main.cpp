@@ -21,8 +21,8 @@ void doLuaStuff()
 
 int main(const int argc, const char* argv[])
 {
-    testJsonValidation();
-    std::exit(0);
+    // testJsonValidation();
+    // std::exit(0);
 
     auto parser = CliParser();
     auto cfg = parser.run(argc, argv);
