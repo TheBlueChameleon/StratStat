@@ -71,8 +71,10 @@ void EngineWrapper::extractFunctions()
 {
     spdlog::trace("EXTRACTING FUNCTIONS ...");
 
+    FETCH(getTypeNames);
     FETCH(getPkmnDefHeaders);
     FETCH(getMoveDefHeaders);
+    FETCH(getTeamDefStructure);
     FETCH(init);
     FETCH(loadTeams);
     FETCH(connectLogger);
@@ -131,6 +133,11 @@ int EngineWrapper::getSignature() const
     return _getSignature();
 }
 
+void EngineWrapper::getTypeNames(JsonValidation::AllowedValues& buffer) const
+{
+
+}
+
 void EngineWrapper::getPkmnDefHeaders(std::vector<VariantContentInfo>& buffer) const
 {
     return _getPkmnDefHeaders(buffer);
@@ -139,6 +146,11 @@ void EngineWrapper::getPkmnDefHeaders(std::vector<VariantContentInfo>& buffer) c
 void EngineWrapper::getMoveDefHeaders(std::vector<VariantContentInfo>& buffer) const
 {
     return _getMoveDefHeaders(buffer);
+}
+
+void EngineWrapper::getTeamDefStructure(JsonValidation::SpecificationSet& specs) const
+{
+    return _getTeamDefStructure(specs);
 }
 
 void EngineWrapper::init(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs) const

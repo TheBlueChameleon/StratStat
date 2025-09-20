@@ -19,6 +19,7 @@ void initMoveDb(const std::filesystem::path& pkmnDefs);
 void initDb(
     const std::filesystem::path& filename,
     const std::vector<VariantContentInfo>& headerRequirements,
+    CommonValueMapValidator validator,
     CommonDatabase& db
 );
 
@@ -27,7 +28,7 @@ void loadTeam2(const std::filesystem::path& teamDef);
 void loadTeam(const std::filesystem::path& defFile, CommonValueMap& playerDef, CommonValueMapVector& teamDef);
 
 std::vector<CsvMappingInfo> analyzeHeader(const DefaultCsvReader::Row& header, const std::vector<VariantContentInfo>& headerRequirements, const std::string& filename);
-std::unordered_map<std::string, VariantContentType> parseCsvRow(const DefaultCsvReader::Row& row, const std::vector<CsvMappingInfo>& columnData);
+CommonValueMap parseCsvRow(const DefaultCsvReader::Row& row, const std::vector<CsvMappingInfo>& columnData);
 
 VariantContentType variantFromString(const std::string& input, const VariantContentID contentID);
 

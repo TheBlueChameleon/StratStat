@@ -25,8 +25,7 @@ void initPkmnDb(const std::filesystem::path& pkmnDefs)
 
     auto headerRequirements = std::vector<VariantContentInfo>();
     getPkmnDefHeaders(headerRequirements);
-    initDb(pkmnDefs, headerRequirements, Engine::getInstance().getPkmnDbMutable());
-    validatePkmnDb();
+    initDb(pkmnDefs, headerRequirements, validatePkmnDef, Engine::getInstance().getPkmnDbMutable());
 
     spdlog::trace("  KNOWN SPECIES: {}", Engine::getInstance().getPkmnDb().size());
     spdlog::trace("... SUCCESS");
@@ -38,8 +37,7 @@ void initMoveDb(const std::filesystem::path& moveDefs)
 
     auto headerRequirements = std::vector<VariantContentInfo>();
     getMoveDefHeaders(headerRequirements);
-    initDb(moveDefs, headerRequirements, Engine::getInstance().getMoveDbMutable());
-    validateMoveDb();
+    initDb(moveDefs, headerRequirements, validateMoveDef, Engine::getInstance().getMoveDbMutable());
 
     spdlog::trace("  KNOWN MOVES: {}", Engine::getInstance().getMoveDb().size());
     spdlog::trace("... SUCCESS");
@@ -48,40 +46,34 @@ void initMoveDb(const std::filesystem::path& moveDefs)
 void initDb(
     const std::filesystem::path& filename,
     const std::vector<VariantContentInfo>& headerRequirements,
+    CommonValueMapValidator validator,
     CommonDatabase& db
 )
 {
-    auto csv = getCsvData(filename);
-
-    const auto& identifierKey = headerRequirements.front().identifier;
+    const auto csv = getCsvData(filename);
     const auto& header = csv.header();
     const auto columnData = analyzeHeader(header, headerRequirements, filename);
-    const auto expectedColumnCount = columnData.size();
 
     for (const auto& row: csv)
     {
-        const auto dbEntry = parseCsvRow(row, columnData);
-        if (dbEntry.size() == 0)
+        const auto dbProtoEntry = parseCsvRow(row, columnData);
+        if (dbProtoEntry.size() == 0)
         {
             continue;
         }
-        else if (dbEntry.size() < expectedColumnCount)
+
+        const auto dbEntry = validator(dbProtoEntry);
+        if (dbEntry.has_value())
         {
-            spdlog::error(
-                "  MALFORMED DEFINITION FOR '{}' (IGNORED)",
-                std::get<static_cast<int>(VariantContentID::Text)>(dbEntry.at(identifierKey)),
-                dbEntry.size(),
-                expectedColumnCount
-            );
+            const auto& dbValue = dbEntry.value();
+            spdlog::trace("  PUT '{}' IN DB", dbValue.getIdentifier());
+            db.add(dbValue);
         }
         else
         {
-            spdlog::trace(
-                "  PUT '{}' IN DB",
-                std::get<static_cast<int>(VariantContentID::Text)>(dbEntry.at(identifierKey))
-            );
-
-            db.add(CommonValueCollection(identifierKey, dbEntry));
+            std::string rowBuffer;
+            row.read_raw_value(rowBuffer);
+            spdlog::error("  MALFORMED LINE: '{}' (IGNORED)", rowBuffer);
         }
     }
 }
@@ -132,7 +124,7 @@ std::vector<CsvMappingInfo> analyzeHeader(
     return result;
 }
 
-std::unordered_map<std::string, VariantContentType> parseCsvRow(const DefaultCsvReader::Row& row, const std::vector<CsvMappingInfo>& columnData)
+CommonValueMap parseCsvRow(const DefaultCsvReader::Row& row, const std::vector<CsvMappingInfo>& columnData)
 {
     std::unordered_map<std::string, VariantContentType> result;
 
@@ -140,19 +132,15 @@ std::unordered_map<std::string, VariantContentType> parseCsvRow(const DefaultCsv
     for (long i = -1; const auto& cell : row)
     {
         ++i;
-        if (i == nextRelevant->columnID)
-        {
-            std::string buffer;
-            cell.read_value(buffer);
-
-            result[nextRelevant->columnName] = variantFromString(buffer, nextRelevant->contentID);
-
-            ++nextRelevant;
-        }
-        else
+        if (i != nextRelevant->columnID)
         {
             continue;
         }
+
+        std::string buffer;
+        cell.read_value(buffer);
+        result[nextRelevant->columnName] = variantFromString(buffer, nextRelevant->contentID);
+        ++nextRelevant;
     }
 
     return result;
@@ -224,5 +212,5 @@ void loadTeam(const std::filesystem::path& fileName, CommonValueMap& playerDef, 
         std::exit(-1);
     }
 
-    validateTeamDef(json);
+    getValidatedTeamDef(json);
 }

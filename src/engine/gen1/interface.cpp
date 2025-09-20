@@ -2,44 +2,29 @@
 #include <string>
 using namespace std::string_literals;
 
-#include <engine/interface.hpp>
-
+#include "../interface.hpp"
 #include "../shared.hpp"
 #include "../sharedtypes.hpp"
 #include "constants.hpp"
 
 extern "C" {
+    void getTypeNames(JsonValidation::AllowedValues& buffer)
+    {
+        buffer.clear();
+        for (const auto& type: PKMN_TYPES)
+        {
+            buffer.insert(type);
+        }
+    }
 
     void getPkmnDefHeaders(std::vector<VariantContentInfo>& buffer)
     {
-        buffer =
-        {
-            VariantContentInfo(PKMN_IDENTIFIER, VariantContentID::Text),
-            VariantContentInfo(PKMN_TYPE1,      VariantContentID::Text),
-            VariantContentInfo(PKMN_TYPE2,      VariantContentID::Text),
-            VariantContentInfo(PKMN_HP,         VariantContentID::Integer),
-            VariantContentInfo(PKMN_ATK,        VariantContentID::Integer),
-            VariantContentInfo(PKMN_DEF,        VariantContentID::Integer),
-            VariantContentInfo(PKMN_SPC,        VariantContentID::Integer),
-            VariantContentInfo(PKMN_SPD,        VariantContentID::Integer),
-            VariantContentInfo(PKMN_EXPGROUP,   VariantContentID::Text),
-        };
+        buffer = PKMN_DB_HEADERS;
     }
 
     void getMoveDefHeaders(std::vector<VariantContentInfo>& buffer)
     {
-        buffer =
-        {
-            VariantContentInfo(MOVE_IDENTIFIER,     VariantContentID::Text),
-            VariantContentInfo("type_id",           VariantContentID::Text),
-            VariantContentInfo("power",             VariantContentID::Integer),
-            VariantContentInfo("pp",                VariantContentID::Integer),
-            VariantContentInfo("accuracy",          VariantContentID::Integer),
-            VariantContentInfo("priority",          VariantContentID::Integer),
-            VariantContentInfo("damage_class_id",   VariantContentID::Text),
-            VariantContentInfo("effect_id",         VariantContentID::Text),
-            VariantContentInfo("effect_chance",     VariantContentID::Integer),
-        };
+        buffer = MOVE_DB_HEADERS;
     }
 
     void addPlayerStructureElements(JsonValidation::Specification& player)
@@ -103,7 +88,7 @@ extern "C" {
         pokemon.addChild(pokemonDef);
     }
 
-    void getTeamDefStructure(std::unordered_set<JsonValidation::Specification>& specs)
+    void getTeamDefStructure(JsonValidation::SpecificationSet& specs)
     {
         using namespace JsonValidation;
 

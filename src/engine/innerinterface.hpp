@@ -1,12 +1,15 @@
 #ifndef INNERINTERFACE_HPP
 #define INNERINTERFACE_HPP
 
+#include <optional>
+
 #include <jsonxx.h>
 
-void foo();
-void validatePkmnDb();
-void validateMoveDb();
-void validateTeamDef(const jsonxx::Object& json);
+#include "sharedtypes.hpp"
+
+std::optional<CommonValueCollection> validatePkmnDef(const CommonValueMap& dbEntry);
+std::optional<CommonValueCollection> validateMoveDef(const CommonValueMap& dbEntry);
+void getValidatedTeamDef(const jsonxx::Object& json);
 void transferTeamDef();
 
 #endif // INNERINTERFACE_HPP

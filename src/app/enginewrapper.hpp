@@ -20,8 +20,10 @@ class EngineWrapper
 #endif
         int(*_getSignature)();
 
+        void(*_getTypeNames)(JsonValidation::AllowedValues& buffer);
         void(*_getPkmnDefHeaders)(std::vector<VariantContentInfo>&);
         void(*_getMoveDefHeaders)(std::vector<VariantContentInfo>&);
+        void(*_getTeamDefStructure)(JsonValidation::SpecificationSet& specs);
 
         void(*_init)(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs);
         void(*_loadTeams)(const std::filesystem::path& player1TeamDef, const std::filesystem::path& player2TeamDef);
@@ -43,8 +45,10 @@ class EngineWrapper
         void* findSymbol(const char* const symbolName);
 
         int  getSignature() const;
+        void getTypeNames(JsonValidation::AllowedValues& buffer) const;
         void getPkmnDefHeaders(std::vector<VariantContentInfo>& buffer) const;
         void getMoveDefHeaders(std::vector<VariantContentInfo>& buffer) const;
+        void getTeamDefStructure(JsonValidation::SpecificationSet& specs) const;
         void init(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs) const;
         void loadTeams(const std::filesystem::path& player1TeamDef, const std::filesystem::path& player2TeamDef) const;
         void connectLogger(const std::shared_ptr<spdlog::logger>& logger) const;

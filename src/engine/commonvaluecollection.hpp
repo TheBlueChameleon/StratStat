@@ -8,9 +8,6 @@
 
 #include "sharedtypes.hpp"
 
-using CommonValueMap = std::unordered_map<std::string, VariantContentType>;
-using CommonValueMapVector = std::vector<CommonValueMap>;
-
 class CommonValueCollection
 {
     private:
