@@ -22,31 +22,31 @@ namespace StratStat
         return csv;
     }
 
-    void initPkmnDb(const std::filesystem::path& pkmnDefs)
+    void loadPkmnDb(const std::filesystem::path& pkmnDefs)
     {
         spdlog::trace("INITIALIZING PKMNDB");
 
         auto headerRequirements = std::vector<VariantContentInfo>();
         getPkmnDefHeaders(headerRequirements);
-        initDb(pkmnDefs, headerRequirements, validatePkmnDef, Engine::getInstance().getPkmnDbMutable());
+        loadDb(pkmnDefs, headerRequirements, validatePkmnDef, Engine::getInstance().getPkmnDbMutable());
 
         spdlog::trace("  KNOWN SPECIES: {}", Engine::getInstance().getPkmnDb().size());
         spdlog::trace("... SUCCESS");
     }
 
-    void initMoveDb(const std::filesystem::path& moveDefs)
+    void loadMoveDb(const std::filesystem::path& moveDefs)
     {
         spdlog::trace("INITIALIZING MOVEDB FROM {}", moveDefs.c_str());
 
         auto headerRequirements = std::vector<VariantContentInfo>();
         getMoveDefHeaders(headerRequirements);
-        initDb(moveDefs, headerRequirements, validateMoveDef, Engine::getInstance().getMoveDbMutable());
+        loadDb(moveDefs, headerRequirements, validateMoveDef, Engine::getInstance().getMoveDbMutable());
 
         spdlog::trace("  KNOWN MOVES: {}", Engine::getInstance().getMoveDb().size());
         spdlog::trace("... SUCCESS");
     }
 
-    void initDb(
+    void loadDb(
         const std::filesystem::path& filename,
         const std::vector<VariantContentInfo>& headerRequirements,
         CommonValueMapValidator validator,
@@ -139,7 +139,7 @@ namespace StratStat
         const std::vector<CsvMappingInfo>& columnData
     )
     {
-        std::unordered_map<std::string, VariantContentType> result;
+        CommonValueMap result;
 
         auto nextRelevant = columnData.begin();
         for (long i = -1; const auto& cell : row)
@@ -254,6 +254,6 @@ namespace StratStat
             std::exit(-1);
         }
 
-        getValidatedTeamDef(json);
+        validateAndTransferPlayerAndTeamDef(json, playerDef, teamDef);
     }
 }

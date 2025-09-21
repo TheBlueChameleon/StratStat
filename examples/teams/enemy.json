@@ -1,7 +1,7 @@
 {
     "computer": {
         "statMoveDebuf" : false,
-        "usesPP"        : false
+        "usePP"         : false
     },
     "pokemon": [
         {

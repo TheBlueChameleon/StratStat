@@ -22,8 +22,8 @@ extern "C" {
     void init(const std::filesystem::path& pkmnDefs, const std::filesystem::path& moveDefs)
     {
         spdlog::debug("INITIALIZING ENGINE");
-        initPkmnDb(pkmnDefs);
-        initMoveDb(moveDefs);
+        loadPkmnDb(pkmnDefs);
+        loadMoveDb(moveDefs);
         spdlog::debug("... DONE");
     }
 

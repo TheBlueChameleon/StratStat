@@ -29,23 +29,33 @@ extern "C" {
     {
         using namespace JsonValidation;
 
-        const auto badgeNames = JsonValidation::AllowedValues({"Brock", "Misty", "Surge", "Erika", "Sabrina", "Koga", "Blaine", "Giovanni"});
+        const auto badgeNames = JsonValidation::AllowedValues(
+        {
+            PLAYER_BADGE_BROCK,
+            PLAYER_BADGE_MISTY,
+            PLAYER_BADGE_SURGE,
+            PLAYER_BADGE_ERIKA,
+            PLAYER_BADGE_SABRINA,
+            PLAYER_BADGE_KOGA,
+            PLAYER_BADGE_BLAINE,
+            PLAYER_BADGE_GIOVANNI
+        });
         const auto allAllowed = JsonValidation::AllowedValues();
 
         const auto mutexBadges = MutexGroup({"badges"});
         const auto mutexBoosts = MutexGroup({"boosts"});
 
-        auto trainerBadges = Specification("badges", TID_Array, false, allAllowed, mutexBadges);
+        auto trainerBadges = Specification(PLAYER_BADGES, TID_Array, false, allAllowed, mutexBadges);
         trainerBadges.addChild(Specification("", TID_String, false, badgeNames));
 
         player.addChild(trainerBadges);
-        player.addChild(Specification("boostAtk", TID_Boolean, false, allAllowed, mutexBoosts));
-        player.addChild(Specification("boostDef", TID_Boolean, false, allAllowed, mutexBoosts));
-        player.addChild(Specification("boostSpd", TID_Boolean, false, allAllowed, mutexBoosts));
-        player.addChild(Specification("boostSpc", TID_Boolean, false, allAllowed, mutexBoosts));
+        player.addChild(Specification(PLAYER_BOOST_ATK, TID_Boolean, false, allAllowed, mutexBoosts));
+        player.addChild(Specification(PLAYER_BOOST_DEF, TID_Boolean, false, allAllowed, mutexBoosts));
+        player.addChild(Specification(PLAYER_BOOST_SPC, TID_Boolean, false, allAllowed, mutexBoosts));
+        player.addChild(Specification(PLAYER_BOOST_SPD, TID_Boolean, false, allAllowed, mutexBoosts));
 
-        player.addChild(Specification("statMoveDebuf", TID_Boolean, false));
-        player.addChild(Specification("usesPP", TID_Boolean, false));
+        player.addChild(Specification(PLAYER_STATUS_MOVES_DEBUFF, TID_Boolean, false));
+        player.addChild(Specification(PLAYER_USE_PP, TID_Boolean, false));
     }
 
     void addPokemonStructureElements(JsonValidation::Specification& pokemon)
@@ -54,7 +64,7 @@ extern "C" {
 
         auto pokemonDef = Specification("", TID_Object, false);
 
-        pokemonDef.addChild(Specification("species", TID_String));
+        pokemonDef.addChild(Specification(TEAM_SPECIES, TID_String));
         pokemonDef.addChild(Specification("level", TID_Number));
 
         pokemonDef.addChild(Specification("DV_ATK", TID_Number, false));
@@ -95,12 +105,12 @@ extern "C" {
 
         const auto allAllowed = JsonValidation::AllowedValues();
 
-        auto human = Specification("human", TID_Object, true, allAllowed, mutexHuman);
-        auto compu = Specification("computer", TID_Object, true, allAllowed, mutexCompu);
+        auto human = Specification(PLAYER_HUMAN, TID_Object, true, allAllowed, mutexHuman);
+        auto compu = Specification(PLAYER_COMPUTER, TID_Object, true, allAllowed, mutexCompu);
         addPlayerStructureElements(human);
         addPlayerStructureElements(compu);
 
-        auto pokemon = Specification("pokemon", TID_Array);
+        auto pokemon = Specification(PLAYER_POKEMON, TID_Array);
         addPokemonStructureElements(pokemon);
 
         specs.insert(human);

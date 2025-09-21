@@ -47,9 +47,14 @@ namespace StratStat
     /* ---------------------------------------------------------------------- */
     // common variant containers
 
-    // TODO: Make proper classes
 
-    using CommonValueMap = std::unordered_map<std::string, VariantContentType>;
+    class CommonValueMap : public std::unordered_map<std::string, VariantContentType>
+    {
+        public:
+            using std::unordered_map<std::string, VariantContentType>::unordered_map;
+    };
+
+    // TODO: Make proper classes
     using CommonValueMapVector = std::vector<CommonValueMap>;
 
     class CommonValueMapValidationResult;

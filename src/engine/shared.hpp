@@ -16,9 +16,9 @@ namespace StratStat
 {
     extern bool readyFlag;
 
-    void initPkmnDb(const std::filesystem::path& pkmnDefs);
-    void initMoveDb(const std::filesystem::path& pkmnDefs);
-    void initDb(
+    void loadPkmnDb(const std::filesystem::path& pkmnDefs);
+    void loadMoveDb(const std::filesystem::path& pkmnDefs);
+    void loadDb(
         const std::filesystem::path& filename,
         const std::vector<StratStat::VariantContentInfo>& headerRequirements,
         StratStat::CommonValueMapValidator validator,
@@ -27,7 +27,11 @@ namespace StratStat
 
     void loadTeam1(const std::filesystem::path& teamDef);
     void loadTeam2(const std::filesystem::path& teamDef);
-    void loadTeam(const std::filesystem::path& defFile, StratStat::CommonValueMap& playerDef, StratStat::CommonValueMapVector& teamDef);
+    void loadTeam(
+        const std::filesystem::path& defFile,
+        StratStat::CommonValueMap& playerDef,
+        StratStat::CommonValueMapVector& teamDef
+    );
 
     std::vector<StratStat::CsvMappingInfo> analyzeHeader(
         const StratStat::DefaultCsvReader::Row& header,
