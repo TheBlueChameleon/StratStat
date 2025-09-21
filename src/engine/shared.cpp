@@ -77,15 +77,17 @@ namespace StratStat
                 std::string rowBuffer;
                 row.read_raw_value(rowBuffer);
                 spdlog::error(
-                    "  VALIDATION ERROR: {}\n"
-                    "  MALFORMED LINE: '{}' (IGNORED)",
-                    validationResult.collectErrorMessages(),
-                    rowBuffer
+                    "MALFORMED LINE:\n"
+                    "'{}'\n"
+                    "VALIDATION ERROR(S):\n"
+                    "{}"
+                    "ENTRY WILL BE IGNORED",
+                    rowBuffer,
+                    validationResult.collectErrorMessages()
                 );
             }
         }
     }
-
 
     std::vector<CsvMappingInfo> analyzeHeader(
         const DefaultCsvReader::Row& header,
@@ -148,28 +150,53 @@ namespace StratStat
                 continue;
             }
 
-            std::string buffer;
-            cell.read_value(buffer);
-            result[nextRelevant->columnName] = variantFromString(buffer, nextRelevant->contentID);
+            std::string cellBuffer;
+            cell.read_value(cellBuffer);
+            const auto v = variantFromString(cellBuffer, nextRelevant->contentID);
+            if (v.hasValue())
+            {
+                result[nextRelevant->columnName] = v;
+            }
+            else
+            {
+                std::string rowBuffer;
+                row.read_raw_value(rowBuffer);
+                spdlog::error(
+                    "MALFORMED LINE:\n"
+                    "'{}'\n"
+                    "COULD NOT CONVERT '{}' TO {}\n"
+                    "ENTRY WILL BE IGNORED",
+                    rowBuffer,
+                    cellBuffer, getVariantContentIDName(nextRelevant->contentID)
+                );
+                return CommonValueMap();
+            }
             ++nextRelevant;
         }
 
         return result;
     }
 
-    // TODO error resistance
     VariantContentType variantFromString(const std::string& input, const VariantContentID contentID)
     {
-        switch (contentID)
+        try
         {
-            case VariantContentID::Integer:
-                return std::stoi(input);
-            case VariantContentID::Double:
-                return std::stod(input);
-            case VariantContentID::Text:
-                return input;
+            switch (contentID)
+            {
+                case VariantContentID::Integer:
+                    return std::stoi(input);
+                case VariantContentID::Double:
+                    return std::stod(input);
+                case VariantContentID::Text:
+                    return input;
+                default:
+                    throw std::runtime_error("Unknown contentID: "s + std::to_string(static_cast<int>(contentID)));
+            }
         }
-        throw std::runtime_error("Unknown contentID: "s + std::to_string(static_cast<int>(contentID)));
+        catch (const std::invalid_argument& e)
+        {
+            return VariantContentType::error();
+        }
     }
 
     void loadTeam1(const std::filesystem::path& teamDef)

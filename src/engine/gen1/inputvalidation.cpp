@@ -10,7 +10,7 @@ using namespace std::string_literals;
 
 namespace StratStat
 {
-    void validateAbstract(
+    void validateCommonValueMapEntry(
         const CommonValueMap& value,
         const std::string& key,
         const AllowedValues& allowedValues,
@@ -43,9 +43,9 @@ namespace StratStat
             errResult.addErrorMessage("not all expected members found"s);
         }
 
-        validateAbstract(dbEntry, PKMN_TYPE1, PKMN_TYPES, errResult);
-        validateAbstract(dbEntry, PKMN_TYPE2, PKMN_TYPES, errResult, true);
-        validateAbstract(dbEntry, PKMN_EXPGROUP, PKMN_EXPERIENCE_GROUPS, errResult);
+        validateCommonValueMapEntry(dbEntry, PKMN_TYPE1, PKMN_TYPES, errResult);
+        validateCommonValueMapEntry(dbEntry, PKMN_TYPE2, PKMN_TYPES, errResult, true);
+        validateCommonValueMapEntry(dbEntry, PKMN_EXPGROUP, PKMN_EXPERIENCE_GROUPS, errResult);
 
         if (errResult.getErrorMessages().empty())
         {
@@ -66,8 +66,9 @@ namespace StratStat
             errResult.addErrorMessage("not all expected members found"s);
         }
 
-        validateAbstract(dbEntry, MOVE_TYPE_ID, PKMN_TYPES, errResult);
-        validateAbstract(dbEntry, MOVE_DAMAGE_CLASS_ID, MOVE_DAMAGE_CLASSIDS, errResult);
+        validateCommonValueMapEntry(dbEntry, MOVE_TYPE_ID, PKMN_TYPES, errResult);
+        validateCommonValueMapEntry(dbEntry, MOVE_DAMAGE_CLASS_ID, MOVE_DAMAGE_CLASSIDS, errResult);
+        validateCommonValueMapEntry(dbEntry, MOVE_EFFECT_ID, MOVE_EFFECT_IDS, errResult);
 
         if (errResult.getErrorMessages().empty())
         {
