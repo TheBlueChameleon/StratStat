@@ -8,14 +8,7 @@
 
 #include "constants.hpp"
 #include "jsonsetoperations.hpp"
-
-namespace JsonValidation
-{
-    class Specification;
-    using SpecificationSet = std::unordered_set<Specification>;
-    using MutexGroup = std::unordered_set<std::string>;
-    using AllowedValues = std::unordered_set<jsonxx::Value>;
-}
+#include "jsonvalidationtypes.hpp"
 
 namespace JsonValidation
 {

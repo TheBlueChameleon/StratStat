@@ -5,6 +5,7 @@
 #include <vector>
 
 
+// TODO: introduce class JsonValidationMessages : public std::vector<std::string>?
 class JsonValidationResult
 {
     private:

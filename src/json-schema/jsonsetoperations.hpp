@@ -27,4 +27,5 @@ namespace jsonxx
 {
     bool operator==(const jsonxx::Value& lhs, const jsonxx::Value& rhs);
 }
+
 #endif // JSONSETOPERATIONS_H

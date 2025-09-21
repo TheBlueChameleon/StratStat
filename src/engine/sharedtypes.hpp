@@ -1,6 +1,7 @@
 #ifndef SHAREDTYPES_H
 #define SHAREDTYPES_H
 
+#include <list>
 #include <string>
 #include <optional>
 #include <utility>
@@ -13,28 +14,42 @@
 
 namespace StratStat
 {
-    class CommonValueCollection;
-
-    enum class VariantContentID {Integer, Double, Text};
-    using VariantContentType = std::variant<int, double, std::string>;
-    struct VariantContentInfo
-    {
-        std::string      identifier;
-        VariantContentID contentID;
-    };
-
-    class CommonValueMapValidationResult;
-    using AllowedValues = std::unordered_set<std::string>;
-    using CommonValueMap = std::unordered_map<std::string, VariantContentType>;
-    using CommonValueMapVector = std::vector<CommonValueMap>;
-    using CommonValueMapValidator = CommonValueMapValidationResult(*)(const CommonValueMap& dbEntry);
-
     using DefaultCsvReader = csv2::Reader<
                              csv2::delimiter<','>,
                              csv2::quote_character<'"'>,
                              csv2::first_row_is_header<true>,
                              csv2::trim_policy::trim_whitespace
                              >;
+
+    /* ---------------------------------------------------------------------- */
+    // common variant definitions
+
+    class VariantContentType : public std::variant<int, double, std::string>
+    {
+        public:
+            using std::variant<int, double, std::string>::variant;
+    };
+
+    enum class VariantContentID {Integer, Double, Text};
+
+    struct VariantContentInfo
+    {
+        std::string      identifier;
+        VariantContentID contentID;
+    };
+
+    /* ---------------------------------------------------------------------- */
+    // common variant containers
+
+    // TODO: Make proper classes
+
+    using CommonValueMap = std::unordered_map<std::string, VariantContentType>;
+    using CommonValueMapVector = std::vector<CommonValueMap>;
+
+    class CommonValueMapValidationResult;
+    using CommonValueMapValidator = CommonValueMapValidationResult(*)(const CommonValueMap& dbEntry);
+
+    /* ---------------------------------------------------------------------- */
 
     struct CsvMappingInfo
     {
@@ -43,17 +58,17 @@ namespace StratStat
         VariantContentID contentID;
     };
 
-    // bool operator==(const StratStat::VariantContentType& lhs, const StratStat::VariantContentType& rhs);
+    class AllowedValues : public std::unordered_set<std::string>
+    {
+        public:
+            using std::unordered_set<std::string>::unordered_set;
+    };
+
+    class ErrorMessgeList : public std::list<std::string>
+    {
+        public:
+            using std::list<std::string>::list;
+    };
 }
 
-// namespace std
-// {
-//     template <> struct hash<StratStat::VariantContentType>
-//     {
-//         size_t operator()(const StratStat::VariantContentType& variant) const;
-//     };
-// }
-
-// _Z15validatePkmnDefRKSt13unordered_mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt7variantIJidS5_EESt4hashIS5_ESt8equal_toIS5_ESaISt4pairIKS5_S7_EEE
-// _Z15validatePkmnDefRKSt13unordered_mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEESt7variantIJidS5_EESt4hashIS5_ESt8equal_toIS5_ESaISt4pairIKS5_S7_EEE
 #endif // SHAREDTYPES_H

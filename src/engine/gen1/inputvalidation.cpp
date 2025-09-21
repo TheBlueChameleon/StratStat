@@ -5,7 +5,7 @@ using namespace std::string_literals;
 
 #include "../commonvaluecollection.hpp"
 #include "../commonvaluemapvalidationresult.hpp"
-#include "../innerinterface.hpp"
+#include "../validationinterface.hpp"
 #include "constants.hpp"
 
 namespace StratStat

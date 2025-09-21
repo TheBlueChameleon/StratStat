@@ -10,21 +10,17 @@ using namespace std::string_literals;
 using namespace StratStat;
 
 extern "C" {
-    void getTypeNames(JsonValidation::AllowedValues& buffer)
+    void getTypeNames(AllowedValues& buffer)
     {
-        buffer.clear();
-        for (const auto& type: PKMN_TYPES)
-        {
-            buffer.insert(type);
-        }
+        buffer = PKMN_TYPES;
     }
 
-    void getPkmnDefHeaders(std::vector<StratStat::VariantContentInfo>& buffer)
+    void getPkmnDefHeaders(std::vector<VariantContentInfo>& buffer)
     {
         buffer = PKMN_DB_HEADERS;
     }
 
-    void getMoveDefHeaders(std::vector<StratStat::VariantContentInfo>& buffer)
+    void getMoveDefHeaders(std::vector<VariantContentInfo>& buffer)
     {
         buffer = MOVE_DB_HEADERS;
     }
@@ -114,13 +110,14 @@ extern "C" {
 
     void shutdown()
     {
-        StratStat::readyFlag = false;
+        readyFlag = false;
     }
 }
 
 // this ensures "unused" functions from the static lib are still linked into the dyLib.
 void dummyCalls()
 {
+    init("", "");
     getSignature();
     isReady();
     connectLogger(nullptr);

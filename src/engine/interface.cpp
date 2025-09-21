@@ -37,6 +37,6 @@ extern "C" {
 
     bool isReady()
     {
-        return StratStat::readyFlag;
+        return readyFlag;
     }
 }

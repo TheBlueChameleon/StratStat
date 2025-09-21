@@ -17,7 +17,21 @@ namespace StratStat
         "Slow"
     };
 
+    const std::vector<VariantContentInfo> PKMN_DB_HEADERS =
+    {
+        VariantContentInfo(PKMN_IDENTIFIER,         VariantContentID::Text),
+        VariantContentInfo(PKMN_TYPE1,              VariantContentID::Text),
+        VariantContentInfo(PKMN_TYPE2,              VariantContentID::Text),
+        VariantContentInfo(PKMN_HP,                 VariantContentID::Integer),
+        VariantContentInfo(PKMN_ATK,                VariantContentID::Integer),
+        VariantContentInfo(PKMN_DEF,                VariantContentID::Integer),
+        VariantContentInfo(PKMN_SPC,                VariantContentID::Integer),
+        VariantContentInfo(PKMN_SPD,                VariantContentID::Integer),
+        VariantContentInfo(PKMN_EXPGROUP,           VariantContentID::Text),
+    };
+
     const AllowedValues MOVE_DAMAGE_CLASSIDS = {"PHYSICAL", "SPECIAL"};
+
     const AllowedValues MOVE_EFFECT_IDS =
     {
         "BIDE",
@@ -92,5 +106,18 @@ namespace StratStat
         "USR_SUBSTITUTE",
         "USR_TRANSFORM",
         "USR_UNDERGROUND"
+    };
+
+    const std::vector<VariantContentInfo> MOVE_DB_HEADERS =
+    {
+        VariantContentInfo(MOVE_IDENTIFIER,         VariantContentID::Text),
+        VariantContentInfo(MOVE_TYPE_ID,            VariantContentID::Text),
+        VariantContentInfo(MOVE_POWER,              VariantContentID::Integer),
+        VariantContentInfo(MOVE_PP,                 VariantContentID::Integer),
+        VariantContentInfo(MOVE_ACCURACY,           VariantContentID::Integer),
+        VariantContentInfo(MOVE_PRIORITY,           VariantContentID::Integer),
+        VariantContentInfo(MOVE_DAMAGE_CLASS_ID,    VariantContentID::Text),
+        VariantContentInfo(MOVE_EFFECT_ID,          VariantContentID::Text),
+        VariantContentInfo(MOVE_EFFECT_CHANCE,      VariantContentID::Integer),
     };
 }

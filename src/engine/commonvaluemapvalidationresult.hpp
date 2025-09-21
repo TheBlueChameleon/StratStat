@@ -11,7 +11,7 @@ namespace StratStat
     class CommonValueMapValidationResult
     {
         public:
-            using ErrorMessgeList = std::list<std::string>;
+
 
         private:
             std::variant<CommonValueCollection, ErrorMessgeList> result;

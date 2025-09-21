@@ -7,7 +7,7 @@ using namespace std::string_literals;
 
 #include "commonvaluemapvalidationresult.hpp"
 #include "engine.hpp"
-#include "innerinterface.hpp"
+#include "validationinterface.hpp"
 #include "interface.hpp"
 #include "shared.hpp"
 
@@ -26,7 +26,7 @@ namespace StratStat
     {
         spdlog::trace("INITIALIZING PKMNDB");
 
-        auto headerRequirements = std::vector<StratStat::VariantContentInfo>();
+        auto headerRequirements = std::vector<VariantContentInfo>();
         getPkmnDefHeaders(headerRequirements);
         initDb(pkmnDefs, headerRequirements, validatePkmnDef, Engine::getInstance().getPkmnDbMutable());
 
@@ -88,8 +88,8 @@ namespace StratStat
 
 
     std::vector<CsvMappingInfo> analyzeHeader(
-        const StratStat::DefaultCsvReader::Row& header,
-        const std::vector<StratStat::VariantContentInfo>& headerRequirements,
+        const DefaultCsvReader::Row& header,
+        const std::vector<VariantContentInfo>& headerRequirements,
         const std::string& filename
     )
     {
@@ -134,7 +134,7 @@ namespace StratStat
 
     CommonValueMap parseCsvRow(
         const DefaultCsvReader::Row& row,
-        const std::vector<StratStat::CsvMappingInfo>& columnData
+        const std::vector<CsvMappingInfo>& columnData
     )
     {
         std::unordered_map<std::string, VariantContentType> result;
@@ -158,7 +158,7 @@ namespace StratStat
     }
 
     // TODO error resistance
-    StratStat::VariantContentType variantFromString(const std::string& input, const StratStat::VariantContentID contentID)
+    VariantContentType variantFromString(const std::string& input, const VariantContentID contentID)
     {
         switch (contentID)
         {
@@ -190,8 +190,8 @@ namespace StratStat
 
     void loadTeam(
         const std::filesystem::path& fileName,
-        StratStat::CommonValueMap& playerDef,
-        StratStat::CommonValueMapVector& teamDef
+        CommonValueMap& playerDef,
+        CommonValueMapVector& teamDef
     )
     {
         auto file = std::ifstream(fileName);

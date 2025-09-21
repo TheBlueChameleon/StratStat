@@ -8,7 +8,7 @@ namespace JsonValidation
         const JsonValueType type,
         const bool mandatory,
         const AllowedValues& allowedValues,
-        const std::unordered_set<std::string>& mutuallyExclusiveGroups
+        const MutexGroup& mutuallyExclusiveGroups
     ):
         name(name),
         type(type),

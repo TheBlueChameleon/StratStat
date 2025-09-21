@@ -85,6 +85,7 @@ target_compile_options(jsonxx-lib PRIVATE -fPIC)
 
 add_library(jsonxx-schema-lib STATIC
     src/json-schema/constants.hpp
+    src/json-schema/jsonvalidationtypes.hpp src/json-schema/jsonvalidationtypes.cpp
     src/json-schema/specification.hpp src/json-schema/specification.cpp
     src/json-schema/jsonvalidation.hpp src/json-schema/jsonvalidation.cpp
     src/json-schema/jsonvalidationtionresult.hpp src/json-schema/jsonvalidationtionresult.cpp
@@ -98,7 +99,7 @@ target_compile_options(jsonxx-schema-lib PRIVATE -fPIC)
 # engine shared routines
 
 add_library(Base-Engine STATIC
-    src/engine/innerinterface.hpp
+    src/engine/validationinterface.hpp
     src/engine/interface.hpp src/engine/interface.cpp
     src/engine/sharedtypes.hpp src/engine/sharedtypes.cpp
     src/engine/shared.hpp src/engine/shared.cpp
@@ -121,7 +122,7 @@ target_link_libraries(Base-Engine PRIVATE
 add_library(Gen1-Engine SHARED
     src/engine/gen1/constants.hpp src/engine/gen1/constants.cpp
     src/engine/interface.hpp src/engine/gen1/interface.cpp
-    src/engine/gen1/innerinterface.cpp
+    src/engine/gen1/inputvalidation.cpp
 )
 
 target_link_libraries(Gen1-Engine PUBLIC

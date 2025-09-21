@@ -7,7 +7,7 @@ namespace StratStat
 {
 
     CommonValueMapValidationResult::CommonValueMapValidationResult() :
-        result(std::list<std::string>())
+        result(ErrorMessgeList())
     {}
 
     CommonValueMapValidationResult::CommonValueMapValidationResult(const CommonValueCollection& result) :
@@ -18,7 +18,7 @@ namespace StratStat
         result(result)
     {}
 
-    std::variant<CommonValueCollection, CommonValueMapValidationResult::ErrorMessgeList> CommonValueMapValidationResult::getAsVariant() const
+    std::variant<CommonValueCollection, ErrorMessgeList> CommonValueMapValidationResult::getAsVariant() const
     {
         return result;
     }
@@ -33,7 +33,7 @@ namespace StratStat
         return result.index() == 0;
     }
 
-    const CommonValueMapValidationResult::ErrorMessgeList& CommonValueMapValidationResult::getErrorMessages() const
+    const ErrorMessgeList& CommonValueMapValidationResult::getErrorMessages() const
     {
         return std::get<ErrorMessgeList>(result);
     }

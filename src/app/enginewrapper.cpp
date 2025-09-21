@@ -13,6 +13,8 @@
 
 // TODO test win version of this
 
+using namespace StratStat;
+
 void EngineWrapper::loadEninge(const std::filesystem::path& enginePath)
 {
     spdlog::trace("LOADING ENGINE FROM {}", enginePath.c_str());
@@ -138,12 +140,12 @@ void EngineWrapper::getTypeNames(JsonValidation::AllowedValues& buffer) const
     return _getTypeNames(buffer);
 }
 
-void EngineWrapper::getPkmnDefHeaders(std::vector<StratStat::VariantContentInfo>& buffer) const
+void EngineWrapper::getPkmnDefHeaders(std::vector<VariantContentInfo>& buffer) const
 {
     return _getPkmnDefHeaders(buffer);
 }
 
-void EngineWrapper::getMoveDefHeaders(std::vector<StratStat::VariantContentInfo>& buffer) const
+void EngineWrapper::getMoveDefHeaders(std::vector<VariantContentInfo>& buffer) const
 {
     return _getMoveDefHeaders(buffer);
 }
