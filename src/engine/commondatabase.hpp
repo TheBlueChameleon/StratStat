@@ -5,18 +5,21 @@
 
 #include "commonvaluecollection.hpp"
 
-class CommonDatabase
+namespace StratStat
 {
-    private:
-        std::unordered_map<std::string, CommonValueCollection> db;
+    class CommonDatabase
+    {
+        private:
+            std::unordered_map<std::string, CommonValueCollection> db;
 
-    public:
-        CommonDatabase();
+        public:
+            CommonDatabase();
 
-        bool add(const CommonValueCollection& def);
-        const CommonValueCollection& get(const std::string& identifier) const;
+            bool add(const CommonValueCollection& def);
+            const CommonValueCollection& get(const std::string& identifier) const;
 
-        int size() const;
-};
+            int size() const;
+    };
+}
 
 #endif // COMMONDATABASE_HPP

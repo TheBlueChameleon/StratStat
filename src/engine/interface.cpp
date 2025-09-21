@@ -6,6 +6,8 @@ using namespace std::string_literals;
 #include "interface.hpp"
 #include "shared.hpp"
 
+using namespace StratStat;
+
 extern "C" {
     int getSignature()
     {
@@ -35,6 +37,6 @@ extern "C" {
 
     bool isReady()
     {
-        return readyFlag;
+        return StratStat::readyFlag;
     }
 }

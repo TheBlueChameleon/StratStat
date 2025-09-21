@@ -12,24 +12,31 @@
 #include "commondatabase.hpp"
 #include "sharedtypes.hpp"
 
-extern bool readyFlag;
+namespace StratStat
+{
+    extern bool readyFlag;
 
-void initPkmnDb(const std::filesystem::path& pkmnDefs);
-void initMoveDb(const std::filesystem::path& pkmnDefs);
-void initDb(
-    const std::filesystem::path& filename,
-    const std::vector<VariantContentInfo>& headerRequirements,
-    CommonValueMapValidator validator,
-    CommonDatabase& db
-);
+    void initPkmnDb(const std::filesystem::path& pkmnDefs);
+    void initMoveDb(const std::filesystem::path& pkmnDefs);
+    void initDb(
+        const std::filesystem::path& filename,
+        const std::vector<StratStat::VariantContentInfo>& headerRequirements,
+        StratStat::CommonValueMapValidator validator,
+        CommonDatabase& db
+    );
 
-void loadTeam1(const std::filesystem::path& teamDef);
-void loadTeam2(const std::filesystem::path& teamDef);
-void loadTeam(const std::filesystem::path& defFile, CommonValueMap& playerDef, CommonValueMapVector& teamDef);
+    void loadTeam1(const std::filesystem::path& teamDef);
+    void loadTeam2(const std::filesystem::path& teamDef);
+    void loadTeam(const std::filesystem::path& defFile, StratStat::CommonValueMap& playerDef, StratStat::CommonValueMapVector& teamDef);
 
-std::vector<CsvMappingInfo> analyzeHeader(const DefaultCsvReader::Row& header, const std::vector<VariantContentInfo>& headerRequirements, const std::string& filename);
-CommonValueMap parseCsvRow(const DefaultCsvReader::Row& row, const std::vector<CsvMappingInfo>& columnData);
+    std::vector<StratStat::CsvMappingInfo> analyzeHeader(
+        const StratStat::DefaultCsvReader::Row& header,
+        const std::vector<VariantContentInfo>& headerRequirements,
+        const std::string& filename
+    );
+    CommonValueMap parseCsvRow(const StratStat::DefaultCsvReader::Row& row, const std::vector<StratStat::CsvMappingInfo>& columnData);
 
-VariantContentType variantFromString(const std::string& input, const VariantContentID contentID);
+    VariantContentType variantFromString(const std::string& input, const StratStat::VariantContentID contentID);
+}
 
 #endif // SHARED_HPP

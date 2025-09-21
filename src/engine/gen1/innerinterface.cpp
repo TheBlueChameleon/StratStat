@@ -1,54 +1,86 @@
 #include <iostream>
+#include <string>
 #include <unordered_set>
+using namespace std::string_literals;
 
 #include "../commonvaluecollection.hpp"
+#include "../commonvaluemapvalidationresult.hpp"
 #include "../innerinterface.hpp"
 #include "constants.hpp"
 
-bool validateType(const VariantContentType& value, const bool allowEmptyType = false)
+namespace StratStat
 {
-    static const std::unordered_set<std::string> allowedTypes = PKMN_TYPES;
-
-    const auto typeStr = std::get<std::string>(value);
-    if (allowEmptyType && typeStr.empty())
+    void validateAbstract(
+        const CommonValueMap& value,
+        const std::string& key,
+        const AllowedValues& allowedValues,
+        CommonValueMapValidationResult& errResult,
+        bool allowEmpty = false
+    )
     {
-        return true;
+        const auto& strValue = std::get<std::string>(value.at(key));
+
+        if (allowEmpty && strValue.empty())
+        {
+            return;
+        }
+
+        if (!allowedValues.contains(strValue))
+        {
+            errResult.addErrorMessage(
+                "invalid "s + key + " '" + strValue + "'"
+            );
+        }
     }
 
+    // TODO: logging/informing about error condition?
+    CommonValueMapValidationResult validatePkmnDef(const CommonValueMap& dbEntry)
     {
-        return allowedTypes.contains(typeStr);
+        CommonValueMapValidationResult errResult;
+
+        if (dbEntry.size() < PKMN_DB_HEADERS.size())
+        {
+            errResult.addErrorMessage("not all expected members found"s);
+        }
+
+        validateAbstract(dbEntry, PKMN_TYPE1, PKMN_TYPES, errResult);
+        validateAbstract(dbEntry, PKMN_TYPE2, PKMN_TYPES, errResult, true);
+        validateAbstract(dbEntry, PKMN_EXPGROUP, PKMN_EXPERIENCE_GROUPS, errResult);
+
+        if (errResult.getErrorMessages().empty())
+        {
+            return CommonValueCollection(PKMN_IDENTIFIER, dbEntry);
+        }
+        else
+        {
+            return errResult;
+        }
     }
-}
 
-// TODO: logging/informing about error condition?
-std::optional<CommonValueCollection> validatePkmnDef(const CommonValueMap& dbEntry)
-{
-#define INVALID return std::optional<CommonValueCollection>()
-
-    if (dbEntry.size() < PKMN_DB_HEADERS.size())
+    CommonValueMapValidationResult validateMoveDef(const CommonValueMap& dbEntry)
     {
-        INVALID;
+        CommonValueMapValidationResult errResult;
+
+        if (dbEntry.size() < MOVE_DB_HEADERS.size())
+        {
+            errResult.addErrorMessage("not all expected members found"s);
+        }
+
+        validateAbstract(dbEntry, MOVE_TYPE_ID, PKMN_TYPES, errResult);
+        validateAbstract(dbEntry, MOVE_DAMAGE_CLASS_ID, MOVE_DAMAGE_CLASSIDS, errResult);
+
+        if (errResult.getErrorMessages().empty())
+        {
+            return CommonValueCollection(MOVE_IDENTIFIER, dbEntry);
+        }
+        else
+        {
+            return errResult;
+        }
     }
 
-    if (!validateType(dbEntry.at(PKMN_TYPE1)))
+    void getValidatedTeamDef(const jsonxx::Object& json)
     {
-        INVALID;
+        std::cout << "### TODO" << std::endl;
     }
-    if (!validateType(dbEntry.at(PKMN_TYPE2), true))
-    {
-        INVALID;
-    }
-#undef INVALID
-
-    return CommonValueCollection(PKMN_IDENTIFIER, dbEntry);
-}
-std::optional<CommonValueCollection> validateMoveDef(const CommonValueMap& dbEntry)
-{
-    // TODO
-    return CommonValueCollection(MOVE_IDENTIFIER, dbEntry);
-}
-
-void getValidatedTeamDef(const jsonxx::Object& json)
-{
-    std::cout << "### TODO" << std::endl;
 }

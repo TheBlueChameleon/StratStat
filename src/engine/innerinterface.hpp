@@ -7,9 +7,12 @@
 
 #include "sharedtypes.hpp"
 
-std::optional<CommonValueCollection> validatePkmnDef(const CommonValueMap& dbEntry);
-std::optional<CommonValueCollection> validateMoveDef(const CommonValueMap& dbEntry);
-void getValidatedTeamDef(const jsonxx::Object& json);
-void transferTeamDef();
+namespace StratStat
+{
+    StratStat::CommonValueMapValidationResult validatePkmnDef(const StratStat::CommonValueMap& dbEntry);
+    StratStat::CommonValueMapValidationResult validateMoveDef(const StratStat::CommonValueMap& dbEntry);
+    void getValidatedTeamDef(const jsonxx::Object& json);
+    void transferTeamDef();
+}
 
 #endif // INNERINTERFACE_HPP

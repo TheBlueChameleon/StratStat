@@ -6,45 +6,48 @@
 
 #include "commondatabase.hpp"
 
-class Engine
+namespace StratStat
 {
-    private:
-        CommonDatabase pkmnDb;
-        CommonDatabase moveDb;
+    class Engine
+    {
+        private:
+            CommonDatabase pkmnDb;
+            CommonDatabase moveDb;
 
-        CommonValueMap player1;
-        CommonValueMap player2;
+            CommonValueMap player1;
+            CommonValueMap player2;
 
-        CommonValueMapVector team1;
-        CommonValueMapVector team2;
+            CommonValueMapVector team1;
+            CommonValueMapVector team2;
 
-        Engine();
+            Engine();
 
-    public:
-        static Engine& getInstance();
+        public:
+            static Engine& getInstance();
 
-        Engine(Engine const&)           = delete;
-        void operator=(Engine const&)   = delete;
+            Engine(Engine const&)           = delete;
+            void operator=(Engine const&)   = delete;
 
-        const CommonDatabase& getPkmnDb() const;
-        const CommonDatabase& getMoveDb() const;
+            const CommonDatabase& getPkmnDb() const;
+            const CommonDatabase& getMoveDb() const;
 
-        CommonDatabase& getPkmnDbMutable();
-        CommonDatabase& getMoveDbMutable();
+            CommonDatabase& getPkmnDbMutable();
+            CommonDatabase& getMoveDbMutable();
 
-        const CommonValueMap& getPlayer1() const;
-        const CommonValueMap& getPlayer2() const;
+            const CommonValueMap& getPlayer1() const;
+            const CommonValueMap& getPlayer2() const;
 
-        CommonValueMap& getPlayer1Mutable();
-        CommonValueMap& getPlayer2Mutable();
+            CommonValueMap& getPlayer1Mutable();
+            CommonValueMap& getPlayer2Mutable();
 
-        const CommonValueMapVector& getTeam1() const;
-        const CommonValueMapVector& getTeam2() const;
+            const CommonValueMapVector& getTeam1() const;
+            const CommonValueMapVector& getTeam2() const;
 
-        CommonValueMapVector& getTeam1Mutable();
-        CommonValueMapVector& getTeam2Mutable();
-};
+            CommonValueMapVector& getTeam1Mutable();
+            CommonValueMapVector& getTeam2Mutable();
+    };
 
-Engine& getEngineInstance();
+    Engine& getEngineInstance();
+}
 
 #endif // ENGINE_HPP

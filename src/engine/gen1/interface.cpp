@@ -7,6 +7,8 @@ using namespace std::string_literals;
 #include "../sharedtypes.hpp"
 #include "constants.hpp"
 
+using namespace StratStat;
+
 extern "C" {
     void getTypeNames(JsonValidation::AllowedValues& buffer)
     {
@@ -17,12 +19,12 @@ extern "C" {
         }
     }
 
-    void getPkmnDefHeaders(std::vector<VariantContentInfo>& buffer)
+    void getPkmnDefHeaders(std::vector<StratStat::VariantContentInfo>& buffer)
     {
         buffer = PKMN_DB_HEADERS;
     }
 
-    void getMoveDefHeaders(std::vector<VariantContentInfo>& buffer)
+    void getMoveDefHeaders(std::vector<StratStat::VariantContentInfo>& buffer)
     {
         buffer = MOVE_DB_HEADERS;
     }
@@ -31,8 +33,8 @@ extern "C" {
     {
         using namespace JsonValidation;
 
-        const auto badgeNames = AllowedValues({"Brock", "Misty", "Surge", "Erika", "Sabrina", "Koga", "Blaine", "Giovanni"});
-        const auto allAllowed = AllowedValues();
+        const auto badgeNames = JsonValidation::AllowedValues({"Brock", "Misty", "Surge", "Erika", "Sabrina", "Koga", "Blaine", "Giovanni"});
+        const auto allAllowed = JsonValidation::AllowedValues();
 
         const auto mutexBadges = MutexGroup({"badges"});
         const auto mutexBoosts = MutexGroup({"boosts"});
@@ -95,7 +97,7 @@ extern "C" {
         const auto mutexHuman = MutexGroup({"playerHumam"});
         const auto mutexCompu = MutexGroup({"playerComputer"});
 
-        const auto allAllowed = AllowedValues();
+        const auto allAllowed = JsonValidation::AllowedValues();
 
         auto human = Specification("human", TID_Object, true, allAllowed, mutexHuman);
         auto compu = Specification("computer", TID_Object, true, allAllowed, mutexCompu);
@@ -112,7 +114,7 @@ extern "C" {
 
     void shutdown()
     {
-        readyFlag = false;
+        StratStat::readyFlag = false;
     }
 }
 

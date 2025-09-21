@@ -1,19 +1,22 @@
 #include "commondatabase.hpp"
 
-CommonDatabase::CommonDatabase() {}
-
-bool CommonDatabase::add(const CommonValueCollection& def)
+namespace StratStat
 {
-    auto [_, insertion] = db.insert({def.getIdentifier(), def});
-    return insertion;
-}
+    CommonDatabase::CommonDatabase() {}
 
-const CommonValueCollection& CommonDatabase::get(const std::string& identifier) const
-{
-    return db.at(identifier);
-}
+    bool CommonDatabase::add(const CommonValueCollection& def)
+    {
+        auto [_, insertion] = db.insert({def.getIdentifier(), def});
+        return insertion;
+    }
 
-int CommonDatabase::size() const
-{
-    return db.size();
+    const CommonValueCollection& CommonDatabase::get(const std::string& identifier) const
+    {
+        return db.at(identifier);
+    }
+
+    int CommonDatabase::size() const
+    {
+        return db.size();
+    }
 }
