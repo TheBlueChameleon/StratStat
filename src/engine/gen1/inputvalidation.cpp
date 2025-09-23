@@ -5,8 +5,11 @@ using namespace std::string_literals;
 
 #include <spdlog/spdlog.h>
 
+#include <json-schema/specification.hpp>
+
 #include "../commonvaluecollection.hpp"
 #include "../commonvaluemapvalidationresult.hpp"
+#include "../interface.hpp"
 #include "../validationinterface.hpp"
 #include "constants.hpp"
 
@@ -121,7 +124,7 @@ namespace StratStat
         return badges;
     }
 
-    void validateAndTransferPlayerDef(
+    void transferPlayerDef(
         const jsonxx::Object& json,
         const std::string& key,
         CommonValueMap& playerDef
@@ -151,26 +154,100 @@ namespace StratStat
         }
     }
 
-    void validateAndTransferTeamDef(
-        const jsonxx::Array& json,
-        CommonValueMap& teamDef
-    ) {}
+    template<typename T, typename C=T, typename D>
+    VariantContentType fetchValueOrDefault(
+        const jsonxx::Object& pkmnDef,
+        const std::string& key,
+        const D defaultValue = std::monostate()
+    )
+    {
+        if (pkmnDef.has<T>(key))
+        {
+            return static_cast<C>(pkmnDef.get<T>(key));
+        }
+        else
+        {
+            return defaultValue;
+        }
+    }
 
-    void validateAndTransferPlayerAndTeamDef(
+    CommonValueMap getTeamMember(
+        const jsonxx::Object& pkmnDef
+    )
+    {
+        CommonValueMap result;
+
+#define FETCH(KEY, TYPE) result[KEY] = fetchValueOrDefault<TYPE, TYPE, std::monostate>(pkmnDef, KEY)
+#define FETCH_AS(KEY, TYPE, CAST) result[KEY] = fetchValueOrDefault<TYPE, CAST, std::monostate>(pkmnDef, KEY)
+#define FETCH_OR(KEY, TYPE, DEFAULT) result[KEY] = fetchValueOrDefault<TYPE>(pkmnDef, KEY, DEFAULT)
+        FETCH(TEAM_SPECIES, jsonxx::String);
+        FETCH_AS(TEAM_LEVEL, jsonxx::Number, int);
+        FETCH_AS(TEAM_DV_ATK, jsonxx::Number, int);
+        FETCH_AS(TEAM_DV_DEF, jsonxx::Number, int);
+        FETCH_AS(TEAM_DV_SPC, jsonxx::Number, int);
+        FETCH_AS(TEAM_DV_SPD, jsonxx::Number, int);
+        FETCH_AS(TEAM_SX_HP, jsonxx::Number, int);
+        FETCH_AS(TEAM_SX_ATK, jsonxx::Number, int);
+        FETCH_AS(TEAM_SX_DEF, jsonxx::Number, int);
+        FETCH_AS(TEAM_SX_SPC, jsonxx::Number, int);
+        FETCH_AS(TEAM_SX_SPD, jsonxx::Number, int);
+        FETCH(TEAM_MOVE1, jsonxx::String);
+        FETCH(TEAM_MOVE2, jsonxx::String);
+        FETCH(TEAM_MOVE3, jsonxx::String);
+        FETCH(TEAM_MOVE4, jsonxx::String);
+        FETCH_AS(TEAM_MOVE1_PP, jsonxx::Number, int);
+        FETCH_AS(TEAM_MOVE2_PP, jsonxx::Number, int);
+        FETCH_AS(TEAM_MOVE3_PP, jsonxx::Number, int);
+        FETCH_AS(TEAM_MOVE4_PP, jsonxx::Number, int);
+        FETCH_AS(TEAM_MOVE1_MAX_PP, jsonxx::Number, int);
+        FETCH_AS(TEAM_MOVE2_MAX_PP, jsonxx::Number, int);
+        FETCH_AS(TEAM_MOVE3_MAX_PP, jsonxx::Number, int);
+        FETCH_AS(TEAM_MOVE4_MAX_PP, jsonxx::Number, int);
+        FETCH_OR(TEAM_STATUS, jsonxx::String, STATUS_NONE);
+        FETCH_AS(TEAM_SLEEP_COUNTER, jsonxx::Number, int);
+        FETCH_AS(TEAM_TOXIC_COUNTER, jsonxx::Number, int);
+#undef FETCH_OR
+#undef FETCH_AS
+#undef FETCH
+
+        return result;
+    }
+
+    void transferTeamDef(
+        const jsonxx::Array& json,
+        CommonValueMapVector& teamDef
+    )
+    {
+        const auto N = json.values().size();
+
+        if (N > 6)
+        {
+            // TODO: maybe pass through filename?
+            spdlog::warn("Non-standard team with "s + std::to_string(N) + " members!");
+        }
+
+        teamDef.reserve(N);
+        for (const jsonxx::Value* ptr : json.values())
+        {
+            teamDef.push_back(getTeamMember(ptr->get<jsonxx::Object>()));
+        }
+    }
+
+    void transferPlayerAndTeamDef(
         const jsonxx::Object& json,
         CommonValueMap& playerDef,
         CommonValueMapVector& teamDef)
     {
         if (json.has<jsonxx::Object>(PLAYER_HUMAN))
         {
-            validateAndTransferPlayerDef(
+            transferPlayerDef(
                 json.get<jsonxx::Object>(PLAYER_HUMAN),
                 PLAYER_HUMAN, playerDef
             );
         }
         else if (json.has<jsonxx::Object>(PLAYER_COMPUTER))
         {
-            validateAndTransferPlayerDef(
+            transferPlayerDef(
                 json.get<jsonxx::Object>(PLAYER_COMPUTER),
                 PLAYER_COMPUTER, playerDef
             );
@@ -181,5 +258,10 @@ namespace StratStat
                 "Illegal State: neither "s + PLAYER_HUMAN + " nor " + PLAYER_COMPUTER + " defined."
             );
         }
+
+        transferTeamDef(
+            json.get<jsonxx::Array>(PLAYER_POKEMON),
+            teamDef
+        );
     }
 }

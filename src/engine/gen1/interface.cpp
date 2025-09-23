@@ -65,33 +65,33 @@ extern "C" {
         auto pokemonDef = Specification("", TID_Object, false);
 
         pokemonDef.addChild(Specification(TEAM_SPECIES, TID_String));
-        pokemonDef.addChild(Specification("level", TID_Number));
+        pokemonDef.addChild(Specification(TEAM_LEVEL, TID_Number));
 
-        pokemonDef.addChild(Specification("DV_ATK", TID_Number, false));
-        pokemonDef.addChild(Specification("DV_DEF", TID_Number, false));
-        pokemonDef.addChild(Specification("DV_SPC", TID_Number, false));
-        pokemonDef.addChild(Specification("DV_SPD", TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_DV_ATK, TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_DV_DEF, TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_DV_SPC, TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_DV_SPD, TID_Number, false));
 
-        pokemonDef.addChild(Specification("StatExperience_HP",  TID_Number, false));
-        pokemonDef.addChild(Specification("StatExperience_ATK", TID_Number, false));
-        pokemonDef.addChild(Specification("StatExperience_DEF", TID_Number, false));
-        pokemonDef.addChild(Specification("StatExperience_SPC", TID_Number, false));
-        pokemonDef.addChild(Specification("StatExperience_SPD", TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_SX_HP,  TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_SX_ATK, TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_SX_DEF, TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_SX_SPC, TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_SX_SPD, TID_Number, false));
 
-        pokemonDef.addChild(Specification("move1", TID_String));
-        pokemonDef.addChild(Specification("move2", TID_String, false));
-        pokemonDef.addChild(Specification("move3", TID_String, false));
-        pokemonDef.addChild(Specification("move4", TID_String, false));
+        pokemonDef.addChild(Specification(TEAM_MOVE1, TID_String));
+        pokemonDef.addChild(Specification(TEAM_MOVE2, TID_String, false));
+        pokemonDef.addChild(Specification(TEAM_MOVE3, TID_String, false));
+        pokemonDef.addChild(Specification(TEAM_MOVE4, TID_String, false));
 
-        pokemonDef.addChild(Specification("move1PP", TID_Number, false));
-        pokemonDef.addChild(Specification("move2PP", TID_Number, false));
-        pokemonDef.addChild(Specification("move3PP", TID_Number, false));
-        pokemonDef.addChild(Specification("move4PP", TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_MOVE1_PP, TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_MOVE2_PP, TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_MOVE3_PP, TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_MOVE4_PP, TID_Number, false));
 
-        pokemonDef.addChild(Specification("move1MaxPP", TID_Number, false));
-        pokemonDef.addChild(Specification("move2MaxPP", TID_Number, false));
-        pokemonDef.addChild(Specification("move3MaxPP", TID_Number, false));
-        pokemonDef.addChild(Specification("move4MaxPP", TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_MOVE1_MAX_PP, TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_MOVE2_MAX_PP, TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_MOVE3_MAX_PP, TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_MOVE4_MAX_PP, TID_Number, false));
 
         pokemon.addChild(pokemonDef);
     }

@@ -27,11 +27,14 @@ namespace StratStat
     class VariantContentType : public std::variant<int, double, std::string, std::monostate>
     {
         public:
+            static VariantContentType error();
+
             using std::variant<int, double, std::string, std::monostate>::variant;
 
             bool hasValue() const;
 
-            static VariantContentType error();
+            std::string to_string() const;
+
     };
 
     enum class VariantContentID {Integer, Double, Text, Error};
@@ -52,6 +55,8 @@ namespace StratStat
     {
         public:
             using std::unordered_map<std::string, VariantContentType>::unordered_map;
+
+            std::string to_string() const;
     };
 
     // TODO: Make proper classes

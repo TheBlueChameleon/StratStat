@@ -12,7 +12,7 @@ namespace StratStat
     StratStat::CommonValueMapValidationResult validatePkmnDef(const StratStat::CommonValueMap& dbEntry);
     StratStat::CommonValueMapValidationResult validateMoveDef(const StratStat::CommonValueMap& dbEntry);
 
-    void validateAndTransferPlayerAndTeamDef(
+    void transferPlayerAndTeamDef(
         const jsonxx::Object& json,
         CommonValueMap& playerDef,
         CommonValueMapVector& teamDef

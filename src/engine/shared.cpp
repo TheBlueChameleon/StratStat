@@ -254,6 +254,6 @@ namespace StratStat
             std::exit(-1);
         }
 
-        validateAndTransferPlayerAndTeamDef(json, playerDef, teamDef);
+        transferPlayerAndTeamDef(json, playerDef, teamDef);
     }
 }

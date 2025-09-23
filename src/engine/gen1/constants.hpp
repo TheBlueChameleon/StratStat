@@ -39,6 +39,15 @@ namespace StratStat
 
     extern const std::vector<VariantContentInfo> MOVE_DB_HEADERS;
 
+    constexpr auto STATUS_NONE = "OK";
+    constexpr auto STATUS_SLEEP = "Sleep";
+    constexpr auto STATUS_POISON = "Poison";
+    constexpr auto STATUS_PARALYZED = "Paralyzed";
+    constexpr auto STATUS_BURNED = "Burned";
+    constexpr auto STATUS_FROZEN = "Frozen";
+    constexpr auto STATUS_SLEEP_COUNTER = "SleepCounter";
+    constexpr auto STATUS_TOXIC_COUNTER = "ToxicCounter";
+
     constexpr auto PLAYER_HUMAN = "human";
     constexpr auto PLAYER_COMPUTER = "computer";
     constexpr auto PLAYER_BADGES = "badges";
@@ -59,7 +68,31 @@ namespace StratStat
     constexpr auto PLAYER_USE_PP = "usePP";
 
     constexpr auto TEAM_SPECIES = "species";
-    // ...
+    constexpr auto TEAM_LEVEL = "level";
+    constexpr auto TEAM_DV_ATK = "DV_ATK";
+    constexpr auto TEAM_DV_DEF = "DV_DEF";
+    constexpr auto TEAM_DV_SPC = "DV_SPC";
+    constexpr auto TEAM_DV_SPD = "DV_SPD";
+    constexpr auto TEAM_SX_HP = "StatExperience_HP";
+    constexpr auto TEAM_SX_ATK = "StatExperience_ATK";
+    constexpr auto TEAM_SX_DEF = "StatExperience_DEF";
+    constexpr auto TEAM_SX_SPC = "StatExperience_SPC";
+    constexpr auto TEAM_SX_SPD = "StatExperience_SPD";
+    constexpr auto TEAM_MOVE1 = "move1";
+    constexpr auto TEAM_MOVE2 = "move2";
+    constexpr auto TEAM_MOVE3 = "move3";
+    constexpr auto TEAM_MOVE4 = "move4";
+    constexpr auto TEAM_MOVE1_PP = "move1PP";
+    constexpr auto TEAM_MOVE2_PP = "move2PP";
+    constexpr auto TEAM_MOVE3_PP = "move3PP";
+    constexpr auto TEAM_MOVE4_PP = "move4PP";
+    constexpr auto TEAM_MOVE1_MAX_PP = "move1MaxPP";
+    constexpr auto TEAM_MOVE2_MAX_PP = "move2MaxPP";
+    constexpr auto TEAM_MOVE3_MAX_PP = "move3MaxPP";
+    constexpr auto TEAM_MOVE4_MAX_PP = "move4MaxPP";
+    constexpr auto TEAM_STATUS = "status";
+    constexpr auto TEAM_SLEEP_COUNTER = "sleepCounter";
+    constexpr auto TEAM_TOXIC_COUNTER = "toxicCounter";
 }
 
 #endif // GEN1_CONSTANTS_HPP
