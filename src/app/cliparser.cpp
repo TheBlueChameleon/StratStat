@@ -12,6 +12,7 @@ using ArgParser = argparse::ArgumentParser;
 
 #include "cliparser.hpp"
 #include "config.hpp"
+#include "errors.hpp"
 
 #include "../json-schema/jsonvalidation.hpp"
 
@@ -115,15 +116,16 @@ const Config CliParser::run(const int argc, const char* argv[])
 {
     if (argc == 1)
     {
-        std::cerr << parent << std::endl;
-        std::exit(-1);
+        std::stringstream ss;
+        ss << parent << std::endl;
+        throw CriticalAbort(ss.str());
     }
 
     try
     {
         parent.parse_args(argc, argv);
     }
-    catch (const std::exception& err)
+    catch (const std::runtime_error& err)
     {
         handleErr(err);
     }
@@ -144,22 +146,27 @@ const Config CliParser::run(const int argc, const char* argv[])
 
 void CliParser::handleErr(const std::exception& err) const
 {
-    std::cerr << err.what() << std::endl;
+    std::stringstream ss;
+    ss << err.what() << std::endl;
 
     if (parent.is_subcommand_used(explicitParametersParser))
     {
-        std::cerr << explicitParametersParser << std::endl;
+        ss << explicitParametersParser << std::endl;
     }
     else if (parent.is_subcommand_used(configFileParser))
     {
-        std::cerr << configFileParser << std::endl;
+        ss << configFileParser << std::endl;
     }
     else
     {
-        throw std::runtime_error("Illegal State: command unknown");
+        // In this scenario, argparse puts "...did you mean 'explicit'\n".
+        // The lack of the question mark here really irks me.
+        ss.seekp(-1, std::ios_base::cur);
+        ss << "? command unknown" << std::endl;
+        ss << typeid(err).name() << std::endl;
     }
 
-    std::exit(-1);
+    throw CriticalAbort(ss.str());
 }
 
 const Config CliParser::parseExplicit() const
@@ -197,8 +204,7 @@ const Config CliParser::parseConfigFile() const
 
     if (!std::filesystem::exists(cfgFileName))
     {
-        std::cerr << "The config file " << cfgFileName << " does not exist." << std::endl;
-        std::exit(-1);
+        throw CriticalAbort("The config file '"s + cfgFileName.c_str() + "' does not exist.");
     }
 
     auto cfgFile = std::ifstream(cfgFileName);
@@ -206,8 +212,7 @@ const Config CliParser::parseConfigFile() const
     const bool success = json.parse(cfgFile);
     if (!success)
     {
-        std::cerr << "The config file " << cfgFileName << " is not a valid JSON file." << std::endl;
-        std::exit(-1);
+        throw CriticalAbort("The config file '"s + cfgFileName.c_str() + "' is not a valid JSON file.");
     }
 
     validateConfigFile(json, cfgFileName);
@@ -277,10 +282,11 @@ void CliParser::validateConfigFile(const jsonxx::Object& json, const std::filesy
 
     if (!result.isValid())
     {
+        std::stringstream ss;
         for (const auto& msg: result.getValidationErrors())
         {
-            std::cerr << "ERROR: " << msg << std::endl;
+            ss << "ERROR: " << msg << std::endl;
         }
-        std::exit(0);
+        throw CriticalAbort(ss.str());
     }
 }

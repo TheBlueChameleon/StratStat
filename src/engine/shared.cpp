@@ -5,6 +5,8 @@ using namespace std::string_literals;
 
 #include <spdlog/spdlog.h>
 
+#include <app/errors.hpp>
+
 #include "commonvaluemapvalidationresult.hpp"
 #include "engine.hpp"
 #include "validationinterface.hpp"
@@ -66,6 +68,19 @@ namespace StratStat
             }
 
             const auto validationResult = validator(dbProtoEntry);
+            if (validationResult.hasWarnings())
+            {
+                std::string rowBuffer;
+                row.read_raw_value(rowBuffer);
+                spdlog::warn(
+                    "VALIDATION WARNINGS IN LINE\n"
+                    "'{}':\n"
+                    "{}"
+                    "RESULTING BEHAVIOR MAY BE UNINTUITIVE.",
+                    rowBuffer,
+                    validationResult.collectWarnings()
+                );
+            }
             if (validationResult.isSuccess())
             {
                 const auto& dbValue = validationResult.getCommonValueCollection();
@@ -83,7 +98,7 @@ namespace StratStat
                     "{}"
                     "ENTRY WILL BE IGNORED",
                     rowBuffer,
-                    validationResult.collectErrorMessages()
+                    validationResult.collectWarnings()
                 );
             }
         }
@@ -227,7 +242,7 @@ namespace StratStat
         if (!success)
         {
             spdlog::critical("The team definition file '{}' is not a valid JSON file.", fileName.c_str());
-            std::exit(-1);
+            throw CriticalAbort();
         }
 
         JsonValidation::SpecificationSet specs;
@@ -251,7 +266,7 @@ namespace StratStat
             {
                 spdlog::critical(error);
             }
-            std::exit(-1);
+            throw CriticalAbort();
         }
 
         transferPlayerAndTeamDef(json, fileName.c_str(), playerDef, teamDef);

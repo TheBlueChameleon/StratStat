@@ -10,6 +10,7 @@
 
 #include <engine/interface.hpp>
 #include "enginewrapper.hpp"
+#include "errors.hpp"
 
 // TODO test win version of this
 
@@ -29,7 +30,7 @@ void EngineWrapper::loadEninge(const std::filesystem::path& enginePath)
     {
         spdlog::critical("COULD NOT LOAD {}", enginePath.c_str());
         spdlog::critical(dlerror());
-        std::exit(-1);
+        throw CriticalAbort();
     }
 
     spdlog::trace("... SUCCESS!");
@@ -46,7 +47,7 @@ void EngineWrapper::fetchCheckAndTransfer(T EngineWrapper::* offset, const char*
     if (target == nullptr)
     {
         spdlog::critical("COULD NOT EXTRACT FUNCTION {}", symbol);
-        std::exit(-1);
+        throw CriticalAbort();
     }
     else
     {
@@ -64,7 +65,7 @@ void EngineWrapper::testSignature()
     if (getSignature() != EXPECTED_SIGNATURE)
     {
         spdlog::critical("UNEXPECTED SIGNATURE");
-        std::exit(-1);
+        throw CriticalAbort();
     }
     spdlog::trace("... SUCCESS!");
 }

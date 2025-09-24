@@ -9,33 +9,30 @@ using namespace std::string_literals;
 #include "logging.hpp"
 #include "enginewrapper.hpp"
 
+#include "errors.hpp"
 #include "tests.hpp"
-
-void doLuaStuff()
-{
-    lua_State* L = luaL_newstate();
-    luaL_openlibs(L);
-    luaL_dofile(L, "./strategies/hello.lua");
-    lua_close(L);
-}
 
 int main(const int argc, const char* argv[])
 {
-    // testJsonValidation();
-    // std::exit(0);
+    try
+    {
+        auto parser = CliParser();
+        auto cfg = parser.run(argc, argv);
 
-    auto parser = CliParser();
-    auto cfg = parser.run(argc, argv);
+        configureLogger(cfg);
+        logCfg(cfg);
 
-    configureLogger(cfg);
-    logCfg(cfg);
+        auto ew = EngineWrapper(cfg.getEngine());
 
-    auto ew = EngineWrapper(cfg.getEngine());
-
-    ew.connectLogger(spdlog::get(DEFALUT_LOGGER_NAME));
-    ew.init(cfg.getPkmnDefs(), cfg.getMoveDefs());
-    ew.loadTeams(cfg.getHumanTeam(), cfg.getEnemyTeam());
-    // doLuaStuff();
+        ew.connectLogger(spdlog::get(DEFALUT_LOGGER_NAME));
+        ew.init(cfg.getPkmnDefs(), cfg.getMoveDefs());
+        ew.loadTeams(cfg.getHumanTeam(), cfg.getEnemyTeam());
+    }
+    catch (const CriticalAbort& e)
+    {
+        std::cerr << e.what() << std::endl;
+        return -1;
+    }
 
     return 0;
 }

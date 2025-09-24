@@ -1,6 +1,8 @@
-#include <iostream>
+#include <string>
+using namespace std::string_literals;
 
 #include "config.hpp"
+#include "errors.hpp"
 
 Config::Config() {}
 
@@ -8,9 +10,10 @@ void Config::assertPathExists(const std::string& attributeName, const std::files
 {
     if (!std::filesystem::exists(path))
     {
-        std::cerr << "The path for '" << attributeName << "' "
-                  "was specified to be '" << path << "', but no such file exists." << std::endl;
-        std::exit(-1);
+        throw CriticalAbort(
+            "The path for '"s + attributeName + "' " +
+            "was specified to be '" + path.c_str() + "', but no such file exists."
+        );
     }
 }
 
@@ -110,9 +113,10 @@ void Config::setRepetitions(int newRepetitions)
 {
     if (newRepetitions < 0)
     {
-        std::cerr << "Invalid number of repetitions: " << newRepetitions << std::endl;
-        std::cerr << "Must be a positive number." << std::endl;
-        std::exit(-1);
+        throw CriticalAbort(
+            "Invalid number of repetitions: "s + std::to_string(newRepetitions) + "\n" +
+            "Must be a positive number."
+        );
     }
 
     repetitions = newRepetitions;
@@ -127,9 +131,10 @@ void Config::setMaxTurns(int newMaxTurns)
 {
     if (newMaxTurns < 0)
     {
-        std::cerr << "Invalid number of max turns per battle: " << newMaxTurns << std::endl;
-        std::cerr << "Must be a positive number." << std::endl;
-        std::exit(-1);
+        throw CriticalAbort(
+            "Invalid number of max turns per battle: "s + std::to_string(newMaxTurns) + "\n" +
+            "Must be a positive number."
+        );
     }
     maxTurns = newMaxTurns;
 }

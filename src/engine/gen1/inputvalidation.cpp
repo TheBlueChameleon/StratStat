@@ -7,6 +7,8 @@ using namespace std::string_literals;
 
 #include <json-schema/specification.hpp>
 
+#include <app/errors.hpp>
+
 #include "../commonvaluecollection.hpp"
 #include "../commonvaluemapvalidationresult.hpp"
 #include "../engine.hpp"
@@ -43,15 +45,26 @@ namespace StratStat
     // TODO pass through file information
     void validateCommonValueMapPositiveIntEntry(
         const CommonValueMap& value,
-        const std::string& key
+        const std::string& key,
+        CommonValueMapValidationResult& errResult,
+        const bool error = false
     )
     {
         const auto intValue = value.at(key).asInt();
         if (intValue < 0)
         {
-            spdlog::warn(
-                "invalid "s + key + " '" + std::to_string(intValue) + "'"
-            );
+            if (error)
+            {
+                errResult.addErrorMessage(
+                    "invalid "s + key + " '" + std::to_string(intValue) + "'"
+                );
+            }
+            else
+            {
+                errResult.addWarning(
+                    "invalid "s + key + " '" + std::to_string(intValue) + "'"
+                );
+            }
         }
     }
 
@@ -69,15 +82,18 @@ namespace StratStat
         validateCommonValueMapEntry(dbEntry, PKMN_TYPE2, PKMN_TYPES, errResult, true);
         validateCommonValueMapEntry(dbEntry, PKMN_EXPGROUP, PKMN_EXPERIENCE_GROUPS, errResult);
 
-        validateCommonValueMapPositiveIntEntry(dbEntry, PKMN_HP);
-        validateCommonValueMapPositiveIntEntry(dbEntry, PKMN_ATK);
-        validateCommonValueMapPositiveIntEntry(dbEntry, PKMN_DEF);
-        validateCommonValueMapPositiveIntEntry(dbEntry, PKMN_SPC);
-        validateCommonValueMapPositiveIntEntry(dbEntry, PKMN_SPD);
+        validateCommonValueMapPositiveIntEntry(dbEntry, PKMN_HP, errResult);
+        validateCommonValueMapPositiveIntEntry(dbEntry, PKMN_ATK, errResult);
+        validateCommonValueMapPositiveIntEntry(dbEntry, PKMN_DEF, errResult);
+        validateCommonValueMapPositiveIntEntry(dbEntry, PKMN_SPC, errResult);
+        validateCommonValueMapPositiveIntEntry(dbEntry, PKMN_SPD, errResult);
 
         if (errResult.getErrorMessages().empty())
         {
-            return CommonValueCollection(PKMN_IDENTIFIER, dbEntry);
+            return CommonValueMapValidationResult(
+                       CommonValueCollection(PKMN_IDENTIFIER, dbEntry),
+                       errResult.getWarnings()
+                   );
         }
         else
         {
@@ -98,15 +114,17 @@ namespace StratStat
         validateCommonValueMapEntry(dbEntry, MOVE_DAMAGE_CLASS_ID, MOVE_DAMAGE_CLASSIDS, errResult);
         validateCommonValueMapEntry(dbEntry, MOVE_EFFECT_ID, MOVE_EFFECT_IDS, errResult);
 
-        validateCommonValueMapPositiveIntEntry(dbEntry, MOVE_POWER);
-        validateCommonValueMapPositiveIntEntry(dbEntry, MOVE_PP);
-        validateCommonValueMapPositiveIntEntry(dbEntry, MOVE_ACCURACY);
-        validateCommonValueMapPositiveIntEntry(dbEntry, MOVE_PRIORITY);
-        validateCommonValueMapPositiveIntEntry(dbEntry, MOVE_EFFECT_CHANCE);
+        validateCommonValueMapPositiveIntEntry(dbEntry, MOVE_POWER, errResult);
+        validateCommonValueMapPositiveIntEntry(dbEntry, MOVE_PP, errResult, true);
+        validateCommonValueMapPositiveIntEntry(dbEntry, MOVE_ACCURACY, errResult, true);
+        validateCommonValueMapPositiveIntEntry(dbEntry, MOVE_EFFECT_CHANCE, errResult, true);
 
         if (errResult.getErrorMessages().empty())
         {
-            return CommonValueCollection(MOVE_IDENTIFIER, dbEntry);
+            return CommonValueMapValidationResult(
+                       CommonValueCollection(MOVE_IDENTIFIER, dbEntry),
+                       errResult.getWarnings()
+                   );
         }
         else
         {
@@ -430,7 +448,7 @@ namespace StratStat
         {
             spdlog::critical("In team definition file '"s + filename + "': "
                              "Team with no (valid) members!");
-            std::exit(-1);
+            throw CriticalAbort();
         }
     }
 
