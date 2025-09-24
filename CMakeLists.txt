@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 4.1.1)
 
 include(FetchContent)
 include(CMakePrintHelpers)
+include(GNUInstallDirs)
 
 # ============================================================================ #
 # language definition
@@ -47,6 +48,11 @@ FetchContent_Declare(
     GIT_TAG        "v1.15.3"
     GIT_SHALLOW    true
 )
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest
+  GIT_TAG        "v1.17.0"
+)
 # more `FetchContent_Declare`s (if any). They should all be declared
 # before any calls to FetchContent_Make_available (see docs for why).
 
@@ -55,6 +61,9 @@ FetchContent_MakeAvailable(lua)
 FetchContent_MakeAvailable(jsonxx)
 FetchContent_MakeAvailable(csv2)
 FetchContent_MakeAvailable(spdlog)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 # more `FetchContent_MakeAvailable`s (if any).
 
 # cmake_print_variables(argparse_SOURCE_DIR)
@@ -99,6 +108,7 @@ target_compile_options(jsonxx-schema-lib PRIVATE -fPIC)
 # engine shared routines
 
 add_library(Base-Engine STATIC
+    src/app/errors.hpp
     src/engine/validationinterface.hpp
     src/engine/interface.hpp src/engine/interface.cpp
     src/engine/sharedtypes.hpp src/engine/sharedtypes.cpp
@@ -147,11 +157,12 @@ target_link_libraries(Gen1-Engine PUBLIC
 add_executable(StratStat
     src/app/main.cpp
 
+    src/app/errors.hpp
     src/app/config.hpp src/app/config.cpp
     src/app/cliparser.hpp src/app/cliparser.cpp
     src/app/logging.hpp src/app/logging.cpp
-    src/engine/interface.hpp
     src/app/enginewrapper.hpp src/app/enginewrapper.cpp
+    src/app/luawrapper.hpp src/app/luawrapper.cpp
 
     src/app/tests.hpp src/app/tests.cpp
 )
@@ -165,10 +176,32 @@ target_link_libraries(StratStat PRIVATE
     spdlog
 )
 
+# ............................................................................ #
+# tests
+
+include(GoogleTest)
+
+enable_testing()
+
+add_executable(StratStat-Test
+    src/test/main.cpp
+)
+
+if (TARGET GTest::gtest_main)
+    message("found it!")
+else()
+    message("no gtest!")
+endif()
+
+target_link_libraries(StratStat-Test
+    GTest::gtest_main
+)
+
+
+gtest_discover_tests(StratStat-Test)
 
 # ============================================================================ #
 
-include(GNUInstallDirs)
 install(TARGETS StratStat
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
