@@ -16,6 +16,7 @@ using namespace std::string_literals;
 
 namespace StratStat
 {
+    // TODO pass through file information
     void validateCommonValueMapEntry(
         const CommonValueMap& value,
         const std::string& key,
@@ -24,7 +25,7 @@ namespace StratStat
         bool allowEmpty = false
     )
     {
-        const auto& strValue = std::get<std::string>(value.at(key));
+        const auto& strValue = value.at(key).asString();
 
         if (allowEmpty && strValue.empty())
         {
@@ -35,6 +36,21 @@ namespace StratStat
         {
             errResult.addErrorMessage(
                 "invalid "s + key + " '" + strValue + "'"
+            );
+        }
+    }
+
+    // TODO pass through file information
+    void validateCommonValueMapPositiveIntEntry(
+        const CommonValueMap& value,
+        const std::string& key
+    )
+    {
+        const auto intValue = value.at(key).asInt();
+        if (intValue < 0)
+        {
+            spdlog::warn(
+                "invalid "s + key + " '" + std::to_string(intValue) + "'"
             );
         }
     }
@@ -52,6 +68,12 @@ namespace StratStat
         validateCommonValueMapEntry(dbEntry, PKMN_TYPE1, PKMN_TYPES, errResult);
         validateCommonValueMapEntry(dbEntry, PKMN_TYPE2, PKMN_TYPES, errResult, true);
         validateCommonValueMapEntry(dbEntry, PKMN_EXPGROUP, PKMN_EXPERIENCE_GROUPS, errResult);
+
+        validateCommonValueMapPositiveIntEntry(dbEntry, PKMN_HP);
+        validateCommonValueMapPositiveIntEntry(dbEntry, PKMN_ATK);
+        validateCommonValueMapPositiveIntEntry(dbEntry, PKMN_DEF);
+        validateCommonValueMapPositiveIntEntry(dbEntry, PKMN_SPC);
+        validateCommonValueMapPositiveIntEntry(dbEntry, PKMN_SPD);
 
         if (errResult.getErrorMessages().empty())
         {
@@ -75,6 +97,12 @@ namespace StratStat
         validateCommonValueMapEntry(dbEntry, MOVE_TYPE_ID, PKMN_TYPES, errResult);
         validateCommonValueMapEntry(dbEntry, MOVE_DAMAGE_CLASS_ID, MOVE_DAMAGE_CLASSIDS, errResult);
         validateCommonValueMapEntry(dbEntry, MOVE_EFFECT_ID, MOVE_EFFECT_IDS, errResult);
+
+        validateCommonValueMapPositiveIntEntry(dbEntry, MOVE_POWER);
+        validateCommonValueMapPositiveIntEntry(dbEntry, MOVE_PP);
+        validateCommonValueMapPositiveIntEntry(dbEntry, MOVE_ACCURACY);
+        validateCommonValueMapPositiveIntEntry(dbEntry, MOVE_PRIORITY);
+        validateCommonValueMapPositiveIntEntry(dbEntry, MOVE_EFFECT_CHANCE);
 
         if (errResult.getErrorMessages().empty())
         {
@@ -234,10 +262,10 @@ namespace StratStat
         {
             if (force)
             {
-                spdlog::warn("In team definition file '"s + filename + "': "
-                             "Value for " + key + " is " +
-                             (disallowZero ? "negative" : "less than one") +
-                             ". (Value overridden and set to 1)");
+                spdlog::error("In team definition file '"s + filename + "': "
+                              "Value for " + key + " is " +
+                              (disallowZero ? "negative" : "less than one") +
+                              ". (Value overridden and set to 1)");
                 pkmn[key] = 1;
             }
             else
@@ -319,27 +347,6 @@ namespace StratStat
             pkmn[associatedState] = std::monostate();
             return;
         }
-
-        if (pkmn[key].asInt() < 0)
-        {
-            if (force)
-            {
-                spdlog::error("In team definition file '"s + filename + "': "
-                              "'" + key + "' was set to '" + std::to_string(pkmn[key].asInt()) + "' " +
-                              "for Pokémon of species '" + pkmn[TEAM_SPECIES].asString() + "', " +
-                              "but only positive values are allowed. It will be set to '1' instead."
-                             );
-                pkmn[key] = 1;
-            }
-            else
-            {
-                spdlog::warn("In team definition file '"s + filename + "': "
-                             "'" + key + "' was set to '" + std::to_string(pkmn[key].asInt()) + "' " +
-                             "for Pokémon of species '" + pkmn[TEAM_SPECIES].asString() + "', " +
-                             "but only positive values are expected."
-                            );
-            }
-        }
     }
 
     void assertSanePkmn(CommonValueMap& pkmn, const std::string& filename)
@@ -385,13 +392,14 @@ namespace StratStat
         assertPositiveInt(pkmn, TEAM_SPD, filename, true, true);
 
         // sleep counter only with status = sleep
-        // sleep counter positive nonzero or reset to 1
         assertStateWithCounter(pkmn, TEAM_SLEEP_COUNTER, STATUS_SLEEP, filename, true);
-        // sleep counter <= 7 or warn
+        // sleep counter positive or reset to 1
+        assertPositiveInt(pkmn, TEAM_SLEEP_COUNTER, filename, false, true);
 
         // toxic counter only with status = poison
-        // value as sleep
         assertStateWithCounter(pkmn, TEAM_TOXIC_COUNTER, STATUS_POISON, filename);
+        // toxic counter positive or warn
+        assertPositiveInt(pkmn, TEAM_TOXIC_COUNTER, filename, false, false);
     }
 
     void transferTeamDef(
