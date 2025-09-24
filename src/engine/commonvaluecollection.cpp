@@ -11,9 +11,7 @@ namespace StratStat
 
     const std::string& CommonValueCollection::getIdentifier() const
     {
-        const VariantContentType& lookup = data.at(identifierKey);
-        const auto contentType = static_cast<int>(VariantContentID::Text);
-        return std::get<contentType>(lookup);
+        return data.at(identifierKey).asString();
     }
 
     const VariantContentType& CommonValueCollection::get(std::string key) const

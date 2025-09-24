@@ -15,6 +15,11 @@ namespace StratStat
         return db.at(identifier);
     }
 
+    const bool CommonDatabase::contains(const std::string& identifier) const
+    {
+        return db.contains(identifier);
+    }
+
     int CommonDatabase::size() const
     {
         return db.size();

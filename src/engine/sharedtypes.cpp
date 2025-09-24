@@ -10,6 +10,36 @@ namespace StratStat
         return this->index() != static_cast<int>(VariantContentID::Error);
     }
 
+    const bool VariantContentType::isInt() const
+    {
+        return this->index() == static_cast<int>(VariantContentID::Integer);
+    }
+
+    const bool VariantContentType::isDouble() const
+    {
+        return this->index() == static_cast<int>(VariantContentID::Double);
+    }
+
+    const bool VariantContentType::isString() const
+    {
+        return this->index() == static_cast<int>(VariantContentID::Text);
+    }
+
+    const int VariantContentType::asInt() const
+    {
+        return std::get<int>(*this);
+    }
+
+    const double VariantContentType::asDouble() const
+    {
+        return std::get<double>(*this);
+    }
+
+    const std::string& VariantContentType::asString() const
+    {
+        return std::get<std::string>(*this);
+    }
+
     std::string VariantContentType::to_string() const
     {
         switch (this->index())

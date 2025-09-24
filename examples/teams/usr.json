@@ -4,7 +4,7 @@
     },
     "pokemon": [
         {
-            "species": "charmander",
+            "species": "Charmander",
             "level": 5,
             "move1": "pound",
             "move1PP": 10

@@ -17,6 +17,7 @@ namespace StratStat
 
             bool add(const CommonValueCollection& def);
             const CommonValueCollection& get(const std::string& identifier) const;
+            const bool contains(const std::string& identifier) const;
 
             int size() const;
     };

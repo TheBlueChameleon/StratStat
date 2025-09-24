@@ -5,13 +5,15 @@
     },
     "pokemon": [
         {
-            "species": "charmander",
+            "species": "Charmander",
             "level": 5,
 
             "move1": "pound",
             "move1PP": 10,
 
-            "move2": "growl"
+            "move2": "growl",
+
+            "toxicCounter": 1,
         }
     ],
 }

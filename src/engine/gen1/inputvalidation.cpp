@@ -9,6 +9,7 @@ using namespace std::string_literals;
 
 #include "../commonvaluecollection.hpp"
 #include "../commonvaluemapvalidationresult.hpp"
+#include "../engine.hpp"
 #include "../interface.hpp"
 #include "../validationinterface.hpp"
 #include "constants.hpp"
@@ -171,9 +172,7 @@ namespace StratStat
         }
     }
 
-    CommonValueMap getTeamMember(
-        const jsonxx::Object& pkmnDef
-    )
+    CommonValueMap getTeamMember(const jsonxx::Object& pkmnDef)
     {
         CommonValueMap result;
 
@@ -182,6 +181,11 @@ namespace StratStat
 #define FETCH_OR(KEY, TYPE, DEFAULT) result[KEY] = fetchValueOrDefault<TYPE>(pkmnDef, KEY, DEFAULT)
         FETCH(TEAM_SPECIES, jsonxx::String);
         FETCH_AS(TEAM_LEVEL, jsonxx::Number, int);
+        FETCH_AS(TEAM_HP, jsonxx::Number, int);
+        FETCH_AS(TEAM_ATK, jsonxx::Number, int);
+        FETCH_AS(TEAM_DEF, jsonxx::Number, int);
+        FETCH_AS(TEAM_SPC, jsonxx::Number, int);
+        FETCH_AS(TEAM_SPD, jsonxx::Number, int);
         FETCH_AS(TEAM_DV_ATK, jsonxx::Number, int);
         FETCH_AS(TEAM_DV_DEF, jsonxx::Number, int);
         FETCH_AS(TEAM_DV_SPC, jsonxx::Number, int);
@@ -213,28 +217,218 @@ namespace StratStat
         return result;
     }
 
+    void assertPositiveInt(
+        CommonValueMap& pkmn,
+        const std::string& key,
+        const std::string& filename,
+        const bool disallowZero = false,
+        const bool force = false
+    )
+    {
+        if (!pkmn[key].hasValue())
+        {
+            return;
+        }
+
+        if (pkmn[key].asInt() < (0 + disallowZero))
+        {
+            if (force)
+            {
+                spdlog::warn("In team definition file '"s + filename + "': "
+                             "Value for " + key + " is " +
+                             (disallowZero ? "negative" : "less than one") +
+                             ". (Value overridden and set to 1)");
+                pkmn[key] = 1;
+            }
+            else
+            {
+                spdlog::warn("In team definition file '"s + filename + "': "
+                             "Value for " + key + " is " +
+                             (disallowZero ? "negative" : "less than one") +
+                             " and might cause invalid states.");
+            }
+        }
+    }
+
+    void assertSaneMove(CommonValueMap& pkmn, const std::string& key, const std::string& filename)
+    {
+        if (!pkmn[key].hasValue())
+        {
+            return;
+        }
+
+        const auto& moveDb = Engine::getInstance().getMoveDb();
+        const auto& moveName = pkmn[key].asString();
+        if (!moveDb.contains(moveName))
+        {
+            spdlog::error("In team definition file '"s + filename + "': "
+                          "Unknown move: '"s + moveName + "' (will be ignored)");
+            pkmn[key] = std::monostate();
+        }
+    }
+
+    void assertHasAnyMove(CommonValueMap& pkmn,const std::string& filename)
+    {
+        if (!(
+                pkmn[TEAM_MOVE1].hasValue() ||
+                pkmn[TEAM_MOVE2].hasValue() ||
+                pkmn[TEAM_MOVE3].hasValue() ||
+                pkmn[TEAM_MOVE4].hasValue()
+            ))
+        {
+            spdlog::error("In team definition file '"s + filename + "': "
+                          "No valid move. Pokémon of species '"s + pkmn[TEAM_SPECIES].asString() + "' will be ignored.");
+            pkmn[TEAM_SPECIES] = std::monostate();
+        }
+    }
+
+    void assertStateWithCounter(
+        CommonValueMap& pkmn,
+        const std::string& key,
+        const std::string& associatedState,
+        const std::string& filename,
+        const bool force = false
+    )
+    {
+        if (!pkmn[key].hasValue())
+        {
+            return;
+        }
+
+        bool notAssociatedWithState = false;
+        if (!pkmn[associatedState].hasValue())
+        {
+            notAssociatedWithState = true;
+        }
+        else if (!pkmn[TEAM_STATUS].isString())
+        {
+            notAssociatedWithState = true;
+        }
+        else if (pkmn[TEAM_STATUS].asString() != associatedState)
+        {
+            notAssociatedWithState = true;
+        }
+
+        if (notAssociatedWithState)
+        {
+            spdlog::warn("In team definition file '"s + filename + "': "
+                         "'" + key + "' was set for Pokémon of species '" + pkmn[TEAM_SPECIES].asString() + "', "
+                         "but it does not also have the associated " + TEAM_STATUS + " '" + associatedState + "'. "
+                         "The setting will be ignored."
+                        );
+            pkmn[associatedState] = std::monostate();
+            return;
+        }
+
+        if (pkmn[key].asInt() < 0)
+        {
+            if (force)
+            {
+                spdlog::error("In team definition file '"s + filename + "': "
+                              "'" + key + "' was set to '" + std::to_string(pkmn[key].asInt()) + "' " +
+                              "for Pokémon of species '" + pkmn[TEAM_SPECIES].asString() + "', " +
+                              "but only positive values are allowed. It will be set to '1' instead."
+                             );
+                pkmn[key] = 1;
+            }
+            else
+            {
+                spdlog::warn("In team definition file '"s + filename + "': "
+                             "'" + key + "' was set to '" + std::to_string(pkmn[key].asInt()) + "' " +
+                             "for Pokémon of species '" + pkmn[TEAM_SPECIES].asString() + "', " +
+                             "but only positive values are expected."
+                            );
+            }
+        }
+    }
+
+    void assertSanePkmn(CommonValueMap& pkmn, const std::string& filename)
+    {
+        // pkmn in db or reset to monostate
+        const auto& pkmnDb = Engine::getInstance().getPkmnDb();
+        const auto& species = pkmn[TEAM_SPECIES].asString();
+        if (!pkmnDb.contains(species))
+        {
+            spdlog::error("In team definition file '"s + filename + "': "
+                          "Unknown species: '"s + species + "' (will be ignored)");
+            pkmn[TEAM_SPECIES] = std::monostate();
+        }
+
+        // level greater or equal to 0 or warn
+        assertPositiveInt(pkmn, TEAM_LEVEL, filename);
+
+        // move in db or reset to monostate
+        assertSaneMove(pkmn, TEAM_MOVE1, filename);
+        assertSaneMove(pkmn, TEAM_MOVE2, filename);
+        assertSaneMove(pkmn, TEAM_MOVE3, filename);
+        assertSaneMove(pkmn, TEAM_MOVE4, filename);
+
+        // has at least one defined move or invalidate pkmn
+        assertHasAnyMove(pkmn, filename);
+
+        // effort stats positive or warn
+        assertPositiveInt(pkmn, TEAM_DV_ATK, filename);
+        assertPositiveInt(pkmn, TEAM_DV_DEF, filename);
+        assertPositiveInt(pkmn, TEAM_DV_SPC, filename);
+        assertPositiveInt(pkmn, TEAM_DV_SPD, filename);
+        assertPositiveInt(pkmn, TEAM_SX_HP, filename);
+        assertPositiveInt(pkmn, TEAM_SX_ATK, filename);
+        assertPositiveInt(pkmn, TEAM_SX_DEF, filename);
+        assertPositiveInt(pkmn, TEAM_SX_SPC, filename);
+        assertPositiveInt(pkmn, TEAM_SX_SPD, filename);
+
+        // absolute stats positive (>0) or reset to 1
+        assertPositiveInt(pkmn, TEAM_HP, filename, true, true);
+        assertPositiveInt(pkmn, TEAM_ATK, filename, true, true);
+        assertPositiveInt(pkmn, TEAM_DEF, filename, true, true);
+        assertPositiveInt(pkmn, TEAM_SPC, filename, true, true);
+        assertPositiveInt(pkmn, TEAM_SPD, filename, true, true);
+
+        // sleep counter only with status = sleep
+        // sleep counter positive nonzero or reset to 1
+        assertStateWithCounter(pkmn, TEAM_SLEEP_COUNTER, STATUS_SLEEP, filename, true);
+        // sleep counter <= 7 or warn
+
+        // toxic counter only with status = poison
+        // value as sleep
+        assertStateWithCounter(pkmn, TEAM_TOXIC_COUNTER, STATUS_POISON, filename);
+    }
+
     void transferTeamDef(
         const jsonxx::Array& json,
+        const std::string& filename,
         CommonValueMapVector& teamDef
     )
     {
         const auto N = json.values().size();
-
         if (N > 6)
         {
-            // TODO: maybe pass through filename?
-            spdlog::warn("Non-standard team with "s + std::to_string(N) + " members!");
+            spdlog::warn("In team definition file '"s + filename + "': "
+                         "Non-standard team with "s + std::to_string(N) + " members!");
         }
-
         teamDef.reserve(N);
+
         for (const jsonxx::Value* ptr : json.values())
         {
-            teamDef.push_back(getTeamMember(ptr->get<jsonxx::Object>()));
+            auto pkmn = getTeamMember(ptr->get<jsonxx::Object>());
+            assertSanePkmn(pkmn, filename);
+            if (pkmn.at(TEAM_SPECIES).hasValue())
+            {
+                teamDef.push_back(pkmn);
+            }
+        }
+
+        if (teamDef.size() == 0)
+        {
+            spdlog::critical("In team definition file '"s + filename + "': "
+                             "Team with no (valid) members!");
+            std::exit(-1);
         }
     }
 
     void transferPlayerAndTeamDef(
         const jsonxx::Object& json,
+        const std::string& filename,
         CommonValueMap& playerDef,
         CommonValueMapVector& teamDef)
     {
@@ -261,6 +455,7 @@ namespace StratStat
 
         transferTeamDef(
             json.get<jsonxx::Array>(PLAYER_POKEMON),
+            filename,
             teamDef
         );
     }

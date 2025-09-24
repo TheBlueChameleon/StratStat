@@ -120,4 +120,14 @@ namespace StratStat
         VariantContentInfo(MOVE_EFFECT_ID,          VariantContentID::Text),
         VariantContentInfo(MOVE_EFFECT_CHANCE,      VariantContentID::Integer),
     };
+
+    const AllowedValues STATUS_ALL =
+    {
+        STATUS_NONE,
+        STATUS_SLEEP,
+        STATUS_POISON,
+        STATUS_PARALYZED,
+        STATUS_BURNED,
+        STATUS_FROZEN,
+    };
 }

@@ -24,20 +24,28 @@ namespace StratStat
     /* ---------------------------------------------------------------------- */
     // common variant definitions
 
-    class VariantContentType : public std::variant<int, double, std::string, std::monostate>
+    class VariantContentType : public std::variant<std::monostate, int, double, std::string>
     {
         public:
             static VariantContentType error();
 
-            using std::variant<int, double, std::string, std::monostate>::variant;
+            using std::variant<std::monostate, int, double, std::string>::variant;
 
             bool hasValue() const;
+
+            const bool isInt() const;
+            const bool isDouble() const;
+            const bool isString() const;
+
+            const int asInt() const;
+            const double asDouble() const;
+            const std::string& asString() const;
 
             std::string to_string() const;
 
     };
 
-    enum class VariantContentID {Integer, Double, Text, Error};
+    enum class VariantContentID {Error, Integer, Double, Text};
 
     struct VariantContentInfo
     {

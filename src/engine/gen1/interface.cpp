@@ -62,21 +62,32 @@ extern "C" {
     {
         using namespace JsonValidation;
 
+        const auto allAllowed = JsonValidation::AllowedValues();
+
+        const auto mutexStats = MutexGroup({"badges"});
+        const auto mutexEfforts = MutexGroup({"boosts"});
+
         auto pokemonDef = Specification("", TID_Object, false);
 
         pokemonDef.addChild(Specification(TEAM_SPECIES, TID_String));
         pokemonDef.addChild(Specification(TEAM_LEVEL, TID_Number));
 
-        pokemonDef.addChild(Specification(TEAM_DV_ATK, TID_Number, false));
-        pokemonDef.addChild(Specification(TEAM_DV_DEF, TID_Number, false));
-        pokemonDef.addChild(Specification(TEAM_DV_SPC, TID_Number, false));
-        pokemonDef.addChild(Specification(TEAM_DV_SPD, TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_HP, TID_Number, false, allAllowed, mutexStats));
+        pokemonDef.addChild(Specification(TEAM_ATK, TID_Number, false, allAllowed, mutexStats));
+        pokemonDef.addChild(Specification(TEAM_DEF, TID_Number, false, allAllowed, mutexStats));
+        pokemonDef.addChild(Specification(TEAM_SPC, TID_Number, false, allAllowed, mutexStats));
+        pokemonDef.addChild(Specification(TEAM_SPD, TID_Number, false, allAllowed, mutexStats));
 
-        pokemonDef.addChild(Specification(TEAM_SX_HP,  TID_Number, false));
-        pokemonDef.addChild(Specification(TEAM_SX_ATK, TID_Number, false));
-        pokemonDef.addChild(Specification(TEAM_SX_DEF, TID_Number, false));
-        pokemonDef.addChild(Specification(TEAM_SX_SPC, TID_Number, false));
-        pokemonDef.addChild(Specification(TEAM_SX_SPD, TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_DV_ATK, TID_Number, false, allAllowed, mutexEfforts));
+        pokemonDef.addChild(Specification(TEAM_DV_DEF, TID_Number, false, allAllowed, mutexEfforts));
+        pokemonDef.addChild(Specification(TEAM_DV_SPC, TID_Number, false, allAllowed, mutexEfforts));
+        pokemonDef.addChild(Specification(TEAM_DV_SPD, TID_Number, false, allAllowed, mutexEfforts));
+
+        pokemonDef.addChild(Specification(TEAM_SX_HP,  TID_Number, false, allAllowed, mutexEfforts));
+        pokemonDef.addChild(Specification(TEAM_SX_ATK, TID_Number, false, allAllowed, mutexEfforts));
+        pokemonDef.addChild(Specification(TEAM_SX_DEF, TID_Number, false, allAllowed, mutexEfforts));
+        pokemonDef.addChild(Specification(TEAM_SX_SPC, TID_Number, false, allAllowed, mutexEfforts));
+        pokemonDef.addChild(Specification(TEAM_SX_SPD, TID_Number, false, allAllowed, mutexEfforts));
 
         pokemonDef.addChild(Specification(TEAM_MOVE1, TID_String));
         pokemonDef.addChild(Specification(TEAM_MOVE2, TID_String, false));
@@ -92,6 +103,10 @@ extern "C" {
         pokemonDef.addChild(Specification(TEAM_MOVE2_MAX_PP, TID_Number, false));
         pokemonDef.addChild(Specification(TEAM_MOVE3_MAX_PP, TID_Number, false));
         pokemonDef.addChild(Specification(TEAM_MOVE4_MAX_PP, TID_Number, false));
+
+        pokemonDef.addChild(Specification(TEAM_STATUS, TID_String, false));
+        pokemonDef.addChild(Specification(TEAM_SLEEP_COUNTER, TID_Number, false));
+        pokemonDef.addChild(Specification(TEAM_TOXIC_COUNTER, TID_Number, false));
 
         pokemon.addChild(pokemonDef);
     }

@@ -14,9 +14,10 @@ namespace StratStat
 
     void transferPlayerAndTeamDef(
         const jsonxx::Object& json,
+        const std::string& filename,
         CommonValueMap& playerDef,
         CommonValueMapVector& teamDef
-    );
+        );
 }
 
 #endif // VALIDATIONINTERFACE_H

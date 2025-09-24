@@ -7,6 +7,8 @@
 
 #include "../sharedtypes.hpp"
 
+// TODO fix capitalization rules
+
 namespace StratStat
 {
     constexpr auto PKMN_IDENTIFIER = "Name";
@@ -45,8 +47,8 @@ namespace StratStat
     constexpr auto STATUS_PARALYZED = "Paralyzed";
     constexpr auto STATUS_BURNED = "Burned";
     constexpr auto STATUS_FROZEN = "Frozen";
-    constexpr auto STATUS_SLEEP_COUNTER = "SleepCounter";
-    constexpr auto STATUS_TOXIC_COUNTER = "ToxicCounter";
+
+    extern const AllowedValues STATUS_ALL;
 
     constexpr auto PLAYER_HUMAN = "human";
     constexpr auto PLAYER_COMPUTER = "computer";
@@ -69,6 +71,11 @@ namespace StratStat
 
     constexpr auto TEAM_SPECIES = "species";
     constexpr auto TEAM_LEVEL = "level";
+    constexpr auto TEAM_HP = "HP";
+    constexpr auto TEAM_ATK = "ATK";
+    constexpr auto TEAM_DEF = "DEF";
+    constexpr auto TEAM_SPC = "SPC";
+    constexpr auto TEAM_SPD = "SPD";
     constexpr auto TEAM_DV_ATK = "DV_ATK";
     constexpr auto TEAM_DV_DEF = "DV_DEF";
     constexpr auto TEAM_DV_SPC = "DV_SPC";
