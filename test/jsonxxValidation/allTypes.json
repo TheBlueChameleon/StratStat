@@ -1,0 +1,24 @@
+{
+    "":,
+    "null":,
+    "string": "string",
+    "number": 2.71,
+    "bool": true,
+    "list": [1, 2, 3, "string"],
+    "noInnerValidationList": [
+        ["true", "yes", "on"],
+        ["false", "no", "off", 0]
+    ],
+    "withInnerValidationList": [
+        ["true", "yes", "on"],
+        ["false", "no", "off"]
+    ],
+    "object" : {},
+    "noInnerValidationObject" : {
+        "inner": true
+    },
+    "withInnerValidationObject" : {
+        "inner": true
+    },
+    "anyType": true
+}

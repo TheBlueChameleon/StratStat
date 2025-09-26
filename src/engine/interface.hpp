@@ -8,7 +8,7 @@
 
 #include <spdlog/spdlog.h>
 
-#include <json-schema/jsonvalidation.hpp>
+#include <jsonxx-validation/jsonvalidation.hpp>
 
 #include "sharedtypes.hpp"
 

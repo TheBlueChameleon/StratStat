@@ -408,25 +408,28 @@ void validateRecursively(
 {
     keySequence.push_back(key);
     const auto expectedType = value->type_;
-    if (expectedType == JsonValidation::TID_Object)
+    if (childSpecs.size() > 0)
     {
-        validateObject(
-            value->get<jsonxx::Object>(),
-            childSpecs,
-            keySequence,
-            errors,
-            warnings
-        );
-    }
-    else if (expectedType == JsonValidation::TID_Array)
-    {
-        validateArray(
-            value->get<jsonxx::Array>(),
-            *childSpecs.begin(),
-            keySequence,
-            errors,
-            warnings
-        );
+        if (expectedType == JsonValidation::TID_Object)
+        {
+            validateObject(
+                value->get<jsonxx::Object>(),
+                childSpecs,
+                keySequence,
+                errors,
+                warnings
+            );
+        }
+        else if (expectedType == JsonValidation::TID_Array)
+        {
+            validateArray(
+                value->get<jsonxx::Array>(),
+                *childSpecs.begin(),
+                keySequence,
+                errors,
+                warnings
+            );
+        }
     }
     keySequence.pop_back();
 }

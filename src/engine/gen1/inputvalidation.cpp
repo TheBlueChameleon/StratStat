@@ -5,7 +5,7 @@ using namespace std::string_literals;
 
 #include <spdlog/spdlog.h>
 
-#include <json-schema/specification.hpp>
+#include <jsonxx-validation/specification.hpp>
 
 #include <app/errors.hpp>
 

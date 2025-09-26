@@ -92,17 +92,17 @@ target_compile_options(jsonxx-lib PRIVATE -fPIC)
 
 # ............................................................................ #
 
-add_library(jsonxx-schema-lib STATIC
-    src/json-schema/constants.hpp
-    src/json-schema/jsonvalidationtypes.hpp src/json-schema/jsonvalidationtypes.cpp
-    src/json-schema/specification.hpp src/json-schema/specification.cpp
-    src/json-schema/jsonvalidation.hpp src/json-schema/jsonvalidation.cpp
-    src/json-schema/jsonvalidationtionresult.hpp src/json-schema/jsonvalidationtionresult.cpp
-    src/json-schema/jsonsetoperations.hpp src/json-schema/jsonsetoperations.cpp
+add_library(jsonxx-validation-lib STATIC
+    src/jsonxx-validation/constants.hpp
+    src/jsonxx-validation/jsonvalidationtypes.hpp       src/jsonxx-validation/jsonvalidationtypes.cpp
+    src/jsonxx-validation/specification.hpp             src/jsonxx-validation/specification.cpp
+    src/jsonxx-validation/jsonvalidation.hpp            src/jsonxx-validation/jsonvalidation.cpp
+    src/jsonxx-validation/jsonvalidationtionresult.hpp  src/jsonxx-validation/jsonvalidationtionresult.cpp
+    src/jsonxx-validation/jsonsetoperations.hpp         src/jsonxx-validation/jsonsetoperations.cpp
     
 )
 
-target_compile_options(jsonxx-schema-lib PRIVATE -fPIC)
+target_compile_options(jsonxx-validation-lib PRIVATE -fPIC)
 
 # ............................................................................ #
 # engine shared routines
@@ -137,7 +137,7 @@ add_library(Gen1-Engine SHARED
 
 target_link_libraries(Gen1-Engine PUBLIC
     Base-Engine
-    jsonxx-schema-lib
+    jsonxx-validation-lib
 )
 
 # ............................................................................ #
@@ -156,15 +156,12 @@ target_link_libraries(Gen1-Engine PUBLIC
 
 add_executable(StratStat
     src/app/main.cpp
-
     src/app/errors.hpp
     src/app/config.hpp src/app/config.cpp
     src/app/cliparser.hpp src/app/cliparser.cpp
     src/app/logging.hpp src/app/logging.cpp
     src/app/enginewrapper.hpp src/app/enginewrapper.cpp
     src/app/luawrapper.hpp src/app/luawrapper.cpp
-
-    src/app/tests.hpp src/app/tests.cpp
 )
 
 target_link_libraries(StratStat PRIVATE
@@ -172,7 +169,7 @@ target_link_libraries(StratStat PRIVATE
     argparse
     csv2
     jsonxx-lib
-    jsonxx-schema-lib
+    jsonxx-validation-lib
     spdlog
 )
 
@@ -185,6 +182,7 @@ enable_testing()
 
 add_executable(StratStat-Test
     src/test/main.cpp
+    src/test/testjsonxxvalidation.hpp src/test/testjsonxxvalidation.cpp
 )
 
 if (TARGET GTest::gtest_main)
@@ -195,6 +193,8 @@ endif()
 
 target_link_libraries(StratStat-Test
     GTest::gtest_main
+    jsonxx-lib
+    jsonxx-validation-lib
 )
 
 

@@ -10,11 +10,11 @@ using namespace std::string_literals;
 #include <argparse/argparse.hpp>
 using ArgParser = argparse::ArgumentParser;
 
+#include <jsonxx-validation/jsonvalidation.hpp>
+
 #include "cliparser.hpp"
 #include "config.hpp"
 #include "errors.hpp"
-
-#include "../json-schema/jsonvalidation.hpp"
 
 auto mandatoryPaths =
 {

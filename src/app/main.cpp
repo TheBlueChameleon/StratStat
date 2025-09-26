@@ -4,13 +4,11 @@ using namespace std::string_literals;
 
 #include <lua.hpp>
 
-#include "config.hpp"
 #include "cliparser.hpp"
-#include "logging.hpp"
+#include "config.hpp"
 #include "enginewrapper.hpp"
-
 #include "errors.hpp"
-#include "tests.hpp"
+#include "logging.hpp"
 
 int main(const int argc, const char* argv[])
 {
