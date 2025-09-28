@@ -2,8 +2,6 @@
 #include <string>
 using namespace std::string_literals;
 
-#include <lua.hpp>
-
 #include "cliparser.hpp"
 #include "config.hpp"
 #include "enginewrapper.hpp"

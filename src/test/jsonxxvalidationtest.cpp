@@ -5,7 +5,7 @@ using namespace std::string_literals;
 
 #include <jsonxx-validation/jsonvalidation.hpp>
 
-#include "testjsonxxvalidation.hpp"
+#include "jsonxxvalidationtest.hpp"
 
 FetchJsonResult::FetchJsonResult(const std::string& errorMessage) :
     result(errorMessage)
@@ -77,7 +77,7 @@ void printValidationMessages(const JsonValidationResult& result)
 
 // ========================================================================== //
 
-const std::string TestJsonxxValidation::basePath = "../test/jsonxxValidation/";
+const std::string TestJsonxxValidation::basePath = "./test/jsonxxValidation/";
 
 TEST_F(TestJsonxxValidation, AllDataTypesSuccess)
 {
@@ -208,3 +208,5 @@ TEST_F(TestJsonxxValidation, MutexGroupsMandatory)
 
     // printValidationMessages(result);
 }
+
+// TODO: TEST_F(TestJsonxxValidation, AllowedValues)

@@ -1,5 +1,5 @@
-#ifndef TESTJSONXXVALIDATION_HPP
-#define TESTJSONXXVALIDATION_HPP
+#ifndef JSONXXVALIDATIONTEST_H
+#define JSONXXVALIDATIONTEST_H
 
 #include <gtest/gtest.h>
 
@@ -29,8 +29,6 @@ class TestJsonxxValidation : public testing::Test
         // void SetUp() override;
 
         const static std::string basePath;
-
-
 };
 
-#endif // TESTJSONXXVALIDATION_HPP
+#endif // JSONXXVALIDATIONTEST_H

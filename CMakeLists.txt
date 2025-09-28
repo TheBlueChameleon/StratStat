@@ -110,13 +110,13 @@ target_compile_options(jsonxx-validation-lib PRIVATE -fPIC)
 add_library(Base-Engine STATIC
     src/app/errors.hpp
     src/engine/validationinterface.hpp
-    src/engine/interface.hpp src/engine/interface.cpp
-    src/engine/sharedtypes.hpp src/engine/sharedtypes.cpp
-    src/engine/shared.hpp src/engine/shared.cpp
-    src/engine/engine.hpp src/engine/engine.cpp
-    src/engine/commonvaluecollection.hpp src/engine/commonvaluecollection.cpp
-    src/engine/commondatabase.hpp src/engine/commondatabase.cpp
-    src/engine/commonvaluemapvalidationresult.hpp src/engine/commonvaluemapvalidationresult.cpp
+    src/engine/interface.hpp                        src/engine/interface.cpp
+    src/engine/sharedtypes.hpp                      src/engine/sharedtypes.cpp
+    src/engine/shared.hpp                           src/engine/shared.cpp
+    src/engine/engine.hpp                           src/engine/engine.cpp
+    src/engine/commonvaluecollection.hpp            src/engine/commonvaluecollection.cpp
+    src/engine/commondatabase.hpp                   src/engine/commondatabase.cpp
+    src/engine/commonvaluemapvalidationresult.hpp   src/engine/commonvaluemapvalidationresult.cpp
 )
 
 target_compile_options(Base-Engine PRIVATE -fPIC)
@@ -130,8 +130,8 @@ target_link_libraries(Base-Engine PRIVATE
 # gen1 engine
 
 add_library(Gen1-Engine SHARED
-    src/engine/gen1/constants.hpp src/engine/gen1/constants.cpp
-    src/engine/interface.hpp src/engine/gen1/interface.cpp
+    src/engine/gen1/constants.hpp   src/engine/gen1/constants.cpp
+    src/engine/interface.hpp        src/engine/gen1/interface.cpp
     src/engine/gen1/inputvalidation.cpp
 )
 
@@ -152,24 +152,42 @@ target_link_libraries(Gen1-Engine PUBLIC
 # )
 
 # ............................................................................ #
+# LUA Wrapper
+
+add_library(LuaWrapper STATIC
+    src/luawrapper/lua.hpp
+    src/luawrapper/luabasetypes.hpp             src/luawrapper/luabasetypes.cpp
+    src/luawrapper/luaerror.hpp                 src/luawrapper/luaerror.cpp
+    src/luawrapper/luawrappable.hpp             src/luawrapper/luawrappable.cpp
+    src/luawrapper/state.hpp                    src/luawrapper/state.cpp
+    src/luawrapper/luatable.hpp                 src/luawrapper/luatable.cpp
+    src/luawrapper/luafunction.hpp              src/luawrapper/luafunction.cpp
+    src/luawrapper/parameterstack.hpp           src/luawrapper/parameterstack.cpp
+    src/luawrapper/luafunctiondescriptor.hpp    src/luawrapper/luafunctiondescriptor.cpp
+)
+
+target_link_libraries(LuaWrapper PUBLIC
+    lua::lua
+)
+
+# ............................................................................ #
 # main
 
 add_executable(StratStat
     src/app/main.cpp
     src/app/errors.hpp
-    src/app/config.hpp src/app/config.cpp
-    src/app/cliparser.hpp src/app/cliparser.cpp
-    src/app/logging.hpp src/app/logging.cpp
-    src/app/enginewrapper.hpp src/app/enginewrapper.cpp
-    src/app/luawrapper.hpp src/app/luawrapper.cpp
+    src/app/config.hpp          src/app/config.cpp
+    src/app/cliparser.hpp       src/app/cliparser.cpp
+    src/app/logging.hpp         src/app/logging.cpp
+    src/app/enginewrapper.hpp   src/app/enginewrapper.cpp
 )
 
 target_link_libraries(StratStat PRIVATE
-    lua::lua
     argparse
     csv2
     jsonxx-lib
     jsonxx-validation-lib
+    LuaWrapper
     spdlog
 )
 
@@ -182,7 +200,8 @@ enable_testing()
 
 add_executable(StratStat-Test
     src/test/main.cpp
-    src/test/testjsonxxvalidation.hpp src/test/testjsonxxvalidation.cpp
+    src/test/jsonxxvalidationtest.hpp   src/test/jsonxxvalidationtest.cpp
+    src/test/luawrappertest.hpp         src/test/luawrappertest.cpp
 )
 
 if (TARGET GTest::gtest_main)
@@ -192,11 +211,11 @@ else()
 endif()
 
 target_link_libraries(StratStat-Test
-    GTest::gtest_main
     jsonxx-lib
     jsonxx-validation-lib
+    LuaWrapper
+    GTest::gtest_main
 )
-
 
 gtest_discover_tests(StratStat-Test)
 
