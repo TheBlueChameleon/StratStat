@@ -36,17 +36,7 @@ namespace LuaWrapper
             const std::vector<int>& getOutputParamTypes() const;
             void setOutputParamTypes(const std::vector<int>& newOutputParamTypes);
 
-            friend class State;
-    };
-
-    bool operator==(const LuaFunctionDescriptor& lhs, const LuaFunctionDescriptor& rhs);
-}
-
-namespace std
-{
-    template <> struct hash<LuaWrapper::LuaFunctionDescriptor>
-    {
-        size_t operator()(const LuaWrapper::LuaFunctionDescriptor& funcDescriptor) const;
+            friend class LuaState;
     };
 }
 

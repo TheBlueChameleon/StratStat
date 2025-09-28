@@ -1,20 +1,19 @@
-#ifndef STATE_H
-#define STATE_H
+#ifndef LUASTATE_H
+#define LUASTATE_H
 
 #include <filesystem>
 #include <list>
 #include <unordered_set>
 
 #include <lua.hpp>
-#include "luafunctiondescriptor.hpp"
-#include "parameterstack.hpp"
+#include "luasetoperations.hpp"
 
 namespace LuaWrapper
 {
     class LuaFunctionDescriptor;
     class ParameterStack;
 
-    class State
+    class LuaState
     {
         private:
             lua_State* L = nullptr;
@@ -27,8 +26,8 @@ namespace LuaWrapper
             void verifyParameterStack(const LuaFunctionDescriptor& fDescriptor, const ParameterStack& parameters);
 
         public:
-            State(const std::filesystem::path& scriptFile);
-            ~State();
+            LuaState(const std::filesystem::path& scriptFile);
+            ~LuaState();
 
             const std::unordered_set<std::string>& getNativeFunctions() const;
             const LuaFunctionDescriptor& getDescriptorForName(const std::string& name) const;
@@ -40,4 +39,4 @@ namespace LuaWrapper
     };
 }
 
-#endif // STATE_H
+#endif // LUASTATE_H

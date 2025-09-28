@@ -5,20 +5,20 @@ using namespace std::string_literals;
 #include <app/errors.hpp>
 
 #include "lua.hpp"
+#include "luautils.hpp"
 #include "luaerrors.hpp"
-#include "luafunctiondescriptor.hpp"
 #include "parameterstack.hpp"
-#include "state.hpp"
+#include "luastate.hpp"
 
 namespace LuaWrapper
 {
-    State::State(const std::filesystem::path& scriptFile)
+    LuaState::LuaState(const std::filesystem::path& scriptFile)
     {
         initLua(scriptFile);
         scanForLuaFunctions();
     }
 
-    State::~State()
+    LuaState::~LuaState()
     {
         if (L)
         {
@@ -27,7 +27,7 @@ namespace LuaWrapper
         L = nullptr;
     }
 
-    void State::initLua(const std::filesystem::path& scriptFile)
+    void LuaState::initLua(const std::filesystem::path& scriptFile)
     {
         L = luaL_newstate();
         luaL_openlibs(L);
@@ -50,7 +50,7 @@ namespace LuaWrapper
         }
     }
 
-    void State::scanForLuaFunctions()
+    void LuaState::scanForLuaFunctions()
     {
         const char* name;
 
@@ -70,7 +70,7 @@ namespace LuaWrapper
         lua_pop(L, 1);                          // stack = []
     }
 
-    void State::verifyParameterStack(const LuaFunctionDescriptor& fDescriptor, const ParameterStack& parameters)
+    void LuaState::verifyParameterStack(const LuaFunctionDescriptor& fDescriptor, const ParameterStack& parameters)
     {
         const std::vector<int>& expectedTypes = fDescriptor.getInputParamTypes();
 
@@ -98,12 +98,12 @@ namespace LuaWrapper
         }
     }
 
-    const std::unordered_set<std::string>& State::getNativeFunctions() const
+    const std::unordered_set<std::string>& LuaState::getNativeFunctions() const
     {
         return luaFunctionNames;
     }
 
-    const LuaFunctionDescriptor& State::getDescriptorForName(const std::string& name) const
+    const LuaFunctionDescriptor& LuaState::getDescriptorForName(const std::string& name) const
     {
         const auto notAvailable = registeredFunctions.end();
         const auto it = registeredFunctions.find(name);
@@ -114,7 +114,7 @@ namespace LuaWrapper
         return *it;
     }
 
-    void State::registerLuaFunction(const LuaFunctionDescriptor& functionDescriptor)
+    void LuaState::registerLuaFunction(const LuaFunctionDescriptor& functionDescriptor)
     {
         if (!luaFunctionNames.contains(functionDescriptor.getFuncName()))
         {
@@ -129,12 +129,12 @@ namespace LuaWrapper
         }
     }
 
-    void State::registerCFunction(const std::string& name, void* fnPtr)
+    void LuaState::registerCFunction(const std::string& name, void* fnPtr)
     {
 
     }
 
-    const ParameterStack State::invoke(const std::string& name, const ParameterStack& parameters)
+    const ParameterStack LuaState::invoke(const std::string& name, const ParameterStack& parameters)
     {
         const LuaFunctionDescriptor& fDescriptor = getDescriptorForName(name);
         verifyParameterStack(fDescriptor, parameters);

@@ -16,7 +16,7 @@ namespace LuaWrapper
         public:
             using std::deque<LuaWrappable>::deque;
 
-            friend class State;
+            friend class LuaState;
     };
 }
 

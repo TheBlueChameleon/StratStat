@@ -1,7 +1,8 @@
 #include <string>
 using namespace std::string_literals;
 
-#include "luabasetypes.hpp"
+#include "lua.hpp"
+#include "luautils.hpp"
 #include "luaerrors.hpp"
 
 namespace LuaWrapper

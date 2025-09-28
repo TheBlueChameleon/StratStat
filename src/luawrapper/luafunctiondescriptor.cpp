@@ -5,6 +5,7 @@
 using namespace std::string_literals;
 
 #include "lua.hpp"
+#include "luautils.hpp"
 #include "luaerrors.hpp"
 #include "luafunctiondescriptor.hpp"
 #include "parameterstack.hpp"
@@ -108,18 +109,5 @@ namespace LuaWrapper
     {
         assertTypeRange(newOutputParamTypes);
         outputParamTypes = newOutputParamTypes;
-    }
-
-    bool operator==(const LuaFunctionDescriptor& lhs, const LuaFunctionDescriptor& rhs)
-    {
-        return lhs.getFuncName() == rhs.getFuncName();
-    }
-}
-
-namespace std
-{
-    size_t hash<LuaWrapper::LuaFunctionDescriptor>::operator()(const LuaWrapper::LuaFunctionDescriptor& funcDescriptor) const
-    {
-        return std::hash<std::string>()(funcDescriptor.getFuncName());
     }
 }

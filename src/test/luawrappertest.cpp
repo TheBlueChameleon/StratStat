@@ -4,7 +4,7 @@ using namespace std::string_literals;
 
 #include <app/errors.hpp>
 
-#include <luawrapper/state.hpp>
+#include <luawrapper/luastate.hpp>
 #include <luawrapper/luaerrors.hpp>
 #include <luawrapper/parameterstack.hpp>
 
@@ -15,9 +15,9 @@ const std::string LuaWrapperTest::basePath = "./test/LuaWrapper/";
 
 TEST_F(LuaWrapperTest, InitUnsuccessful)
 {
-    ASSERT_THROW(State(basePath + "doesNotExist"), CriticalAbort);
+    ASSERT_THROW(LuaState(basePath + "doesNotExist"), CriticalAbort);
 
-    ASSERT_THROW(State(basePath + "malformed.lua"), CriticalAbort);
+    ASSERT_THROW(LuaState(basePath + "malformed.lua"), CriticalAbort);
 
 }
 
@@ -28,7 +28,7 @@ TEST_F(LuaWrapperTest, CommunicationNumbers)
     auto ps1 = ParameterStack({1});
     auto ps2 = ParameterStack({1.5});
 
-    State state(basePath + "identity.lua");
+    LuaState state(basePath + "identity.lua");
 
     state.registerLuaFunction(fd);
     const auto re1 = state.invoke(name, ps1);
@@ -46,7 +46,7 @@ TEST_F(LuaWrapperTest, CommunicationStrings)
     const std::string arg = "foo thy bar";
     auto fd = LuaFunctionDescriptor(name, {LUA_TSTRING}, {LUA_TSTRING});
     auto ps = ParameterStack({arg});
-    State state(basePath + "identity.lua");
+    LuaState state(basePath + "identity.lua");
 
     state.registerLuaFunction(fd);
     const auto re = state.invoke(name, ps);
@@ -61,7 +61,7 @@ TEST_F(LuaWrapperTest, CommunicationsMultivariate)
     auto fd = LuaFunctionDescriptor(name, {LUA_TNUMBER, LUA_TNUMBER}, {LUA_TNUMBER, LUA_TNUMBER});
     auto ps = ParameterStack({1, 2});
 
-    State state(basePath + "parameters.lua");
+    LuaState state(basePath + "parameters.lua");
     state.registerLuaFunction(fd);
 
     const auto re = state.invoke(name, ps);
@@ -77,7 +77,7 @@ TEST_F(LuaWrapperTest, CommunicationsInsuccessful)
     auto fd = LuaWrapper::LuaFunctionDescriptor("doesNotExist", {LUA_TNUMBER}, {LUA_TNUMBER});
     auto ps = ParameterStack({"foo"s});
 
-    State state(basePath + "identity.lua");
+    LuaState state(basePath + "identity.lua");
 
     // does not exist
     ASSERT_THROW(state.registerLuaFunction(fd), LuaError);

@@ -1,11 +1,16 @@
 #ifndef LUAWRAPPABLE_HPP
 #define LUAWRAPPABLE_HPP
 
+#include <variant>
+
 #include "lua.hpp"
-#include "luabasetypes.hpp"
+#include "luatable.hpp"
+#include "luafunctiondescriptor.hpp"
 
 namespace LuaWrapper
 {
+    using LuaWrappableVariant = std::variant<nullptr_t, bool, void*, double, std::string, LuaTable, LuaFunctionDescriptor, std::monostate>;
+
     class LuaWrappable
     {
         private:
