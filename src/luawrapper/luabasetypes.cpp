@@ -2,7 +2,7 @@
 using namespace std::string_literals;
 
 #include "luabasetypes.hpp"
-#include "luaerror.hpp"
+#include "luaerrors.hpp"
 
 namespace LuaWrapper
 {

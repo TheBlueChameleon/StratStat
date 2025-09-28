@@ -5,7 +5,7 @@ using namespace std::string_literals;
 #include <app/errors.hpp>
 
 #include <luawrapper/state.hpp>
-#include <luawrapper/luaerror.hpp>
+#include <luawrapper/luaerrors.hpp>
 #include <luawrapper/parameterstack.hpp>
 
 #include "luawrappertest.hpp"
@@ -38,6 +38,21 @@ TEST_F(LuaWrapperTest, CommunicationNumbers)
     EXPECT_EQ(re1[0].getInt(), 1);
     ASSERT_EQ(re2.size(), 1);
     EXPECT_EQ(re2[0].getDouble(), 1.5);
+}
+
+TEST_F(LuaWrapperTest, CommunicationStrings)
+{
+    const std::string name = "identity";
+    const std::string arg = "foo thy bar";
+    auto fd = LuaFunctionDescriptor(name, {LUA_TSTRING}, {LUA_TSTRING});
+    auto ps = ParameterStack({arg});
+    State state(basePath + "identity.lua");
+
+    state.registerLuaFunction(fd);
+    const auto re = state.invoke(name, ps);
+
+    ASSERT_EQ(re.size(), 1);
+    EXPECT_EQ(re[0].getString(), arg);
 }
 
 TEST_F(LuaWrapperTest, CommunicationsMultivariate)

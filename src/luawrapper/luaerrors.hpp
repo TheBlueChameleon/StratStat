@@ -1,5 +1,5 @@
-#ifndef LUAERROR_HPP
-#define LUAERROR_HPP
+#ifndef LUAERRORS_H
+#define LUAERRORS_H
 
 #include <stdexcept>
 
@@ -11,6 +11,8 @@ namespace LuaWrapper
         public:
             using std::runtime_error::runtime_error;
     };
+
+    // TODO differentiate errors
 }
 
-#endif // LUAERROR_HPP
+#endif // LUAERRORS_H

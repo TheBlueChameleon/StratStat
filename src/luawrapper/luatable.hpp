@@ -5,12 +5,19 @@
 
 namespace LuaWrapper
 {
+    class LuaWrappable;
+
     class LuaTable
     {
+        private:
+            // Collection<Pair<LW, LW>> entries
+
+            void pushToLua(lua_State* L) const;
+
         public:
             LuaTable();
 
-            void pushToLua(lua_State* L) const;
+            friend class LuaWrappable;
     };
 }
 

@@ -1,19 +1,19 @@
-#ifndef LUAFUNCTION_HPP
-#define LUAFUNCTION_HPP
+#ifndef LUACFUNCTION_H
+#define LUACFUNCTION_H
 
 #include <string>
 
 
 namespace LuaWrapper
 {
-    class LuaFunction
+    class LuaCFunction
     {
         private:
             std::string name;
 
         public:
-            LuaFunction();
+            LuaCFunction();
     };
 }
 
-#endif // LUAFUNCTION_HPP
+#endif // LUACFUNCTION_H

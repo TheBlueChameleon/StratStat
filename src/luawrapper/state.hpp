@@ -6,12 +6,14 @@
 #include <unordered_set>
 
 #include <lua.hpp>
-
 #include "luafunctiondescriptor.hpp"
 #include "parameterstack.hpp"
 
 namespace LuaWrapper
 {
+    class LuaFunctionDescriptor;
+    class ParameterStack;
+
     class State
     {
         private:
@@ -21,14 +23,14 @@ namespace LuaWrapper
             std::unordered_set<LuaFunctionDescriptor>   registeredFunctions;
 
             void initLua(const std::filesystem::path& scriptFile);
-            void scanForNativeFunctions();
+            void scanForLuaFunctions();
             void verifyParameterStack(const LuaFunctionDescriptor& fDescriptor, const ParameterStack& parameters);
 
         public:
             State(const std::filesystem::path& scriptFile);
             ~State();
 
-            std::unordered_set<std::string> getNativeFunctions() const;
+            const std::unordered_set<std::string>& getNativeFunctions() const;
             const LuaFunctionDescriptor& getDescriptorForName(const std::string& name) const;
 
             void registerLuaFunction(const LuaFunctionDescriptor& functionDescriptor);

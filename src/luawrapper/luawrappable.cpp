@@ -1,4 +1,4 @@
-#include "luaerror.hpp"
+#include "luaerrors.hpp"
 #include "luawrappable.hpp"
 
 namespace LuaWrapper

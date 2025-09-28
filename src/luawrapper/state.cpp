@@ -5,7 +5,9 @@ using namespace std::string_literals;
 #include <app/errors.hpp>
 
 #include "lua.hpp"
-#include "luaerror.hpp"
+#include "luaerrors.hpp"
+#include "luafunctiondescriptor.hpp"
+#include "parameterstack.hpp"
 #include "state.hpp"
 
 namespace LuaWrapper
@@ -13,7 +15,7 @@ namespace LuaWrapper
     State::State(const std::filesystem::path& scriptFile)
     {
         initLua(scriptFile);
-        scanForNativeFunctions();
+        scanForLuaFunctions();
     }
 
     State::~State()
@@ -48,7 +50,7 @@ namespace LuaWrapper
         }
     }
 
-    void State::scanForNativeFunctions()
+    void State::scanForLuaFunctions()
     {
         const char* name;
 
@@ -56,14 +58,16 @@ namespace LuaWrapper
         lua_pushnil(L);                         // stack = [nil, table]
         while (lua_next(L, -2) != 0)            // stack = [<next value>, <next key>, table]
         {
+            // lua_next implies lua_pop(L, 1) to get key
             if (lua_isfunction(L, -1))
             {
                 name = lua_tostring(L, -2);     // Get key(-2)
-                luaFunctionNames.insert(name);
+                luaFunctionNames.emplace(name);
             }
-            lua_pop(L, 1);                      // remove value(-1): stack = [<next key>, table]
+            lua_pop(L, 1);                      // stack = [<next key>, table]
         }
-        lua_pop(L, 1);                          // remove global table(-1)
+        // lua_next has exhausted table         => stack = [table]
+        lua_pop(L, 1);                          // stack = []
     }
 
     void State::verifyParameterStack(const LuaFunctionDescriptor& fDescriptor, const ParameterStack& parameters)
@@ -94,7 +98,7 @@ namespace LuaWrapper
         }
     }
 
-    std::unordered_set<std::string> State::getNativeFunctions() const
+    const std::unordered_set<std::string>& State::getNativeFunctions() const
     {
         return luaFunctionNames;
     }

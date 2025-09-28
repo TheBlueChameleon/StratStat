@@ -1,6 +1,6 @@
-#include "luafunction.hpp"
+#include "luacfunction.hpp"
 
 namespace LuaWrapper
 {
-    LuaFunction::LuaFunction() {}
+    LuaCFunction::LuaCFunction() {}
 }

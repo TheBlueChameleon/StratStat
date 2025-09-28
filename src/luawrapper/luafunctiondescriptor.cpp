@@ -5,7 +5,7 @@
 using namespace std::string_literals;
 
 #include "lua.hpp"
-#include "luaerror.hpp"
+#include "luaerrors.hpp"
 #include "luafunctiondescriptor.hpp"
 #include "parameterstack.hpp"
 
@@ -40,7 +40,6 @@ namespace LuaWrapper
     {
         ParameterStack result;
 
-        int pos = -1;
         for (const int typeID : std::ranges::reverse_view(types))
         {
             switch (typeID)
@@ -49,17 +48,17 @@ namespace LuaWrapper
                     result.push_front(nullptr);
                     break;
                 case LUA_TBOOLEAN:
-                    result.push_front(lua_toboolean(L, pos));
+                    result.push_front(lua_toboolean(L, -1));
                     break;
                 case LUA_TLIGHTUSERDATA:
                     throw LuaError("Not yet implemented: Fetching type: " + getTypeName(typeID));
                     //result.push_front(lua_touserdata(L, -1));
                     break;
                 case LUA_TNUMBER:
-                    result.push_front(lua_tonumber(L, pos));
+                    result.push_front(lua_tonumber(L, -1));
                     break;
                 case LUA_TSTRING:
-                    result.push_front(lua_tostring(L, pos));
+                    result.push_front(std::string(lua_tostring(L, -1)));
                     break;
                 case LUA_TTABLE:
                     throw LuaError("Not yet implemented: Fetching type: " + getTypeName(typeID));
@@ -73,7 +72,7 @@ namespace LuaWrapper
                     throw LuaError("Unknown typeID: "s + std::to_string(typeID));
             }
 
-            --pos;
+            lua_pop(L, 1);
         }
 
         return result;
