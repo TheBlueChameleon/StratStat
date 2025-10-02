@@ -5,7 +5,7 @@
 #include <list>
 #include <unordered_set>
 
-#include <lua.hpp>
+#include "luacapi.hpp"
 #include "luasetoperations.hpp"
 
 namespace LuaWrapper

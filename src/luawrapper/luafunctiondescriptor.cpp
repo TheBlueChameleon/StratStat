@@ -4,10 +4,11 @@
 #include <string>
 using namespace std::string_literals;
 
-#include "lua.hpp"
+#include "luacapi.hpp"
 #include "luautils.hpp"
 #include "luaerrors.hpp"
 #include "luafunctiondescriptor.hpp"
+#include "luawrappable.hpp"
 #include "parameterstack.hpp"
 
 namespace LuaWrapper

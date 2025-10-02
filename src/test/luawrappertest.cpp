@@ -4,9 +4,7 @@ using namespace std::string_literals;
 
 #include <app/errors.hpp>
 
-#include <luawrapper/luastate.hpp>
-#include <luawrapper/luaerrors.hpp>
-#include <luawrapper/parameterstack.hpp>
+#include <luawrapper/luawrapper.hpp>
 
 #include "luawrappertest.hpp"
 using namespace LuaWrapper;
@@ -19,6 +17,17 @@ TEST_F(LuaWrapperTest, InitUnsuccessful)
 
     ASSERT_THROW(LuaState(basePath + "malformed.lua"), CriticalAbort);
 
+}
+
+TEST_F(LuaWrapperTest, TableAccess)
+{
+    LuaTable t;
+
+    ASSERT_THROW(t.addEntry(nullptr, nullptr), LuaError);
+
+    t.addEntry(0, nullptr);
+    EXPECT_TRUE(t.hasKey(0));
+    EXPECT_FALSE(t.hasKey(1));
 }
 
 TEST_F(LuaWrapperTest, CommunicationNumbers)

@@ -1,7 +1,12 @@
 #ifndef LUATABLE_HPP
 #define LUATABLE_HPP
 
-#include "lua.hpp"
+#include <unordered_set>
+#include <vector>
+
+#include "luacapi.hpp"
+#include "luasetoperations.hpp"
+#include "keyvaluepair.hpp"
 
 namespace LuaWrapper
 {
@@ -10,12 +15,20 @@ namespace LuaWrapper
     class LuaTable
     {
         private:
-            // Collection<Pair<LW, LW>> entries
+            std::unordered_set<KeyValuePair> table;
 
             void pushToLua(lua_State* L) const;
 
         public:
             LuaTable();
+
+            void addEntry(const KeyValuePair& entry);
+            void addEntry(KeyValuePair&& entry);
+            void addEntry(const LuaWrappable& key, const LuaWrappable& value);
+            void addEntry(LuaWrappable&& key, LuaWrappable&& value);
+
+            bool hasKey(const LuaWrappable& key) const;
+            const LuaWrappable &get(const LuaWrappable& key) const;
 
             friend class LuaWrappable;
     };

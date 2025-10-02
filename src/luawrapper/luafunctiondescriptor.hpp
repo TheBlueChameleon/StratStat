@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "lua.hpp"
+#include "luacapi.hpp"
 
 namespace LuaWrapper
 {

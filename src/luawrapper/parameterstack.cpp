@@ -1,3 +1,4 @@
+#include "luawrappable.hpp"
 #include "parameterstack.hpp"
 
 namespace LuaWrapper

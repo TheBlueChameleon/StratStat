@@ -1,12 +1,14 @@
 #include <iostream>
 #include <string>
+#include <vector>
 using namespace std::string_literals;
 
 #include <app/errors.hpp>
 
-#include "lua.hpp"
+#include "luacapi.hpp"
 #include "luautils.hpp"
 #include "luaerrors.hpp"
+#include "luawrappable.hpp"
 #include "parameterstack.hpp"
 #include "luastate.hpp"
 

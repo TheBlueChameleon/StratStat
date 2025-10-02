@@ -3,11 +3,12 @@
 
 #include <deque>
 
-#include "lua.hpp"
-#include "luawrappable.hpp"
+#include "luacapi.hpp"
 
 namespace LuaWrapper
 {
+    class LuaWrappable;
+
     class ParameterStack : public std::deque<LuaWrappable>
     {
         private:

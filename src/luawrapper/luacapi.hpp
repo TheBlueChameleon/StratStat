@@ -1,10 +1,12 @@
-#ifndef LUA_HPP
-#define LUA_HPP
+#ifndef LUACAPI_H
+#define LUACAPI_H
 
 extern "C" {
+
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
+
 }
 
-#endif // LUA_HPP
+#endif // LUACAPI_H

@@ -1,5 +1,10 @@
+#include <format>
+#include <string>
+using namespace std::string_literals;
+
 #include "luaerrors.hpp"
 #include "luawrappable.hpp"
+#include "keyvaluepair.hpp"
 
 namespace LuaWrapper
 {
@@ -39,6 +44,11 @@ namespace LuaWrapper
         value(f)
     {}
 
+    bool LuaWrappable::isNil() const
+    {
+        return getType() == LUA_TNIL;
+    }
+
     void LuaWrappable::pushToLua(lua_State* L) const
     {
         switch (getType())
@@ -63,6 +73,8 @@ namespace LuaWrapper
                 break;
             case LUA_TFUNCTION:
                 throw LuaError("Not Implemented yet");
+            default:
+                throw LuaError("Unknown typeID: "s + std::to_string(getType()));
         }
     }
 
@@ -114,5 +126,28 @@ namespace LuaWrapper
     const LuaFunctionDescriptor& LuaWrappable::getFunctionDescriptor() const
     {
         return std::get<LuaFunctionDescriptor>(value);
+    }
+
+    const std::string LuaWrappable::getRepr() const
+    {
+        switch (getType())
+        {
+            case LUA_TNIL:
+                return "nil";
+            case LUA_TBOOLEAN:
+                return (getBool() ? "true" : "false");
+            case LUA_TLIGHTUSERDATA:
+                return "0x"s + std::format("{:x}", reinterpret_cast<size_t>(getPtr()));;
+            case LUA_TNUMBER:
+                return std::to_string(getDouble());
+            case LUA_TSTRING:
+                return getString();
+            case LUA_TTABLE:
+                throw LuaError("Not Implemented yet");
+            case LUA_TFUNCTION:
+                throw LuaError("Not Implemented yet");
+            default:
+                throw LuaError("Unknown typeID: "s + std::to_string(getType()));
+        }
     }
 }

@@ -155,13 +155,15 @@ target_link_libraries(Gen1-Engine PUBLIC
 # LUA Wrapper
 
 add_library(LuaWrapper STATIC
-    src/luawrapper/lua.hpp
+    src/luawrapper/luawrapper.hpp
+    src/luawrapper/luacapi.hpp
     src/luawrapper/luautils.hpp                 src/luawrapper/luautils.cpp
     src/luawrapper/luasetoperations.hpp         src/luawrapper/luasetoperations.cpp
     src/luawrapper/luaerrors.hpp                src/luawrapper/luaerrors.cpp
     src/luawrapper/luawrappable.hpp             src/luawrapper/luawrappable.cpp
     src/luawrapper/luastate.hpp                 src/luawrapper/luastate.cpp
     src/luawrapper/luatable.hpp                 src/luawrapper/luatable.cpp
+    src/luawrapper/keyvaluepair.hpp             src/luawrapper/keyvaluepair.cpp
     src/luawrapper/luacfunction.hpp             src/luawrapper/luacfunction.cpp
     src/luawrapper/parameterstack.hpp           src/luawrapper/parameterstack.cpp
     src/luawrapper/luafunctiondescriptor.hpp    src/luawrapper/luafunctiondescriptor.cpp

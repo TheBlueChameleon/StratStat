@@ -3,13 +3,19 @@
 
 #include <variant>
 
-#include "lua.hpp"
+#include "luacapi.hpp"
+#include "luasetoperations.hpp"
 #include "luatable.hpp"
 #include "luafunctiondescriptor.hpp"
 
 namespace LuaWrapper
 {
-    using LuaWrappableVariant = std::variant<nullptr_t, bool, void*, double, std::string, LuaTable, LuaFunctionDescriptor, std::monostate>;
+    class LuaWrappableVariant : public std::variant<nullptr_t, bool, void*, double, std::string, LuaTable, LuaFunctionDescriptor, std::monostate>
+    {
+        public:
+            using std::variant<nullptr_t, bool, void*, double, std::string, LuaTable, LuaFunctionDescriptor, std::monostate>::variant;
+
+    };
 
     class LuaWrappable
     {
@@ -29,6 +35,7 @@ namespace LuaWrapper
             LuaWrappable(const LuaTable&);
             LuaWrappable(const LuaFunctionDescriptor&);
 
+            bool isNil() const;
             int getType() const;
 
             void setValue(const LuaWrappableVariant& newV);
@@ -41,6 +48,8 @@ namespace LuaWrapper
             const std::string& getString() const;
             const LuaTable& getTable() const;
             const LuaFunctionDescriptor& getFunctionDescriptor() const;
+
+            const std::string getRepr() const;
 
             friend class ParameterStack;
     };

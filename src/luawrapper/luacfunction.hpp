@@ -3,7 +3,6 @@
 
 #include <string>
 
-
 namespace LuaWrapper
 {
     class LuaCFunction
