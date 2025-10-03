@@ -27,6 +27,7 @@ namespace LuaWrapper
             void pushToLua(lua_State* L) const;
 
         public:
+            LuaWrappable();
             LuaWrappable(nullptr_t);
             LuaWrappable(bool);
             LuaWrappable(void*);

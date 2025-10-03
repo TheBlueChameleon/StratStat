@@ -39,6 +39,8 @@ namespace LuaWrapper
             LuaTableConstIterator begin() const;
             LuaTableConstIterator end() const;
 
+            bool isEqualTo(const LuaTable& other) const;
+
             friend class LuaWrappable;
     };
 }

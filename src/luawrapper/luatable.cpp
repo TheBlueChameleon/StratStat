@@ -157,4 +157,9 @@ namespace LuaWrapper
     {
         return LuaTableConstIterator(table.cend());
     }
+
+    bool LuaTable::isEqualTo(const LuaTable& other) const
+    {
+        return this->table == other.table;
+    }
 }

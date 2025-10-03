@@ -17,7 +17,7 @@ namespace LuaWrapper
 
     bool operator==(const LuaTable& lhs, const LuaTable& rhs)
     {
-        return true;
+        return lhs.isEqualTo(rhs);
     }
 
     bool operator==(const LuaWrappable& lhs, const LuaWrappable& rhs)

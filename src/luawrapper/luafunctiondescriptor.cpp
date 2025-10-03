@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <iostream>
 #include <ranges>
 #include <string>
 using namespace std::string_literals;
@@ -14,7 +15,8 @@ namespace LuaWrapper
 {
     void assertTypeRange(const std::vector<int>& types)
     {
-        for (int i = 0; const auto type : types)
+        int i = 0;
+        for (const auto type : types)
         {
             if ((type <= LUA_TNONE) || (type >= LUA_NUMTYPES))
             {
@@ -37,43 +39,62 @@ namespace LuaWrapper
         assertTypeRange(outParamTypes);
     }
 
+    LuaWrappable fetchTypeIDFromLua(lua_State* L, const int typeID);
+
+    LuaTable fetchTableFromLua(lua_State* L)
+    {
+        LuaTable result;
+
+        lua_pushnil(L);  /* Make sure lua_next starts at beginning */
+        LuaWrappable key, value;
+        while (lua_next(L, -2))                      /* TABLE LOCATED AT -2 IN STACK */
+        {
+            value = fetchTypeIDFromLua(L, lua_type(L, -1));
+            lua_pop(L,1);
+            key = fetchTypeIDFromLua(L, lua_type(L, -1));
+            result.setEntry(std::move(key), std::move(value));
+        }
+
+        return result;
+    }
+
+    LuaWrappable fetchTypeIDFromLua(lua_State* L, const int typeID)
+    {
+        switch (typeID)
+        {
+            case LUA_TNIL:
+                return nullptr;
+            case LUA_TBOOLEAN:
+                return lua_toboolean(L, -1);
+            case LUA_TLIGHTUSERDATA:
+                //return lua_touserdata(L, -1);
+                throw LuaError("Not yet implemented: Fetching type: " + getTypeName(typeID));
+            case LUA_TNUMBER:
+                return lua_tonumber(L, -1);
+            case LUA_TSTRING:
+                return std::string(lua_tostring(L, -1));
+            case LUA_TTABLE:
+                return fetchTableFromLua(L);
+            case LUA_TFUNCTION:
+                throw LuaError("Not yet implemented: Fetching type: " + getTypeName(typeID));
+            case LUA_TUSERDATA:
+                throw LuaError("Not yet implemented: Fetching type: " + getTypeName(typeID));
+            case LUA_TTHREAD:
+                throw LuaError("Not yet implemented: Fetching type: " + getTypeName(typeID));
+            default:
+                throw LuaError("Unknown typeID: "s + std::to_string(typeID));
+        }
+
+        lua_pop(L, 1);
+    }
+
     ParameterStack LuaFunctionDescriptor::fetchFromLua(lua_State* L, const std::vector<int>& types) const
     {
         ParameterStack result;
 
         for (const int typeID : std::ranges::reverse_view(types))
         {
-            switch (typeID)
-            {
-                case LUA_TNIL:
-                    result.push_front(nullptr);
-                    break;
-                case LUA_TBOOLEAN:
-                    result.push_front(lua_toboolean(L, -1));
-                    break;
-                case LUA_TLIGHTUSERDATA:
-                    throw LuaError("Not yet implemented: Fetching type: " + getTypeName(typeID));
-                    //result.push_front(lua_touserdata(L, -1));
-                    break;
-                case LUA_TNUMBER:
-                    result.push_front(lua_tonumber(L, -1));
-                    break;
-                case LUA_TSTRING:
-                    result.push_front(std::string(lua_tostring(L, -1)));
-                    break;
-                case LUA_TTABLE:
-                    throw LuaError("Not yet implemented: Fetching type: " + getTypeName(typeID));
-                case LUA_TFUNCTION:
-                    throw LuaError("Not yet implemented: Fetching type: " + getTypeName(typeID));
-                case LUA_TUSERDATA:
-                    throw LuaError("Not yet implemented: Fetching type: " + getTypeName(typeID));
-                case LUA_TTHREAD:
-                    throw LuaError("Not yet implemented: Fetching type: " + getTypeName(typeID));
-                default:
-                    throw LuaError("Unknown typeID: "s + std::to_string(typeID));
-            }
-
-            lua_pop(L, 1);
+            result.push_front(fetchTypeIDFromLua(L, typeID));
         }
 
         return result;

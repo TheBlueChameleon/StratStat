@@ -7,6 +7,10 @@ using namespace std::string_literals;
 
 namespace LuaWrapper
 {
+    LuaWrappable::LuaWrappable() :
+        value(std::monostate())
+    {}
+
     LuaWrappable::LuaWrappable(nullptr_t) :
         value(nullptr)
     {}
