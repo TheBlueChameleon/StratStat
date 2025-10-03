@@ -23,11 +23,25 @@ TEST_F(LuaWrapperTest, TableAccess)
 {
     LuaTable t;
 
-    ASSERT_THROW(t.addEntry(nullptr, nullptr), LuaError);
+    ASSERT_THROW(t.setEntry(nullptr, nullptr), LuaError);
 
-    t.addEntry(0, nullptr);
+    t.setEntry(0, nullptr);         // emplace KVP
     EXPECT_TRUE(t.hasKey(0));
     EXPECT_FALSE(t.hasKey(1));
+
+    t.setEntry(KeyValuePair(1, 1)); // move KPV
+
+    const auto entry = KeyValuePair(2, "2");
+    t.setEntry(entry);              // copy KVP
+
+    LuaWrappable key = true;
+    LuaWrappable value = "true";
+    t.setEntry(key, value);
+
+    EXPECT_EQ(t.size(), 4);
+
+    t.setEntry(0, -1);
+    EXPECT_EQ(t.size(), 4);
 }
 
 TEST_F(LuaWrapperTest, CommunicationNumbers)

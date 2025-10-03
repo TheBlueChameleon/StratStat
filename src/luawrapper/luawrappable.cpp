@@ -36,8 +36,16 @@ namespace LuaWrapper
         value(s)
     {}
 
+    LuaWrappable::LuaWrappable(std::string&& s) :
+        value(std::move(s))
+    {}
+
     LuaWrappable::LuaWrappable(const LuaTable& t) :
         value(t)
+    {}
+
+    LuaWrappable::LuaWrappable(LuaTable&& t) :
+        value(std::move(t))
     {}
 
     LuaWrappable::LuaWrappable(const LuaFunctionDescriptor& f) :

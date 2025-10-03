@@ -14,31 +14,9 @@ namespace LuaWrapper
 
     }
 
-    void LuaTable::addEntry(const KeyValuePair& entry)
+    size_t LuaTable::size() const
     {
-        auto copy = KeyValuePair(entry);
-        table.emplace(std::move(copy));
-        copy.setNull();
-    }
-
-    void LuaTable::addEntry(KeyValuePair&& entry)
-    {
-        table.emplace(std::move(entry));
-        entry.setNull();
-    }
-
-    void LuaTable::addEntry(const LuaWrappable& key, const LuaWrappable& value)
-    {
-        auto entry = KeyValuePair(key, value);
-        table.insert(std::move(entry));
-        entry.setNull();
-    }
-
-    void LuaTable::addEntry(LuaWrappable&& key, LuaWrappable&& value)
-    {
-        auto&& entry = KeyValuePair(std::move(key), std::move(value));
-        table.emplace(entry);
-        entry.setNull();
+        return table.size();
     }
 
     const LuaWrappable& mapToKeys(const KeyValuePair& p)
@@ -46,26 +24,26 @@ namespace LuaWrapper
         return p.getKey();
     }
 
-    bool LuaTable::hasKey(const LuaWrappable& key) const
+    struct matchesKey
     {
-        auto matchesKey = [&key](const LuaWrappable& entryKey)
+        const LuaWrappable& key;
+
+        bool operator()(const LuaWrappable& entryKey)
         {
             return entryKey == key;
-        };
+        }
+    };
 
-        auto it = std::ranges::find_if(table, matchesKey, mapToKeys);
+    bool LuaTable::hasKey(const LuaWrappable& key) const
+    {
+        auto it = std::ranges::find_if(table, matchesKey(key), mapToKeys);
         const auto notAvailable = table.end();
         return it != notAvailable;
     }
 
     const LuaWrappable& LuaTable::get(const LuaWrappable& key) const
     {
-        auto matchesKey = [&key](const LuaWrappable& entryKey)
-        {
-            return entryKey == key;
-        };
-
-        auto it = std::ranges::find_if(table, matchesKey, mapToKeys);
+        auto it = std::ranges::find_if(table, matchesKey(key), mapToKeys);
         const auto notAvailable = table.end();
         if (it == notAvailable)
         {
@@ -73,5 +51,26 @@ namespace LuaWrapper
         }
 
         return it->getValue();
+    }
+
+    void LuaTable::setEntry(const KeyValuePair& entry)
+    {
+        auto copy = KeyValuePair(entry);
+        table.emplace(entry);
+    }
+
+    void LuaTable::setEntry(KeyValuePair&& entry)
+    {
+        table.emplace(std::move(entry));
+    }
+
+    void LuaTable::setEntry(const LuaWrappable& key, const LuaWrappable& value)
+    {
+        table.insert(KeyValuePair(key, value));
+    }
+
+    void LuaTable::setEntry(LuaWrappable&& key, LuaWrappable&& value)
+    {
+        setEntry(KeyValuePair(std::move(key), std::move(value)));
     }
 }

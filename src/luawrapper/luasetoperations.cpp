@@ -17,7 +17,7 @@ namespace LuaWrapper
 
     bool operator==(const KeyValuePair& lhs, const KeyValuePair& rhs)
     {
-        return (lhs.getKey() == rhs.getKey()) && (lhs.getValue() == rhs.getValue());
+        return lhs.getKey() == rhs.getKey();
     }
 
     bool operator==(const LuaWrappable& lhs, const LuaWrappable& rhs)
@@ -69,7 +69,6 @@ namespace std
                 return 0;
             case LUA_TBOOLEAN:
                 return 1 + wrappable.getBool();
-                break;
             case LUA_TLIGHTUSERDATA:
                 return reinterpret_cast<size_t>(wrappable.getPtr());
             case LUA_TNUMBER:

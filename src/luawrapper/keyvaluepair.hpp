@@ -18,6 +18,8 @@ namespace LuaWrapper
             void assertNoNullKey(const LuaWrapper::LuaWrappable& key);
 
         public:
+            KeyValuePair(const KeyValuePair& other);
+            KeyValuePair(KeyValuePair&& other);
             KeyValuePair(const LuaWrappable& key, const LuaWrappable& value);
             KeyValuePair(LuaWrappable&& key, LuaWrappable&& value);
             ~KeyValuePair();

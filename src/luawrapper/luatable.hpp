@@ -2,7 +2,6 @@
 #define LUATABLE_HPP
 
 #include <unordered_set>
-#include <vector>
 
 #include "luacapi.hpp"
 #include "luasetoperations.hpp"
@@ -22,13 +21,15 @@ namespace LuaWrapper
         public:
             LuaTable();
 
-            void addEntry(const KeyValuePair& entry);
-            void addEntry(KeyValuePair&& entry);
-            void addEntry(const LuaWrappable& key, const LuaWrappable& value);
-            void addEntry(LuaWrappable&& key, LuaWrappable&& value);
-
+            size_t size() const;
             bool hasKey(const LuaWrappable& key) const;
-            const LuaWrappable &get(const LuaWrappable& key) const;
+            const LuaWrappable& get(const LuaWrappable& key) const;
+
+            void setEntry(const KeyValuePair& entry);
+            void setEntry(KeyValuePair&& entry);
+            void setEntry(const LuaWrappable& key, const LuaWrappable& value);
+            void setEntry(LuaWrappable&& key, LuaWrappable&& value);
+
 
             friend class LuaWrappable;
     };

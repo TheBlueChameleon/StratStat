@@ -32,7 +32,9 @@ namespace LuaWrapper
             LuaWrappable(int);
             LuaWrappable(double);
             LuaWrappable(const std::string&);
+            LuaWrappable(std::string&&);
             LuaWrappable(const LuaTable&);
+            LuaWrappable(LuaTable&&);
             LuaWrappable(const LuaFunctionDescriptor&);
 
             bool isNil() const;

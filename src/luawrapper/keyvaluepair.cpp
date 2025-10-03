@@ -5,6 +5,21 @@
 
 namespace LuaWrapper
 {
+    KeyValuePair::KeyValuePair(const KeyValuePair& other)
+    {
+        assertNoNullKey(other.getKey());
+        this->key = new LuaWrappable(other.getKey());
+        this->value = new LuaWrappable(other.getValue());
+    }
+
+    KeyValuePair::KeyValuePair(KeyValuePair&& other)
+    {
+        assertNoNullKey(other.getKey());
+        this->key = other.key;
+        this->value = other.value;
+        other.setNull();
+    }
+
     KeyValuePair::KeyValuePair(const LuaWrappable& key, const LuaWrappable& value)
     {
         assertNoNullKey(key);
