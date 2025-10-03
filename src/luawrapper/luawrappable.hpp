@@ -31,6 +31,7 @@ namespace LuaWrapper
             LuaWrappable(void*);
             LuaWrappable(int);
             LuaWrappable(double);
+            LuaWrappable(const char* const);
             LuaWrappable(const std::string&);
             LuaWrappable(std::string&&);
             LuaWrappable(const LuaTable&);

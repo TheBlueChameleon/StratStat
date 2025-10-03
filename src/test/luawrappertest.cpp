@@ -25,23 +25,30 @@ TEST_F(LuaWrapperTest, TableAccess)
 
     ASSERT_THROW(t.setEntry(nullptr, nullptr), LuaError);
 
-    t.setEntry(0, nullptr);         // emplace KVP
+    t.setEntry(0, nullptr);         // move semantics
     EXPECT_TRUE(t.hasKey(0));
     EXPECT_FALSE(t.hasKey(1));
 
-    t.setEntry(KeyValuePair(1, 1)); // move KPV
-
-    const auto entry = KeyValuePair(2, "2");
-    t.setEntry(entry);              // copy KVP
-
-    LuaWrappable key = true;
+    LuaWrappable key = true;        // copy semantics
     LuaWrappable value = "true";
     t.setEntry(key, value);
 
-    EXPECT_EQ(t.size(), 4);
+    EXPECT_EQ(t.size(), 2);
 
-    t.setEntry(0, -1);
-    EXPECT_EQ(t.size(), 4);
+    std::unordered_set<LuaWrappable> expectedKeys = {0, true};
+    std::unordered_set<LuaWrappable> actualKeys = t.getKeySet();
+    EXPECT_EQ(actualKeys, expectedKeys);
+
+    std::unordered_multiset<LuaWrappable> expectedValues = {nullptr, "true"};
+    std::unordered_multiset<LuaWrappable> actualValues = t.getValues();
+    EXPECT_EQ(actualValues, expectedValues);
+
+    t.setEntry(0, 0);
+    actualKeys = t.getKeySet();
+    actualValues = t.getValues();
+    EXPECT_EQ(t.size(), 2);
+    EXPECT_EQ(actualKeys, expectedKeys);
+    EXPECT_NE(actualValues, expectedValues);
 }
 
 TEST_F(LuaWrapperTest, CommunicationNumbers)

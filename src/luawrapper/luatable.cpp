@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <iostream>
 #include <string>
 using namespace std::string_literals;
 
@@ -19,58 +21,106 @@ namespace LuaWrapper
         return table.size();
     }
 
-    const LuaWrappable& mapToKeys(const KeyValuePair& p)
-    {
-        return p.getKey();
-    }
-
-    struct matchesKey
-    {
-        const LuaWrappable& key;
-
-        bool operator()(const LuaWrappable& entryKey)
-        {
-            return entryKey == key;
-        }
-    };
-
     bool LuaTable::hasKey(const LuaWrappable& key) const
     {
-        auto it = std::ranges::find_if(table, matchesKey(key), mapToKeys);
+        return table.contains(key);
+    }
+
+    using TableIterator = std::unordered_map<IndirectWrappable, IndirectWrappable>::iterator;
+    using TableConstIterator = std::unordered_map<IndirectWrappable, IndirectWrappable>::const_iterator;
+
+    std::pair<TableIterator, TableIterator> lookupKey(
+        std::unordered_map<IndirectWrappable, IndirectWrappable>& table,
+        const LuaWrappable& key)
+    {
+        auto it = table.find(key);
         const auto notAvailable = table.end();
-        return it != notAvailable;
+
+        return {it, notAvailable};
+    }
+
+    std::pair<TableConstIterator, TableConstIterator> lookupKey(
+        const std::unordered_map<IndirectWrappable, IndirectWrappable>& table,
+        const LuaWrappable& key)
+    {
+        const auto it = table.find(key);
+        const auto notAvailable = table.end();
+
+        return {it, notAvailable};
     }
 
     const LuaWrappable& LuaTable::get(const LuaWrappable& key) const
     {
-        auto it = std::ranges::find_if(table, matchesKey(key), mapToKeys);
-        const auto notAvailable = table.end();
+        const auto [it, notAvailable] = lookupKey(table, key);
         if (it == notAvailable)
         {
             throw LuaError("Key '"s + key.getRepr() + "' was not found in the table.");
         }
-
-        return it->getValue();
+        return it->second.get();
     }
 
-    void LuaTable::setEntry(const KeyValuePair& entry)
+    const std::unordered_set<LuaWrappable> LuaTable::getKeySet() const
     {
-        auto copy = KeyValuePair(entry);
-        table.emplace(entry);
+        std::unordered_set<LuaWrappable> result;
+
+        std::transform(table.begin(), table.end(),
+                       std::inserter(result, result.end()),
+                       [](const auto& pair)
+        {
+            return pair.first.get();
+        }
+                      );
+        return result;
     }
 
-    void LuaTable::setEntry(KeyValuePair&& entry)
+    const std::unordered_multiset<LuaWrappable> LuaTable::getValues() const
     {
-        table.emplace(std::move(entry));
+        std::unordered_multiset<LuaWrappable> result;
+        std::transform(table.begin(), table.end(),
+                       std::inserter(result, result.end()),
+                       [](const auto& pair)
+        {
+            return pair.second.get();
+        }
+                      );
+        return result;
+    }
+
+    void assertNoNullKey(const LuaWrappable& key)
+    {
+        if (key.isNil())
+        {
+            throw LuaError("attempting to create table entry with nil key");
+        }
     }
 
     void LuaTable::setEntry(const LuaWrappable& key, const LuaWrappable& value)
     {
-        table.insert(KeyValuePair(key, value));
+        assertNoNullKey(key);
+        const auto [it, notAvailable] = lookupKey(table, key);
+        if (it == notAvailable)
+        {
+            table.insert({key, value});
+        }
+        else
+        {
+            it->second.set(value);
+        }
+
     }
 
     void LuaTable::setEntry(LuaWrappable&& key, LuaWrappable&& value)
     {
-        setEntry(KeyValuePair(std::move(key), std::move(value)));
+        assertNoNullKey(key);
+        const auto [it, notAvailable] = lookupKey(table, key);
+        if (it == notAvailable)
+        {
+            table.insert({std::move(key), std::move(value)});
+        }
+        else
+        {
+            it->second.set(std::move(value));
+        }
+
     }
 }

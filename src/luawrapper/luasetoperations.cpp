@@ -1,23 +1,18 @@
 #include <string>
 using namespace std::string_literals;
 
+#include "indirectwrappable.hpp"
 #include "luaerrors.hpp"
 #include "luafunctiondescriptor.hpp"
 #include "luasetoperations.hpp"
 #include "luautils.hpp"
 #include "luawrappable.hpp"
-#include "keyvaluepair.hpp"
 
 namespace LuaWrapper
 {
     bool operator==(const LuaFunctionDescriptor& lhs, const LuaFunctionDescriptor& rhs)
     {
         return lhs.getFuncName() == rhs.getFuncName();
-    }
-
-    bool operator==(const KeyValuePair& lhs, const KeyValuePair& rhs)
-    {
-        return lhs.getKey() == rhs.getKey();
     }
 
     bool operator==(const LuaWrappable& lhs, const LuaWrappable& rhs)
@@ -47,6 +42,16 @@ namespace LuaWrapper
                 throw LuaError("Unknown typeID: "s + std::to_string(lhs.getType()));
         }
     }
+
+    bool operator==(const IndirectWrappable& lhs, const IndirectWrappable& rhs)
+    {
+        if (lhs.holdsValue() && rhs.holdsValue())
+        {
+            return lhs.get() == rhs.get();
+        }
+
+        return false;
+    }
 }
 
 namespace std
@@ -54,11 +59,6 @@ namespace std
     size_t hash<LuaWrapper::LuaFunctionDescriptor>::operator()(const LuaWrapper::LuaFunctionDescriptor& funcDescriptor) const
     {
         return std::hash<std::string>()(funcDescriptor.getFuncName());
-    }
-
-    size_t std::hash<LuaWrapper::KeyValuePair>::operator()(const LuaWrapper::KeyValuePair& kvPair) const
-    {
-        return std::hash<LuaWrapper::LuaWrappable>()(kvPair.getKey());
     }
 
     size_t std::hash<LuaWrapper::LuaWrappable>::operator()(const LuaWrapper::LuaWrappable& wrappable) const
@@ -82,6 +82,11 @@ namespace std
             default:
                 throw LuaWrapper::LuaError("Unknown typeID: "s + std::to_string(wrappable.getType()));
         }
+    }
+
+    size_t std::hash<LuaWrapper::IndirectWrappable>::operator()(const LuaWrapper::IndirectWrappable& wrappable) const
+    {
+        return std::hash<LuaWrapper::LuaWrappable>()(wrappable.get());
     }
 
 }

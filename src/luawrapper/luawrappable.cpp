@@ -4,7 +4,6 @@ using namespace std::string_literals;
 
 #include "luaerrors.hpp"
 #include "luawrappable.hpp"
-#include "keyvaluepair.hpp"
 
 namespace LuaWrapper
 {
@@ -30,6 +29,10 @@ namespace LuaWrapper
 
     LuaWrappable::LuaWrappable(double d) :
         value(d)
+    {}
+
+    LuaWrappable::LuaWrappable(const char* const s) :
+        value(std::string(s))
     {}
 
     LuaWrappable::LuaWrappable(const std::string& s) :
