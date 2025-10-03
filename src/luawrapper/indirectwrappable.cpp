@@ -28,6 +28,7 @@ namespace LuaWrapper
         if (ptr)
         {
             delete (ptr);
+            ptr = nullptr;
         }
     }
 
@@ -79,7 +80,12 @@ namespace LuaWrapper
         return ptr;
     }
 
-    LuaWrappable* IndirectWrappable::expose() const
+    const LuaWrappable* IndirectWrappable::operator->() const
+    {
+        return ptr;
+    }
+
+    const LuaWrappable* IndirectWrappable::expose() const
     {
         return ptr;
     }

@@ -29,8 +29,9 @@ namespace LuaWrapper
 
             LuaWrappable& operator*();
             LuaWrappable* operator->();
+            const LuaWrappable* operator->() const;
 
-            LuaWrappable* expose() const;
+            const LuaWrappable* expose() const;
             LuaWrappable* exposeMutable();
 
             friend class LuaTable;

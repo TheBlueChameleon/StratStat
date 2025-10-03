@@ -21,6 +21,7 @@ TEST_F(LuaWrapperTest, InitUnsuccessful)
 
 TEST_F(LuaWrapperTest, TableAccess)
 {
+    constexpr auto TRUE = "TRUE";
     LuaTable t;
 
     ASSERT_THROW(t.setEntry(nullptr, nullptr), LuaError);
@@ -30,7 +31,7 @@ TEST_F(LuaWrapperTest, TableAccess)
     EXPECT_FALSE(t.hasKey(1));
 
     LuaWrappable key = true;        // copy semantics
-    LuaWrappable value = "true";
+    LuaWrappable value = TRUE;
     t.setEntry(key, value);
 
     EXPECT_EQ(t.size(), 2);
@@ -39,10 +40,11 @@ TEST_F(LuaWrapperTest, TableAccess)
     std::unordered_set<LuaWrappable> actualKeys = t.getKeySet();
     EXPECT_EQ(actualKeys, expectedKeys);
 
-    std::unordered_multiset<LuaWrappable> expectedValues = {nullptr, "true"};
+    std::unordered_multiset<LuaWrappable> expectedValues = {nullptr, TRUE};
     std::unordered_multiset<LuaWrappable> actualValues = t.getValues();
     EXPECT_EQ(actualValues, expectedValues);
 
+    // overwrite table value
     t.setEntry(0, 0);
     actualKeys = t.getKeySet();
     actualValues = t.getValues();
@@ -50,12 +52,17 @@ TEST_F(LuaWrapperTest, TableAccess)
     EXPECT_EQ(actualKeys, expectedKeys);
     EXPECT_NE(actualValues, expectedValues);
 
-    for (const auto& p : t)
+    // iterability
+    std::unordered_map<LuaWrappable, LuaWrappable> expected =
     {
-        std::cout << "about to loop" << std::endl;
-        auto& [k, v] = p;
-        std::cout << k.getRepr() << "\t" << v.getRepr() << std::endl;
+        {0, 0},
+        {true, TRUE}
+    };
+    for (const auto& [k, v]  : t)
+    {
+        EXPECT_EQ(expected.at(k.get()), v);
     }
+
 }
 
 TEST_F(LuaWrapperTest, CommunicationNumbers)

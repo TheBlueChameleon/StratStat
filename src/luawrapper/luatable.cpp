@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <iostream>
 #include <string>
 using namespace std::string_literals;
 
@@ -131,7 +130,6 @@ namespace LuaWrapper
 
     LuaTableIterator LuaTable::begin()
     {
-        std::cout << "about construct iterator" << std::endl;
         return LuaTableIterator(table.begin());
     }
 

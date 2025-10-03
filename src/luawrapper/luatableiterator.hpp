@@ -5,6 +5,7 @@
 
 namespace LuaWrapper
 {
+    class IndirectWrappable;
     class LuaWrappable;
 
     class LuaTableIterator
@@ -14,24 +15,17 @@ namespace LuaWrapper
 
             using iterator_category = std::forward_iterator_tag;
             using difference_type   = std::ptrdiff_t;
-            using value_type        = std::pair<LuaWrappable&, LuaWrappable&>;
+            using value_type        = std::pair<IndirectWrappable, IndirectWrappable>;
             using pointer           = value_type*;
             using reference         = value_type&;
 
         private:
             UnderlyingIterator  it;
-            value_type          current;
-
-            void increment();
-
-            LuaWrappable* getKeyPtr() const;
-            LuaWrappable* getValuePtr() const;
 
         public:
             LuaTableIterator(const UnderlyingIterator& it);
 
-            reference operator*();
-            pointer operator->();
+            value_type operator*();
             LuaTableIterator& operator++();
             LuaTableIterator operator++(int);
 

@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <spdlog/spdlog.h>
 
 #ifdef _WIN32

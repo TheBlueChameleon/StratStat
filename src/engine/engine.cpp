@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "engine.hpp"
 
 namespace StratStat
