@@ -22,6 +22,7 @@ TEST_F(LuaWrapperTest, InitUnsuccessful)
 TEST_F(LuaWrapperTest, TableAccess)
 {
     constexpr auto TRUE = "TRUE";
+    constexpr auto ONE = "ONE";
     LuaTable t;
 
     ASSERT_THROW(t.setEntry(nullptr, nullptr), LuaError);
@@ -30,13 +31,13 @@ TEST_F(LuaWrapperTest, TableAccess)
     EXPECT_TRUE(t.hasKey(0));
     EXPECT_FALSE(t.hasKey(1));
 
-    LuaWrappable key = true;        // copy semantics
+    LuaWrappable key = ONE;         // copy semantics
     LuaWrappable value = TRUE;
     t.setEntry(key, value);
 
     EXPECT_EQ(t.size(), 2);
 
-    std::unordered_set<LuaWrappable> expectedKeys = {0, true};
+    std::unordered_set<LuaWrappable> expectedKeys = {0, ONE};
     std::unordered_set<LuaWrappable> actualKeys = t.getKeySet();
     EXPECT_EQ(actualKeys, expectedKeys);
 
@@ -56,7 +57,7 @@ TEST_F(LuaWrapperTest, TableAccess)
     std::unordered_map<LuaWrappable, LuaWrappable> expected =
     {
         {0, 0},
-        {true, TRUE}
+        {ONE, TRUE}
     };
     for (const auto& [k, v]  : t)
     {
@@ -102,7 +103,9 @@ TEST_F(LuaWrapperTest, TableAccess)
 TEST_F(LuaWrapperTest, CommunicationTables)
 {
     const std::string name = "identity";
-    const LuaTable arg;
+    LuaTable arg;
+    arg.setEntry("a", "A");
+    arg.setEntry(1, -1);
     auto fd = LuaFunctionDescriptor(name, {LUA_TTABLE}, {LUA_TTABLE});
     auto ps = ParameterStack({arg});
     LuaState state(basePath + "identity.lua");

@@ -7,6 +7,7 @@ using namespace std::string_literals;
 #include "luatable.hpp"
 #include "luatableiterator.hpp"
 #include "luatableconstiterator.hpp"
+#include "luautils.hpp"
 #include "luawrappable.hpp"
 
 namespace LuaWrapper
@@ -16,14 +17,12 @@ namespace LuaWrapper
     void LuaTable::pushToLua(lua_State* L) const
     {
         lua_newtable(L);
-
         for (const auto& [k, v] : *this)
         {
-            std::cout << "key = " << k->getRepr() << "\tvalue = " << v->getRepr() << std::endl;
+            k->pushToLua(L);
+            v->pushToLua(L);
+            lua_settable(L, -3);
         }
-        // lua_pushliteral(L, "key");
-        // lua_pushliteral(L, "value");
-        // lua_settable(L, -3);
     }
 
     size_t LuaTable::size() const
@@ -96,17 +95,22 @@ namespace LuaWrapper
         return result;
     }
 
-    void assertNoNullKey(const LuaWrappable& key)
+    void assertNoInvalidKey(const LuaWrappable& key)
     {
-        if (key.isNil() || key.isError())
+
+        if (key.isNil() || key.isError() || key.isBool())
         {
-            throw LuaError("attempting to create table entry with nil key");
+            throw LuaError(
+                "attempting to create table entry with invalid key ("s +
+                getTypeName(key.getType()) +
+                ")."
+            );
         }
     }
 
     void LuaTable::setEntry(const LuaWrappable& key, const LuaWrappable& value)
     {
-        assertNoNullKey(key);
+        assertNoInvalidKey(key);
         const auto [it, notAvailable] = lookupKey(table, key);
         if (it == notAvailable)
         {
@@ -121,7 +125,7 @@ namespace LuaWrapper
 
     void LuaTable::setEntry(LuaWrappable&& key, LuaWrappable&& value)
     {
-        assertNoNullKey(key);
+        assertNoInvalidKey(key);
         const auto [it, notAvailable] = lookupKey(table, key);
         if (it == notAvailable)
         {

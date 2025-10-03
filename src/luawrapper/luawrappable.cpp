@@ -64,6 +64,36 @@ namespace LuaWrapper
         return getType() == LUA_TNIL;
     }
 
+    bool LuaWrappable::isBool() const
+    {
+        return getType() == LUA_TBOOLEAN;
+    }
+
+    bool LuaWrappable::isPtr() const
+    {
+        return getType() == LUA_TLIGHTUSERDATA;
+    }
+
+    bool LuaWrappable::isNumber() const
+    {
+        return getType() == LUA_TNUMBER;
+    }
+
+    bool LuaWrappable::isString() const
+    {
+        return getType() == LUA_TSTRING;
+    }
+
+    bool LuaWrappable::isTable() const
+    {
+        return getType() == LUA_TTABLE;
+    }
+
+    bool LuaWrappable::isFunction() const
+    {
+        return getType() == LUA_TFUNCTION;
+    }
+
     bool LuaWrappable::isError() const
     {
         return getType() == LUA_NUMTYPES;

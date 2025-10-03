@@ -46,6 +46,12 @@ namespace LuaWrapper
             LuaWrappable& operator=(LuaWrappable&& other) = default;
 
             bool isNil() const;
+            bool isBool() const;
+            bool isPtr() const;
+            bool isNumber() const;
+            bool isString() const;
+            bool isTable() const;
+            bool isFunction() const;
             bool isError() const;
             int  getType() const;
 
@@ -63,6 +69,7 @@ namespace LuaWrapper
             const std::string getRepr() const;
 
             friend class ParameterStack;
+            friend class LuaTable;
     };
 }
 

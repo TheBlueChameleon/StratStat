@@ -30,7 +30,7 @@ namespace LuaWrapper
             case LUA_TTHREAD:
                 return "thread";
             default:
-                throw LuaError("Unknown typeID: "s + std::to_string(typeID));
+                return "unknown typeID: "s + std::to_string(typeID);
         }
     }
 }
