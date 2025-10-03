@@ -49,6 +49,13 @@ TEST_F(LuaWrapperTest, TableAccess)
     EXPECT_EQ(t.size(), 2);
     EXPECT_EQ(actualKeys, expectedKeys);
     EXPECT_NE(actualValues, expectedValues);
+
+    for (const auto& p : t)
+    {
+        std::cout << "about to loop" << std::endl;
+        auto& [k, v] = p;
+        std::cout << k.getRepr() << "\t" << v.getRepr() << std::endl;
+    }
 }
 
 TEST_F(LuaWrapperTest, CommunicationNumbers)
@@ -83,6 +90,21 @@ TEST_F(LuaWrapperTest, CommunicationStrings)
 
     ASSERT_EQ(re.size(), 1);
     EXPECT_EQ(re[0].getString(), arg);
+}
+
+TEST_F(LuaWrapperTest, CommunicationTables)
+{
+    const std::string name = "identity";
+    const LuaTable arg;
+    auto fd = LuaFunctionDescriptor(name, {LUA_TTABLE}, {LUA_TTABLE});
+    auto ps = ParameterStack({arg});
+    LuaState state(basePath + "identity.lua");
+
+    state.registerLuaFunction(fd);
+    const auto re = state.invoke(name, ps);
+
+    ASSERT_EQ(re.size(), 1);
+    EXPECT_EQ(re[0].getTable(), arg);
 }
 
 TEST_F(LuaWrapperTest, CommunicationsMultivariate)

@@ -7,6 +7,7 @@
 #include "indirectwrappable.hpp"
 #include "luacapi.hpp"
 #include "luasetoperations.hpp"
+#include "luatableiterator.hpp"
 
 namespace LuaWrapper
 {
@@ -31,6 +32,8 @@ namespace LuaWrapper
             void setEntry(const LuaWrappable& key, const LuaWrappable& value);
             void setEntry(LuaWrappable&& key, LuaWrappable&& value);
 
+            LuaTableIterator begin();
+            LuaTableIterator end();
 
             friend class LuaWrappable;
     };

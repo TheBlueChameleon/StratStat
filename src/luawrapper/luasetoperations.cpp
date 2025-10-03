@@ -15,6 +15,11 @@ namespace LuaWrapper
         return lhs.getFuncName() == rhs.getFuncName();
     }
 
+    bool operator==(const LuaTable& lhs, const LuaTable& rhs)
+    {
+        return true;
+    }
+
     bool operator==(const LuaWrappable& lhs, const LuaWrappable& rhs)
     {
         if (lhs.getType() != rhs.getType())

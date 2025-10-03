@@ -5,6 +5,7 @@ using namespace std::string_literals;
 
 #include "luaerrors.hpp"
 #include "luatable.hpp"
+#include "luatableiterator.hpp"
 #include "luawrappable.hpp"
 
 namespace LuaWrapper
@@ -13,7 +14,11 @@ namespace LuaWrapper
 
     void LuaTable::pushToLua(lua_State* L) const
     {
+        lua_newtable(L);
 
+        // lua_pushliteral(L, "key");
+        // lua_pushliteral(L, "value");
+        // lua_settable(L, -3);
     }
 
     size_t LuaTable::size() const
@@ -88,7 +93,7 @@ namespace LuaWrapper
 
     void assertNoNullKey(const LuaWrappable& key)
     {
-        if (key.isNil())
+        if (key.isNil() || key.isError())
         {
             throw LuaError("attempting to create table entry with nil key");
         }
@@ -122,5 +127,16 @@ namespace LuaWrapper
             it->second.set(std::move(value));
         }
 
+    }
+
+    LuaTableIterator LuaTable::begin()
+    {
+        std::cout << "about construct iterator" << std::endl;
+        return LuaTableIterator(table.begin());
+    }
+
+    LuaTableIterator LuaTable::end()
+    {
+        return LuaTableIterator(table.end());
     }
 }

@@ -27,6 +27,12 @@ namespace LuaWrapper
             void set(const LuaWrappable& newEntity);
             void set(LuaWrappable&& newEntity);
 
+            LuaWrappable& operator*();
+            LuaWrappable* operator->();
+
+            LuaWrappable* expose() const;
+            LuaWrappable* exposeMutable();
+
             friend class LuaTable;
     };
 }

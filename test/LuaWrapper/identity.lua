@@ -1,4 +1,9 @@
 function identity(n)
+--     print("Got table:")
+--     for k,v in pairs(n) do
+--         print(k.." = "..v)
+--     end
+--     print("...end")
     return(n)
 end
 

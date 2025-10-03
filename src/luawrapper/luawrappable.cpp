@@ -7,10 +7,6 @@ using namespace std::string_literals;
 
 namespace LuaWrapper
 {
-    LuaWrappable::LuaWrappable() :
-        value(std::monostate())
-    {}
-
     LuaWrappable::LuaWrappable(nullptr_t) :
         value(nullptr)
     {}
@@ -55,9 +51,22 @@ namespace LuaWrapper
         value(f)
     {}
 
+    LuaWrappable::LuaWrappable(const LuaWrappable& other) :
+        value(other.value)
+    {}
+
+    LuaWrappable::LuaWrappable(LuaWrappable&& other) :
+        value(std::move(other.value))
+    {}
+
     bool LuaWrappable::isNil() const
     {
         return getType() == LUA_TNIL;
+    }
+
+    bool LuaWrappable::isError() const
+    {
+        return getType() == LUA_NUMTYPES;
     }
 
     void LuaWrappable::pushToLua(lua_State* L) const

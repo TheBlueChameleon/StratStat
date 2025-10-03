@@ -7,9 +7,11 @@ namespace LuaWrapper
 {
     class IndirectWrappable;
     class LuaFunctionDescriptor;
+    class LuaTable;
     class LuaWrappable;
 
     bool operator==(const LuaFunctionDescriptor& lhs, const LuaFunctionDescriptor& rhs);
+    bool operator==(const LuaTable& lhs, const LuaTable& rhs);
     bool operator==(const LuaWrappable& lhs, const LuaWrappable& rhs);
     bool operator==(const IndirectWrappable& lhs, const IndirectWrappable& rhs);
 }

@@ -68,4 +68,24 @@ namespace LuaWrapper
             *ptr = std::move(newEntity);
         }
     }
+
+    LuaWrappable& IndirectWrappable::operator*()
+    {
+        return *ptr;
+    }
+
+    LuaWrappable* IndirectWrappable::operator->()
+    {
+        return ptr;
+    }
+
+    LuaWrappable* IndirectWrappable::expose() const
+    {
+        return ptr;
+    }
+
+    LuaWrappable* IndirectWrappable::exposeMutable()
+    {
+        return ptr;
+    }
 }
