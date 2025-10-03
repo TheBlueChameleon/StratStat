@@ -119,21 +119,21 @@ TEST_F(LuaWrapperTest, CommunicationTables)
     EXPECT_EQ(re[0].getTable(), arg);
 }
 
-// TEST_F(LuaWrapperTest, CommunicationsMultivariate)
-// {
-//     const std::string name = "sumAndDifference";
-//     auto fd = LuaFunctionDescriptor(name, {LUA_TNUMBER, LUA_TNUMBER}, {LUA_TNUMBER, LUA_TNUMBER});
-//     auto ps = ParameterStack({1, 2});
+TEST_F(LuaWrapperTest, CommunicationsMultivariate)
+{
+    const std::string name = "sumAndDifference";
+    auto fd = LuaFunctionDescriptor(name, {LUA_TNUMBER, LUA_TNUMBER}, {LUA_TNUMBER, LUA_TNUMBER});
+    auto ps = ParameterStack({1, 2});
 
-//     LuaState state(basePath + "parameters.lua");
-//     state.registerLuaFunction(fd);
+    LuaState state(basePath + "parameters.lua");
+    state.registerLuaFunction(fd);
 
-//     const auto re = state.invoke(name, ps);
+    const auto re = state.invoke(name, ps);
 
-//     ASSERT_EQ(re.size(), 2);
-//     EXPECT_EQ(re[0].getDouble(), +3);
-//     EXPECT_EQ(re[1].getDouble(), -1);
-// }
+    ASSERT_EQ(re.size(), 2);
+    EXPECT_EQ(re[0].getDouble(), +3);
+    EXPECT_EQ(re[1].getDouble(), -1);
+}
 
 TEST_F(LuaWrapperTest, CommunicationsInsuccessful)
 {

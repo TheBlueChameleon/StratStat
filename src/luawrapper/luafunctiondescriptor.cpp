@@ -45,9 +45,9 @@ namespace LuaWrapper
     {
         LuaTable result;
 
-        lua_pushnil(L);  /* Make sure lua_next starts at beginning */
+        lua_pushnil(L);             // lua_next will interpret this as "begin with first key"
         LuaWrappable key, value;
-        while (lua_next(L, -2))                      /* TABLE LOCATED AT -2 IN STACK */
+        while (lua_next(L, -2))     // pops key, pushes [value, next_key]; returns null if no next_key
         {
             value = fetchTypeIDFromLua(L, lua_type(L, -1));
             lua_pop(L,1);
@@ -55,11 +55,15 @@ namespace LuaWrapper
             result.setEntry(std::move(key), std::move(value));
         }
 
+        // talbe is on top of stack
+
         return result;
     }
 
     LuaWrappable fetchTypeIDFromLua(lua_State* L, const int typeID)
     {
+        // fetched item remains on top of stack after this
+
         switch (typeID)
         {
             case LUA_TNIL:
@@ -85,7 +89,6 @@ namespace LuaWrapper
                 throw LuaError("Unknown typeID: "s + std::to_string(typeID));
         }
 
-        lua_pop(L, 1);
     }
 
     ParameterStack LuaFunctionDescriptor::fetchFromLua(lua_State* L, const std::vector<int>& types) const
@@ -95,6 +98,7 @@ namespace LuaWrapper
         for (const int typeID : std::ranges::reverse_view(types))
         {
             result.push_front(fetchTypeIDFromLua(L, typeID));
+            lua_pop(L, 1);
         }
 
         return result;
