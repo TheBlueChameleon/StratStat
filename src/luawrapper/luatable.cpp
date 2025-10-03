@@ -1,10 +1,12 @@
 #include <algorithm>
+#include <iostream>
 #include <string>
 using namespace std::string_literals;
 
 #include "luaerrors.hpp"
 #include "luatable.hpp"
 #include "luatableiterator.hpp"
+#include "luatableconstiterator.hpp"
 #include "luawrappable.hpp"
 
 namespace LuaWrapper
@@ -15,6 +17,10 @@ namespace LuaWrapper
     {
         lua_newtable(L);
 
+        for (const auto& [k, v] : *this)
+        {
+            std::cout << "key = " << k->getRepr() << "\tvalue = " << v->getRepr() << std::endl;
+        }
         // lua_pushliteral(L, "key");
         // lua_pushliteral(L, "value");
         // lua_settable(L, -3);
@@ -136,5 +142,15 @@ namespace LuaWrapper
     LuaTableIterator LuaTable::end()
     {
         return LuaTableIterator(table.end());
+    }
+
+    LuaTableConstIterator LuaTable::begin() const
+    {
+        return LuaTableConstIterator(table.cbegin());
+    }
+
+    LuaTableConstIterator LuaTable::end() const
+    {
+        return LuaTableConstIterator(table.cend());
     }
 }

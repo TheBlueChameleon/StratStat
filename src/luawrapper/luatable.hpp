@@ -8,6 +8,7 @@
 #include "luacapi.hpp"
 #include "luasetoperations.hpp"
 #include "luatableiterator.hpp"
+#include "luatableconstiterator.hpp"
 
 namespace LuaWrapper
 {
@@ -34,6 +35,9 @@ namespace LuaWrapper
 
             LuaTableIterator begin();
             LuaTableIterator end();
+
+            LuaTableConstIterator begin() const;
+            LuaTableConstIterator end() const;
 
             friend class LuaWrappable;
     };

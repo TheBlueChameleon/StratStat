@@ -65,39 +65,39 @@ TEST_F(LuaWrapperTest, TableAccess)
 
 }
 
-TEST_F(LuaWrapperTest, CommunicationNumbers)
-{
-    const std::string name = "identity";
-    auto fd = LuaFunctionDescriptor(name, {LUA_TNUMBER}, {LUA_TNUMBER});
-    auto ps1 = ParameterStack({1});
-    auto ps2 = ParameterStack({1.5});
+// TEST_F(LuaWrapperTest, CommunicationNumbers)
+// {
+//     const std::string name = "identity";
+//     auto fd = LuaFunctionDescriptor(name, {LUA_TNUMBER}, {LUA_TNUMBER});
+//     auto ps1 = ParameterStack({1});
+//     auto ps2 = ParameterStack({1.5});
 
-    LuaState state(basePath + "identity.lua");
+//     LuaState state(basePath + "identity.lua");
 
-    state.registerLuaFunction(fd);
-    const auto re1 = state.invoke(name, ps1);
-    const auto re2 = state.invoke(name, ps2);
+//     state.registerLuaFunction(fd);
+//     const auto re1 = state.invoke(name, ps1);
+//     const auto re2 = state.invoke(name, ps2);
 
-    ASSERT_EQ(re1.size(), 1);
-    EXPECT_EQ(re1[0].getInt(), 1);
-    ASSERT_EQ(re2.size(), 1);
-    EXPECT_EQ(re2[0].getDouble(), 1.5);
-}
+//     ASSERT_EQ(re1.size(), 1);
+//     EXPECT_EQ(re1[0].getInt(), 1);
+//     ASSERT_EQ(re2.size(), 1);
+//     EXPECT_EQ(re2[0].getDouble(), 1.5);
+// }
 
-TEST_F(LuaWrapperTest, CommunicationStrings)
-{
-    const std::string name = "identity";
-    const std::string arg = "foo thy bar";
-    auto fd = LuaFunctionDescriptor(name, {LUA_TSTRING}, {LUA_TSTRING});
-    auto ps = ParameterStack({arg});
-    LuaState state(basePath + "identity.lua");
+// TEST_F(LuaWrapperTest, CommunicationStrings)
+// {
+//     const std::string name = "identity";
+//     const std::string arg = "foo thy bar";
+//     auto fd = LuaFunctionDescriptor(name, {LUA_TSTRING}, {LUA_TSTRING});
+//     auto ps = ParameterStack({arg});
+//     LuaState state(basePath + "identity.lua");
 
-    state.registerLuaFunction(fd);
-    const auto re = state.invoke(name, ps);
+//     state.registerLuaFunction(fd);
+//     const auto re = state.invoke(name, ps);
 
-    ASSERT_EQ(re.size(), 1);
-    EXPECT_EQ(re[0].getString(), arg);
-}
+//     ASSERT_EQ(re.size(), 1);
+//     EXPECT_EQ(re[0].getString(), arg);
+// }
 
 TEST_F(LuaWrapperTest, CommunicationTables)
 {

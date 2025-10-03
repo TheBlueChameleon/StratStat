@@ -164,6 +164,7 @@ add_library(LuaWrapper STATIC
     src/luawrapper/luastate.hpp                 src/luawrapper/luastate.cpp
     src/luawrapper/luatable.hpp                 src/luawrapper/luatable.cpp
     src/luawrapper/luatableiterator.hpp         src/luawrapper/luatableiterator.cpp
+    src/luawrapper/luatableconstiterator.hpp    src/luawrapper/luatableconstiterator.cpp
     src/luawrapper/indirectwrappable.hpp        src/luawrapper/indirectwrappable.cpp
     src/luawrapper/luacfunction.hpp             src/luawrapper/luacfunction.cpp
     src/luawrapper/parameterstack.hpp           src/luawrapper/parameterstack.cpp

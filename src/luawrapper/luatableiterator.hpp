@@ -20,7 +20,7 @@ namespace LuaWrapper
             using reference         = value_type&;
 
         private:
-            UnderlyingIterator  it;
+            UnderlyingIterator it;
 
         public:
             LuaTableIterator(const UnderlyingIterator& it);
